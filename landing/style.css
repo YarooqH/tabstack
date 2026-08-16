@@ -4780,152 +4780,68 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 16px;
 }
 
-.compare-badge {
+.compare-label-tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
+  color: var(--text-tertiary);
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
   padding: 3px 8px;
   border-radius: 5px;
 }
 
-.badge-warning {
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  color: #ef4444;
+.compare-label-tag.active {
+  color: var(--text-primary);
+  border-color: var(--border-medium);
 }
 
-.badge-calm {
-  background: rgba(34, 197, 94, 0.08);
-  border: 1px solid rgba(34, 197, 94, 0.25);
-  color: var(--accent-green);
-}
-
-.badge-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-}
-
-.badge-dot.warning {
-  background: #ef4444;
-  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
-}
-
-.badge-dot.calm {
-  background: var(--accent-green);
-  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
-}
-
-.compare-caption {
+.compare-status-note {
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-tertiary);
 }
 
-.compare-caption.text-savings {
-  color: var(--accent-green);
-  font-weight: 500;
-}
-
-.compare-chaos-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  opacity: 0.6;
-  margin: auto 0;
-}
-
-.chaos-skeleton-box {
-  border: 1px dashed var(--border-medium);
+.compare-workspace-card {
+  flex: 1;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--bg-input);
-  padding: 10px 12px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
-
-.chaos-box-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.chaos-box-meta {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-tertiary);
-}
-
-.compare-calm-preview {
-  margin: auto 0;
-}
-
-.calm-active-stack-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-medium);
-  border-radius: 8px;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-}
-
-.calm-card-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.calm-brand-icon-box {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  display: flex;
-  align-items: center;
   justify-content: center;
 }
 
-.brand-mini-svg {
-  width: 14px;
-  height: 14px;
+.workspace-card-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.calm-card-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
+.workspace-line {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--border-subtle);
 }
 
-.calm-card-meta {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-tertiary);
+.workspace-line.wide {
+  width: 75%;
 }
 
-.calm-hotkey-badge {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  background: var(--bg-input);
-  border: 1px solid var(--border-medium);
-  padding: 2px 8px;
-  border-radius: 4px;
-  color: var(--text-secondary);
+.workspace-line.mid {
+  width: 90%;
+  opacity: 0.6;
 }
 
-.compare-bottom-caption {
-  font-size: 12px;
-  color: var(--text-tertiary);
-  margin: 0;
+.workspace-line.narrow {
+  width: 45%;
+  opacity: 0.4;
 }
 
 .compare-range-input {
@@ -4973,31 +4889,33 @@ body {
 .compare-metrics-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  gap: 16px;
+  margin-top: 16px;
 }
 
 .compare-metric-card {
-  padding: 14px 18px;
+  padding: 18px 20px;
   border-radius: 10px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
-
-.compare-metric-val {
-  font-family: var(--font-mono);
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.2;
+  gap: 6px;
+  text-align: left;
 }
 
 .compare-metric-lbl {
-  font-size: 12px;
-  color: var(--text-tertiary);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.compare-metric-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
 }
 
 /* ==========================================================================

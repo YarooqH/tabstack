@@ -808,9 +808,9 @@
   <section id="comparison" class="section border-top">
     <div class="container">
       <div class="section-header">
-        <p class="section-kicker">Interactive comparison</p>
-        <h2 class="section-title">The tidy tab bar. Experience the calm.</h2>
-        <p class="section-subtitle">Drag the slider to compare unorganized tab sprawl with TabStack auto-clustering.</p>
+        <p class="section-kicker">Visual comparison</p>
+        <h2 class="section-title">From tab sprawl to instant clarity.</h2>
+        <p class="section-subtitle">Drag the slider to compare unmanaged browser tabs with TabStack auto-grouping.</p>
       </div>
 
       <!-- Scrubber Comparison Window Card -->
@@ -824,27 +824,22 @@
           </div>
           <div class="compare-address-bar">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span>tabstack://split-comparison</span>
+            <span>tabstack://overview</span>
           </div>
         </div>
 
         <!-- Viewport Stage -->
         <div class="compare-stage" id="compareStage" style="--split-pos: 50%;">
           
-          <!-- ================= LAYER 1: CHAOS (Underneath / Left) ================= -->
+          <!-- ================= LAYER 1: CHAOS (Default Browser / Left) ================= -->
           <div class="compare-pane chaos-pane">
             <div class="compare-tab-strip squished-strip">
-              <!-- 30+ Squished Tab Silhouettes with Real SVGs -->
-              <div class="squish-tab active" title="MrBeast Yacht"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#ef4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
-              <div class="squish-tab" title="qray/tabstack PR"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></div>
-              <div class="squish-tab" title="Design System v2"><svg class="tab-svg-icon" viewBox="0 0 38 57" fill="none"><path d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0z" fill="#1ABCFE"/><path d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0z" fill="#0ACF83"/><path d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19z" fill="#FF7262"/><path d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5z" fill="#F24E1E"/><path d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5z" fill="#A259FF"/></svg></div>
-              <div class="squish-tab" title="Product Roadmap Doc"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#3b82f6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div>
-              <div class="squish-tab" title="Spotify Track"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#10b981"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z"/></svg></div>
-              <div class="squish-tab"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#ef4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
-              <div class="squish-tab"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></div>
-              <div class="squish-tab"><svg class="tab-svg-icon" viewBox="0 0 38 57" fill="none"><path d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0z" fill="#1ABCFE"/><path d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0z" fill="#0ACF83"/><path d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19z" fill="#FF7262"/><path d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5z" fill="#F24E1E"/><path d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5z" fill="#A259FF"/></svg></div>
-              <div class="squish-tab"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#3b82f6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div>
-              <div class="squish-tab"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#10b981"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z"/></svg></div>
+              <!-- Squished Tab Silhouettes with Real SVGs -->
+              <div class="squish-tab active" title="YouTube"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#ef4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
+              <div class="squish-tab" title="GitHub"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></div>
+              <div class="squish-tab" title="Figma"><svg class="tab-svg-icon" viewBox="0 0 38 57" fill="none"><path d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0z" fill="#1ABCFE"/><path d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0z" fill="#0ACF83"/><path d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19z" fill="#FF7262"/><path d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5z" fill="#F24E1E"/><path d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5z" fill="#A259FF"/></svg></div>
+              <div class="squish-tab" title="Docs"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#3b82f6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div>
+              <div class="squish-tab" title="Spotify"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#10b981"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z"/></svg></div>
               <div class="squish-tab"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#ef4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
               <div class="squish-tab"><svg class="tab-svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></div>
               <div class="squish-tab"><svg class="tab-svg-icon" viewBox="0 0 38 57" fill="none"><path d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0z" fill="#1ABCFE"/><path d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0z" fill="#0ACF83"/><path d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19z" fill="#FF7262"/><path d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5z" fill="#F24E1E"/><path d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5z" fill="#A259FF"/></svg></div>
@@ -854,34 +849,23 @@
             
             <div class="compare-viewport-body">
               <div class="compare-meta-bar">
-                <span class="compare-badge badge-warning">
-                  <span class="badge-dot warning"></span>
-                  34 Squished Tabs · 1.84 GB RAM
-                </span>
-                <span class="compare-caption">Unmanaged Session</span>
+                <span class="compare-label-tag">Standard Tab Bar</span>
+                <span class="compare-status-note">Squished icons · Missing titles</span>
               </div>
-              <div class="compare-chaos-grid">
-                <div class="chaos-skeleton-box">
-                  <span class="chaos-box-title">Window 1</span>
-                  <span class="chaos-box-meta">14 active tabs · High memory</span>
-                </div>
-                <div class="chaos-skeleton-box">
-                  <span class="chaos-box-title">Window 2</span>
-                  <span class="chaos-box-meta">12 active tabs · High memory</span>
-                </div>
-                <div class="chaos-skeleton-box">
-                  <span class="chaos-box-title">Window 3</span>
-                  <span class="chaos-box-meta">8 active tabs · Leaking RAM</span>
+              <div class="compare-workspace-card">
+                <div class="workspace-card-inner">
+                  <div class="workspace-line wide"></div>
+                  <div class="workspace-line mid"></div>
+                  <div class="workspace-line narrow"></div>
                 </div>
               </div>
-              <p class="compare-bottom-caption">Titles truncated, favicons unreadable, background memory leaking.</p>
             </div>
           </div>
 
-          <!-- ================= LAYER 2: CALM (Right / Clipped Overlay) ================= -->
+          <!-- ================= LAYER 2: CALM (TabStack / Clipped Overlay) ================= -->
           <div class="compare-pane calm-pane" id="compareCalmPane">
             <div class="compare-tab-strip grouped-strip">
-              <!-- 4 Auto-Grouped Stacks -->
+              <!-- Auto-Grouped Stacks -->
               <div class="clean-group-pill active">
                 <svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#ef4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                 <span class="group-title">YouTube</span>
@@ -906,32 +890,21 @@
 
             <div class="compare-viewport-body">
               <div class="compare-meta-bar">
-                <span class="compare-badge badge-calm">
-                  <span class="badge-dot calm"></span>
-                  4 Domain Stacks · 164 MB Active
-                </span>
-                <span class="compare-caption text-savings">-88% Memory Freed</span>
+                <span class="compare-label-tag active">TabStack Grouped</span>
+                <span class="compare-status-note">Clean stacks · Active focus</span>
               </div>
-              <div class="compare-calm-preview">
-                <div class="calm-active-stack-card">
-                  <div class="calm-card-left">
-                    <div class="calm-brand-icon-box">
-                      <svg class="brand-mini-svg" viewBox="0 0 24 24" fill="#ef4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                    </div>
-                    <div>
-                      <div class="calm-card-title">YouTube · Active Focus Stack</div>
-                      <div class="calm-card-meta">3 tabs expanded · Other 3 stacks hibernated</div>
-                    </div>
-                  </div>
-                  <span class="calm-hotkey-badge">⌥1 Active</span>
+              <div class="compare-workspace-card">
+                <div class="workspace-card-inner">
+                  <div class="workspace-line wide"></div>
+                  <div class="workspace-line mid"></div>
+                  <div class="workspace-line narrow"></div>
                 </div>
               </div>
-              <p class="compare-bottom-caption">Deterministic clustering, background RAM discard, instant hotkeys.</p>
             </div>
           </div>
 
           <!-- Invisible Range Controller -->
-          <input type="range" min="0" max="100" step="0.1" value="50" class="compare-range-input" id="compareSlider" aria-label="Drag to compare chaotic tabs vs TabStack calm">
+          <input type="range" min="0" max="100" step="0.1" value="50" class="compare-range-input" id="compareSlider" aria-label="Drag to compare unmanaged browser tabs with TabStack auto-grouping">
 
           <!-- Scrubber Divider Handle Line + Knob -->
           <div class="compare-handle-line" id="compareHandleLine" aria-hidden="true">
@@ -943,19 +916,19 @@
         </div>
       </div>
 
-      <!-- Quick Metrics Summary Grid Below -->
+      <!-- Grounded Key Benefits Below Slider -->
       <div class="compare-metrics-row">
         <div class="compare-metric-card">
-          <span class="compare-metric-val">88%</span>
-          <span class="compare-metric-lbl">RAM Reclaimed</span>
+          <span class="compare-metric-lbl">Automatic Domain Grouping</span>
+          <p class="compare-metric-desc">Clusters tabs from the same website into native, color-coded Chrome tab groups without manual drag-and-drop.</p>
         </div>
         <div class="compare-metric-card">
-          <span class="compare-metric-val">34 → 4</span>
-          <span class="compare-metric-lbl">Domain Stacks</span>
+          <span class="compare-metric-lbl">Single-Stack Focus</span>
+          <p class="compare-metric-desc">Expanding a stack keeps your current task open while collapsing dormant groups to preserve horizontal tab space.</p>
         </div>
         <div class="compare-metric-card">
-          <span class="compare-metric-val">0 ms</span>
-          <span class="compare-metric-lbl">Engine Overhead</span>
+          <span class="compare-metric-lbl">Native Tab Suspension</span>
+          <p class="compare-metric-desc">Uses Chromium's native tab discard API to free memory from idle tabs without closing them or losing your scroll position.</p>
         </div>
       </div>
 
@@ -966,9 +939,9 @@
   <section id="problems" class="section border-top sticky-story-section">
     <div class="container">
       <div class="section-header text-center">
-        <p class="section-kicker">A calmer tab bar</p>
-        <h2 class="section-title">The tidy tab bar. Chaos to calm.</h2>
-        <p class="section-subtitle">Scroll down to see the heavy lifting in action.</p>
+        <p class="section-kicker">Core features</p>
+        <h2 class="section-title">How TabStack organizes your browser.</h2>
+        <p class="section-subtitle">Scroll down to see the workflow in action.</p>
       </div>
 
       <!-- Two-Column Sticky Scroll Container -->
@@ -980,11 +953,11 @@
           <!-- Step 1 Block -->
           <div class="story-step-block active" id="storyStep-1" data-step="1" role="button" tabindex="0">
             <div class="step-num-badge">Step 01</div>
-            <h3 class="step-heading">Auto-Group Automatically</h3>
-            <p class="step-description">TabStack recognizes related context and domains, instantly clustering scattered tabs into clean, organized project stacks.</p>
+            <h3 class="step-heading">Group by Domain</h3>
+            <p class="step-description">Tabs from the same website automatically cluster into native Chromium groups as you browse.</p>
             <div class="step-metric-pill">
               <span class="metric-dot"></span>
-              <span>16 Tabs Auto-Grouped</span>
+              <span>Native Chrome Groups</span>
             </div>
           </div>
 
@@ -992,21 +965,21 @@
           <div class="story-step-block" id="storyStep-2" data-step="2" role="button" tabindex="0">
             <div class="step-num-badge">Step 02</div>
             <h3 class="step-heading">Focus on What’s Active</h3>
-            <p class="step-description">Keep only your active workspace open. TabStack collapses all other groups into the background, removing dormant stacks from view until you need them.</p>
+            <p class="step-description">Opening a stack collapses other groups out of the way, keeping your current task front and center.</p>
             <div class="step-metric-pill">
               <span class="metric-dot"></span>
-              <span>Single Group Focus</span>
+              <span>Auto-Collapsing Stacks</span>
             </div>
           </div>
 
           <!-- Step 3 Block -->
           <div class="story-step-block" id="storyStep-3" data-step="3" role="button" tabindex="0">
             <div class="step-num-badge">Step 03</div>
-            <h3 class="step-heading">Freeze Memory Hogs</h3>
-            <p class="step-description">Stop background tabs from draining your system. TabStack freezes idle groups, dropping RAM usage from 1.8 GB to 164 MB.</p>
+            <h3 class="step-heading">Suspend Background Tabs</h3>
+            <p class="step-description">Idle background tabs are safely discarded via Chromium’s native memory manager, ready to restore instantly on click.</p>
             <div class="step-metric-pill">
               <span class="metric-dot"></span>
-              <span>88% Memory Saved</span>
+              <span>Native Memory Discard</span>
             </div>
           </div>
 
@@ -1025,7 +998,7 @@
               </div>
               <div class="sticky-url-pill">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <span>tabstack://experience-calm</span>
+                <span>tabstack://overview</span>
               </div>
             </div>
 
@@ -1055,16 +1028,16 @@
                 <div class="pane-stage-body">
                   <div class="story-cluster-card">
                     <div class="cluster-card-header">
-                      <span class="cluster-tag">Chromium Group Engine</span>
-                      <span class="cluster-status-text">● 3 Stacks Clustered</span>
+                      <span class="cluster-tag">Native Grouping</span>
+                      <span class="cluster-status-text">Grouped by Domain</span>
                     </div>
                     <div class="cluster-preview-subtabs">
-                      <div class="micro-tab active"><span class="tab-dot active"></span> MrBeast Yacht</div>
-                      <div class="micro-tab"><span class="tab-dot"></span> Rick Astley</div>
-                      <div class="micro-tab"><span class="tab-dot"></span> Lofi Girl 24/7</div>
+                      <div class="micro-tab active"><span class="tab-dot active"></span> YouTube Video Player</div>
+                      <div class="micro-tab"><span class="tab-dot"></span> YouTube Studio Analytics</div>
+                      <div class="micro-tab"><span class="tab-dot"></span> YouTube Playlist Queue</div>
                     </div>
                   </div>
-                  <p class="story-footer-caption">Scattered tabs snap into place automatically by root domain.</p>
+                  <p class="story-footer-caption">Tabs from the same website group together into native Chrome stacks.</p>
                 </div>
               </div>
 
@@ -1073,26 +1046,26 @@
                 <div class="pane-tabstrip-shelf">
                   <div class="story-group-pill active">
                     <svg class="tab-svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                    <span>GitHub (Active)</span>
-                    <span class="pill-badge active">Focused</span>
+                    <span>GitHub</span>
+                    <span class="pill-badge active">Expanded</span>
                   </div>
                   <div class="story-group-pill sleeping">
                     <svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#ef4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                     <span>YouTube</span>
-                    <span class="pill-sleep-tag">Folded</span>
+                    <span class="pill-sleep-tag">Collapsed</span>
                   </div>
                   <div class="story-group-pill sleeping">
                     <svg class="tab-svg-icon" viewBox="0 0 38 57" fill="none"><path d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0z" fill="#1ABCFE"/><path d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0z" fill="#0ACF83"/><path d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19z" fill="#FF7262"/><path d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5z" fill="#F24E1E"/><path d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5z" fill="#A259FF"/></svg>
                     <span>Figma</span>
-                    <span class="pill-sleep-tag">Folded</span>
+                    <span class="pill-sleep-tag">Collapsed</span>
                   </div>
                 </div>
 
                 <div class="pane-stage-body">
                   <div class="story-focus-drawer">
                     <div class="focus-drawer-header">
-                      <span>qray/tabstack Pull Requests</span>
-                      <span class="hotkey-hint">⌥2</span>
+                      <span>qray/tabstack · Active Pull Requests</span>
+                      <span class="hotkey-hint">Active</span>
                     </div>
                     <div class="focus-subtabs-list">
                       <div class="focus-tab-row active"><span class="tab-dot active"></span> #42 · feat/landing-redesign</div>
@@ -1100,7 +1073,7 @@
                       <div class="focus-tab-row"><span class="tab-dot"></span> Commit History · v2.4 Release</div>
                     </div>
                   </div>
-                  <p class="story-footer-caption">Only your active domain is expanded. Inactive stacks sleep out of your way.</p>
+                  <p class="story-footer-caption">Only your active domain expands. Inactive stacks stay neatly collapsed.</p>
                 </div>
               </div>
 
@@ -1115,12 +1088,12 @@
                   <div class="story-group-pill sleeping">
                     <svg class="tab-svg-icon" viewBox="0 0 24 24" fill="#ef4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                     <span>YouTube</span>
-                    <span class="pill-sleep-tag">Discarded</span>
+                    <span class="pill-sleep-tag">Suspended</span>
                   </div>
                   <div class="story-group-pill sleeping">
                     <svg class="tab-svg-icon" viewBox="0 0 38 57" fill="none"><path d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0z" fill="#1ABCFE"/><path d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0z" fill="#0ACF83"/><path d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19z" fill="#FF7262"/><path d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5z" fill="#F24E1E"/><path d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5z" fill="#A259FF"/></svg>
                     <span>Figma</span>
-                    <span class="pill-sleep-tag">Discarded</span>
+                    <span class="pill-sleep-tag">Suspended</span>
                   </div>
                 </div>
 
@@ -1128,23 +1101,23 @@
                   <div class="story-ram-dashboard">
                     <div class="ram-stat-split">
                       <div class="ram-num-block">
-                        <span class="ram-label">ACTIVE MEMORY</span>
-                        <div class="ram-big-num">164 <small>MB</small></div>
-                        <span class="ram-savings-tag">-88% Memory Freed</span>
+                        <span class="ram-label">INACTIVE TABS</span>
+                        <div class="ram-big-num">Suspended</div>
+                        <span class="ram-savings-tag">Memory released to system</span>
                       </div>
                       <div class="ram-state-block">
-                        <span class="ram-label">PROCESS STATE</span>
-                        <div class="ram-state-badge">NATIVE FLUSH</div>
-                        <span class="ram-state-caption">Zero state or history loss</span>
+                        <span class="ram-label">CHROME DISCARD API</span>
+                        <div class="ram-state-badge">ZERO DATA LOSS</div>
+                        <span class="ram-state-caption">Restores instantly when clicked</span>
                       </div>
                     </div>
 
                     <div class="ram-progress-track">
-                      <div class="ram-progress-active" style="width: 12%;"></div>
-                      <div class="ram-progress-reclaimed" style="width: 88%;"></div>
+                      <div class="ram-progress-active" style="width: 25%;"></div>
+                      <div class="ram-progress-reclaimed" style="width: 75%;"></div>
                     </div>
                   </div>
-                  <p class="story-footer-caption">Chromium native tab discard reclaims memory from dormant groups instantly.</p>
+                  <p class="story-footer-caption">Chromium native tab discard frees memory from dormant tabs without closing them.</p>
                 </div>
               </div>
 
