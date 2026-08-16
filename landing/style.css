@@ -974,23 +974,64 @@ body {
   opacity: 1;
 }
 
-/* Chromium Tab Groups */
+/* Chromium Tab Groups - Authentic Native Color Tint & Bounding Outline */
 .chrome-group {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  height: 100%;
-  padding: 0 2px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  height: 30px;
+  padding: 0 4px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
 }
 
-.chrome-group.active-group {
-  background: rgba(255, 255, 255, 0.04);
+.chrome-group:not(.collapsed) {
+  border-color: var(--group-border, rgba(255, 255, 255, 0.18));
+  background: var(--group-bg, rgba(255, 255, 255, 0.05));
 }
 
-[data-theme="light"] .chrome-group.active-group {
-  background: rgba(0, 0, 0, 0.04);
+.chrome-group.group-red {
+  --group-color: #dc2626;
+  --group-border: rgba(220, 38, 38, 0.5);
+  --group-bg: rgba(220, 38, 38, 0.08);
+}
+
+.chrome-group.group-cyan,
+.chrome-group.group-green {
+  --group-color: #10b981;
+  --group-border: rgba(16, 185, 129, 0.5);
+  --group-bg: rgba(16, 185, 129, 0.08);
+}
+
+.chrome-group.group-purple {
+  --group-color: #8b5cf6;
+  --group-border: rgba(139, 92, 246, 0.5);
+  --group-bg: rgba(139, 92, 246, 0.08);
+}
+
+.chrome-group.group-blue {
+  --group-color: #2563eb;
+  --group-border: rgba(37, 99, 235, 0.5);
+  --group-bg: rgba(37, 99, 235, 0.08);
+}
+
+.chrome-group.group-orange {
+  --group-color: #f59e0b;
+  --group-border: rgba(245, 158, 11, 0.5);
+  --group-bg: rgba(245, 158, 11, 0.08);
+}
+
+[data-theme="light"] .chrome-group.group-red {
+  --group-border: rgba(220, 38, 38, 0.4);
+  --group-bg: rgba(220, 38, 38, 0.07);
+}
+
+[data-theme="light"] .chrome-group.group-cyan,
+[data-theme="light"] .chrome-group.group-green {
+  --group-border: rgba(16, 185, 129, 0.4);
+  --group-bg: rgba(16, 185, 129, 0.07);
 }
 
 /* Chrome Group Pill (Authentic Chip Style) */
@@ -1003,13 +1044,15 @@ body {
   font-size: 11px;
   font-weight: 600;
   color: #ffffff;
-  height: 24px;
+  height: 22px;
   margin: 0;
   cursor: pointer;
+  background: var(--group-color, #dc2626);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   transition: transform 0.15s ease, opacity 0.15s ease;
   flex-shrink: 0;
 }
+
 .chrome-group-pill:hover {
   transform: translateY(-1px);
 }
@@ -1018,6 +1061,7 @@ body {
 .group-red .chrome-group-pill { background: #dc2626; }
 .group-cyan .chrome-group-pill { background: #0891b2; color: #ffffff; }
 .group-blue .chrome-group-pill { background: #2563eb; }
+.group-orange .chrome-group-pill { background: #f59e0b; }
 
 .group-dot {
   width: 5px;
@@ -5148,6 +5192,11 @@ body {
   align-items: flex-end;
   gap: 4px;
   flex-shrink: 0;
+  padding: 0 4px;
+  border-radius: 6px 6px 0 0;
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  border-bottom: 0;
+  background: rgba(245, 158, 11, 0.08);
 }
 
 .mock-tab-item {
