@@ -428,8 +428,64 @@ function init() {
   // 5. Setup Interactive Simulator
   setupSimulator();
 
+  // 6. Setup Interactive Bento Features
+  setupBentoFeatures();
+
   // 6. Setup Auto Tour Observer
   setupTourObserver();
+}
+
+function setupBentoFeatures() {
+  const bentoCard = document.getElementById('bentoFocusCard');
+  if (!bentoCard) return;
+
+  const focusPills = bentoCard.querySelectorAll('.bento-focus-pill');
+  const subtabsContainer = document.getElementById('bentoFocusSubtabs');
+
+  const groupData = {
+    youtube: [
+      { title: '$1 vs $1,000,000,000 Yacht!', active: true },
+      { title: 'Rick Astley - Never Gonna Give You Up', active: false }
+    ],
+    spotify: [
+      { title: "Today's Top Hits · Espresso", active: true },
+      { title: 'Deep Focus · Ambient Beats', active: false }
+    ],
+    pinterest: [
+      { title: 'Minimalist Desk Setups & Workspace', active: true },
+      { title: 'Brutalist Architecture & Raw Concrete', active: false }
+    ]
+  };
+
+  focusPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      const groupKey = pill.dataset.bentoGroup;
+      if (!groupKey || !groupData[groupKey]) return;
+
+      focusPills.forEach(p => {
+        const isCurrent = p === pill;
+        p.classList.toggle('active', isCurrent);
+        const statusDot = p.querySelector('.focus-status');
+        const tag = p.querySelector('.focus-tag, .focus-sleep-badge');
+        if (statusDot) {
+          statusDot.className = `focus-status ${isCurrent ? 'active-dot' : 'sleep-dot'}`;
+        }
+        if (tag) {
+          tag.className = isCurrent ? 'focus-tag' : 'focus-sleep-badge';
+          tag.textContent = isCurrent ? 'Focused' : 'zZ';
+        }
+      });
+
+      if (subtabsContainer) {
+        const items = groupData[groupKey];
+        subtabsContainer.innerHTML = items.map((item) => `
+          <div class="bento-pane-item ${item.active ? 'active' : ''}">
+            <span class="pane-dot ${item.active ? 'green' : ''}"></span> ${item.title}
+          </div>
+        `).join('');
+      }
+    });
+  });
 }
 
 function setupSimulator() {

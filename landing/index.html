@@ -845,7 +845,7 @@
     </div>
   </section>
 
-  <!-- Core Features -->
+  <!-- Core Features: Interactive Bento Visual Suite -->
   <section id="problems" class="section border-top">
     <div class="container">
       <div class="section-header">
@@ -854,29 +854,119 @@
         <p class="section-subtitle">A focused toolkit to keep your browser fast, organized, and light.</p>
       </div>
 
-      <div class="problem-grid">
-        <article class="problem-card">
-          <span class="problem-kicker">Auto-Clustering</span>
-          <h3 class="problem-title">Stacks same-domain tabs into native groups.</h3>
-          <p class="problem-text">Tabs from the same website cluster together automatically without cluttering your tab strip.</p>
+      <div class="bento-feature-grid">
+        <!-- 1. Auto-Clustering Bento Card -->
+        <article class="bento-card">
+          <div class="bento-visual bento-clustering-visual">
+            <div class="bento-tabstrip-preview">
+              <div class="bento-cluster-pill group-red">
+                <span class="cluster-dot"></span>
+                <span class="cluster-label">YouTube</span>
+                <span class="cluster-badge">4</span>
+              </div>
+              <div class="bento-cluster-pill group-purple">
+                <span class="cluster-dot"></span>
+                <span class="cluster-label">GitHub</span>
+                <span class="cluster-badge">3</span>
+              </div>
+              <div class="bento-cluster-pill group-blue">
+                <span class="cluster-dot"></span>
+                <span class="cluster-label">Figma</span>
+                <span class="cluster-badge">2</span>
+              </div>
+            </div>
+            <div class="bento-subtab-preview">
+              <div class="bento-micro-tab"><span class="tab-favicon yt"></span> MrBeast Yacht</div>
+              <div class="bento-micro-tab"><span class="tab-favicon yt"></span> Rick Astley</div>
+              <div class="bento-micro-tab active"><span class="tab-favicon yt"></span> Lofi Girl 24/7</div>
+            </div>
+          </div>
+          <div class="bento-card-content">
+            <span class="problem-kicker">Auto-Clustering</span>
+            <h3 class="problem-title">Stacks same-domain tabs into native groups.</h3>
+            <p class="problem-text">Tabs from the same website cluster together automatically without cluttering your tab strip.</p>
+          </div>
         </article>
 
-        <article class="problem-card">
-          <span class="problem-kicker">Active Focus</span>
-          <h3 class="problem-title">Expands your active site and folds the rest.</h3>
-          <p class="problem-text">Switching tabs opens the current group and collapses inactive stacks out of your way.</p>
+        <!-- 2. Active Focus Bento Card -->
+        <article class="bento-card" id="bentoFocusCard">
+          <div class="bento-visual bento-focus-visual">
+            <div class="bento-focus-switcher">
+              <button class="bento-focus-pill active" data-bento-group="youtube">
+                <span class="focus-status active-dot"></span>
+                <span>YouTube</span>
+                <span class="focus-tag">Focused</span>
+              </button>
+              <button class="bento-focus-pill" data-bento-group="spotify">
+                <span class="focus-status sleep-dot"></span>
+                <span>Spotify</span>
+                <span class="focus-sleep-badge">zZ</span>
+              </button>
+              <button class="bento-focus-pill" data-bento-group="pinterest">
+                <span class="focus-status sleep-dot"></span>
+                <span>Pinterest</span>
+                <span class="focus-sleep-badge">zZ</span>
+              </button>
+            </div>
+            <div class="bento-focus-active-pane" id="bentoFocusPane">
+              <div class="active-pane-header">
+                <span class="active-indicator">● Active Group Expanded</span>
+                <span class="active-shortcut">Alt + Shift + ↑ / ↓</span>
+              </div>
+              <div class="active-pane-subtabs" id="bentoFocusSubtabs">
+                <div class="bento-pane-item active"><span class="pane-dot green"></span> $1 vs $1,000,000,000 Yacht!</div>
+                <div class="bento-pane-item"><span class="pane-dot"></span> Rick Astley - Never Gonna Give You Up</div>
+              </div>
+            </div>
+          </div>
+          <div class="bento-card-content">
+            <span class="problem-kicker">Active Focus</span>
+            <h3 class="problem-title">Expands your active site and folds the rest.</h3>
+            <p class="problem-text">Switching tabs opens the current group and collapses inactive stacks out of your way.</p>
+          </div>
         </article>
 
-        <article class="problem-card">
-          <span class="problem-kicker">RAM Hibernation</span>
-          <h3 class="problem-title">Frees background memory without losing state.</h3>
-          <p class="problem-text">Puts dormant tabs to sleep at the browser level. Your scroll position and history stay put.</p>
+        <!-- 3. RAM Hibernation Bento Card -->
+        <article class="bento-card">
+          <div class="bento-visual bento-ram-visual">
+            <div class="ram-meter-card">
+              <div class="ram-meter-top">
+                <span class="ram-title">Background Memory</span>
+                <span class="ram-badge-savings">-88% Reclaimed</span>
+              </div>
+              <div class="ram-bar-container">
+                <div class="ram-bar-fill">
+                  <div class="ram-bar-active" style="width: 14%;"></div>
+                  <div class="ram-bar-reclaimed" style="width: 86%;"></div>
+                </div>
+              </div>
+              <div class="ram-metrics-row">
+                <div class="ram-metric">
+                  <span class="ram-label">Active Stack</span>
+                  <span class="ram-val green">164 MB</span>
+                </div>
+                <div class="ram-metric">
+                  <span class="ram-label">Before Discard</span>
+                  <span class="ram-val muted"><del>1,420 MB</del></span>
+                </div>
+              </div>
+              <div class="ram-status-footer">
+                <span class="ram-status-dot"></span>
+                <span>Native Chrome Discard · Zero State Loss</span>
+              </div>
+            </div>
+          </div>
+          <div class="bento-card-content">
+            <span class="problem-kicker">RAM Hibernation</span>
+            <h3 class="problem-title">Frees background memory without losing state.</h3>
+            <p class="problem-text">Puts dormant tabs to sleep at the browser level. Your scroll position and history stay put.</p>
+          </div>
         </article>
       </div>
     </div>
   </section>
 
-  <!-- How It Works -->
+  <!-- How It Works: Connected Visual Step Pipeline -->
   <section id="how-it-works" class="section">
     <div class="container">
       <div class="section-header">
@@ -885,29 +975,68 @@
         <p class="section-subtitle">Runs natively in Chromium with zero background overhead.</p>
       </div>
 
-      <ol class="steps-grid">
-        <li class="step-card">
-          <span class="step-number">01</span>
-          <div>
-            <h3 class="step-title">Open your tabs</h3>
-            <p class="step-text">Browse normally across YouTube, GitHub, docs, and search without worrying about clutter.</p>
-          </div>
-        </li>
-        <li class="step-card">
-          <span class="step-number">02</span>
-          <div>
-            <h3 class="step-title">Auto-group by site</h3>
-            <p class="step-text">Same-domain tabs stack into clean, color-coded native groups in real time.</p>
-          </div>
-        </li>
-        <li class="step-card">
-          <span class="step-number">03</span>
-          <div>
-            <h3 class="step-title">Sleep idle stacks</h3>
-            <p class="step-text">Background groups collapse and sleep automatically, reclaiming memory used by idle pages.</p>
-          </div>
-        </li>
-      </ol>
+      <div class="steps-pipeline-wrap">
+        <div class="steps-pipeline-line" aria-hidden="true"></div>
+        <ol class="steps-pipeline-grid">
+          <li class="pipeline-step-card">
+            <div class="step-card-visual">
+              <div class="step-mini-icon-mesh">
+                <div class="mini-tab-chip float-1"><span class="chip-dot red"></span> YouTube</div>
+                <div class="mini-tab-chip float-2"><span class="chip-dot purple"></span> GitHub</div>
+                <div class="mini-tab-chip float-3"><span class="chip-dot blue"></span> Docs</div>
+              </div>
+              <span class="step-badge">01 / BROWSE</span>
+            </div>
+            <div class="step-card-text-wrap">
+              <h3 class="step-title">Open your tabs</h3>
+              <p class="step-text">Browse normally across YouTube, GitHub, docs, and search without worrying about clutter.</p>
+            </div>
+          </li>
+
+          <li class="pipeline-step-card">
+            <div class="step-card-visual">
+              <div class="step-cluster-animation">
+                <div class="cluster-flow-badge group-purple">
+                  <span class="cluster-flow-dot"></span>
+                  <span>github.com</span>
+                  <span class="flow-count">×4</span>
+                </div>
+                <div class="cluster-flow-badge group-red">
+                  <span class="cluster-flow-dot"></span>
+                  <span>youtube.com</span>
+                  <span class="flow-count">×3</span>
+                </div>
+              </div>
+              <span class="step-badge">02 / STACK</span>
+            </div>
+            <div class="step-card-text-wrap">
+              <h3 class="step-title">Auto-group by site</h3>
+              <p class="step-text">Same-domain tabs stack into clean, color-coded native groups in real time.</p>
+            </div>
+          </li>
+
+          <li class="pipeline-step-card">
+            <div class="step-card-visual">
+              <div class="step-sleep-badge-wrap">
+                <div class="sleep-flow-card">
+                  <div class="sleep-flow-header">
+                    <span>Spotify Stack</span>
+                    <span class="sleep-flow-z">zZ</span>
+                  </div>
+                  <div class="sleep-flow-bar">
+                    <span class="sleep-status-text">Memory Freed · 480 MB</span>
+                  </div>
+                </div>
+              </div>
+              <span class="step-badge">03 / SLEEP</span>
+            </div>
+            <div class="step-card-text-wrap">
+              <h3 class="step-title">Sleep idle stacks</h3>
+              <p class="step-text">Background groups collapse and sleep automatically, reclaiming memory used by idle pages.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
     </div>
   </section>
 
