@@ -6,6 +6,7 @@
   --bg-page: #000000;
   --bg-surface: #0a0a0a;
   --bg-elevated: #111111;
+  --bg-card: #111111;
   --bg-input: #141414;
   --bg-tab: #161616;
   --bg-tab-active: #202020;
@@ -58,6 +59,7 @@
   --bg-page: #ffffff;
   --bg-surface: #fafafa;
   --bg-elevated: #ffffff;
+  --bg-card: #f4f4f5;
   --bg-input: #f4f4f5;
   --bg-tab: #f4f4f5;
   --bg-tab-active: #ffffff;
@@ -106,10 +108,11 @@
 html {
   scroll-behavior: smooth;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  background-color: var(--bg-page);
 }
 
 body {
-  background-color: var(--bg-page);
+  background-color: transparent;
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 15px;
@@ -490,6 +493,11 @@ body {
   transition: transform 0.5s var(--ease-spring);
 }
 
+/* Light mode: soften the hard black SVG drop-shadow on the hero slabs */
+[data-theme="light"] .slab-layer {
+  filter: drop-shadow(0 6px 10px rgba(30, 30, 40, 0.16));
+}
+
 .slab-layer.slab-bot {
   transform: translateY(-18px);
 }
@@ -589,7 +597,12 @@ body {
 
 /* Brand icon on final slab */
 .slab-brand-icon {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.slab-layer.unified .slab-brand-icon {
+  opacity: 0 !important;
+  pointer-events: none;
 }
 
 /* Default Colors for Solid Slabs - Clean harmonious lighting */
@@ -702,6 +715,10 @@ body {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="light"] .showcase-simulator-window {
+  box-shadow: 0 24px 60px -24px rgba(15, 15, 20, 0.16), 0 0 0 1px rgba(15, 15, 20, 0.05);
 }
 
 /* Global Utility */
@@ -1169,6 +1186,10 @@ body {
   gap: 14px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   animation: fadeInMockup 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] .webpage-mockup-wrap {
+  box-shadow: 0 8px 20px -8px rgba(15, 15, 20, 0.12);
 }
 
 @keyframes fadeInMockup {
@@ -1706,6 +1727,7 @@ body {
 
 [data-theme="light"] .popup-flyout-container {
   background: #ffffff;
+  box-shadow: 0 16px 32px -16px rgba(15, 15, 20, 0.16), 0 0 0 1px rgba(15, 15, 20, 0.05);
 }
 
 /* Popup Header */
@@ -2654,6 +2676,10 @@ body {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="light"] .mockup-window {
+  box-shadow: 0 20px 40px -20px rgba(15, 15, 20, 0.14);
 }
 
 .mockup-header {

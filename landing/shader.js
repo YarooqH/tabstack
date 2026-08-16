@@ -60,31 +60,41 @@ export function initBackgroundShader(canvasId) {
       vec2 uv = gl_FragCoord.xy / uResolution.xy;
       vec2 p = (gl_FragCoord.xy * 2.0 - uResolution.xy) / min(uResolution.x, uResolution.y);
 
-      // Pointer influence
+      // Pointer influence with ripple physics
       float dist = length(uv - uPointer);
-      float ripple = sin(dist * 20.0 - uTime * 2.5) * exp(-dist * 4.0) * 0.05;
+      float ripple = sin(dist * 22.0 - uTime * 2.8) * exp(-dist * 4.0) * 0.07;
 
-      // Layered Noise for ambient luxury fluid
-      float n1 = snoise(p * 0.8 + vec2(uTime * 0.04, uTime * 0.03) + ripple);
-      float n2 = snoise(p * 1.6 - vec2(uTime * 0.03, uTime * 0.05));
+      // Layered Noise for luxury fluid motion
+      float n1 = snoise(p * 0.75 + vec2(uTime * 0.035, uTime * 0.025) + ripple);
+      float n2 = snoise(p * 1.5 - vec2(uTime * 0.025, uTime * 0.045) - ripple * 0.5);
       float combined = (n1 * 0.65 + n2 * 0.35);
 
-      // Subtle monochrome tone mapping
-      float glow = smoothstep(-0.6, 0.9, combined);
-      
       // Fine film grain
-      float grain = fract(sin(dot(uv.xy, vec2(12.9898, 78.233))) * 43758.5453) * 0.035;
+      float grain = (fract(sin(dot(uv.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * 0.038;
 
       if (uDark > 0.5) {
         // Dark Mode: Deep pitch black with subtle silver refraction
-        vec3 color = mix(vec3(0.0, 0.0, 0.0), vec3(0.09, 0.09, 0.11), glow);
+        float glow = smoothstep(-0.6, 0.9, combined);
+        vec3 color = mix(vec3(0.0, 0.0, 0.0), vec3(0.095, 0.095, 0.115), glow);
         color += grain;
-        gl_FragColor = vec4(color, 1.0);
+        gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
       } else {
-        // Light Mode: Soft studio porcelain with subtle warm-cool mesh
-        vec3 color = mix(vec3(0.98, 0.98, 0.99), vec3(0.93, 0.94, 0.96), glow);
-        color -= grain * 0.5;
-        gl_FragColor = vec4(color, 1.0);
+        // Light Mode: Luxury silver-platinum fluid mesh with tactile matte paper texture
+        float flow = smoothstep(-0.75, 0.75, combined);
+        
+        // Fluid waves: soft cool zinc/slate shadows (0.83, 0.85, 0.89) to luminous crisp white crests
+        vec3 shadow = vec3(0.83, 0.85, 0.89);
+        vec3 crest  = vec3(0.995, 0.995, 1.0);
+        vec3 color  = mix(shadow, crest, flow);
+        
+        // Interactive pointer gaze light
+        float pointerGaze = smoothstep(0.35, 0.0, dist) * 0.05;
+        color += pointerGaze;
+        
+        // Tactile paper grain
+        color += grain * 0.8;
+        
+        gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
       }
     }
   `;
