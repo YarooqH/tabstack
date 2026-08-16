@@ -36,7 +36,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: landing
-        run: npm ci
+        run: npm install
 
       - name: Build landing page
         working-directory: landing
@@ -45,7 +45,7 @@ jobs:
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: landing/dist
+          path: './landing/dist'
 
   deploy:
     environment:
