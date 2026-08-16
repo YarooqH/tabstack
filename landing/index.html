@@ -253,22 +253,6 @@
       </div>
       
       <div class="simulator-stage-wrapper">
-        
-        <!-- Sticky RAM Price Tag Container -->
-        <aside class="sim-floating-tag" id="simFloatingTag" aria-label="Live Memory and Tab Usage">
-          <div class="tag-row">
-            <span class="tag-indicator" id="tagStatusDot"></span>
-            <span class="tag-text" id="tagStatusText">9 Tabs</span>
-          </div>
-          <div class="tag-divider"></div>
-          <div class="tag-row">
-            <span class="tag-label">Memory</span>
-            <span class="tag-value text-red" id="tagRamValue">1,890 MB</span>
-          </div>
-          <div class="tag-badge hidden" id="tagSavedBadge">
-            <span>-1,748 MB</span>
-          </div>
-        </aside>
 
         <div class="showcase-simulator-window" id="simulatorWindow">
         
@@ -278,13 +262,6 @@
             <span class="light red"></span>
             <span class="light yellow"></span>
             <span class="light green"></span>
-          </div>
-
-          <!-- Top Titlebar Tab Count & State Indicator -->
-          <div class="chrome-top-meta-badge" id="chromeTopMetaBadge" title="Total open tabs & active stacks">
-            <span class="top-meta-dot"></span>
-            <span id="chromeTopTabCount">12 tabs</span>
-            <span class="top-meta-dup-tag" id="chromeTopDupTag">3 dups</span>
           </div>
 
           <!-- Tab strip scroll left button -->
@@ -466,6 +443,22 @@
           <div class="chrome-window-controls">
             <span class="new-tab-btn" title="New Tab">+</span>
           </div>
+
+          <!-- Redesigned Live Telemetry Tag (Docked Right) -->
+          <aside class="sim-telemetry-badge" id="simFloatingTag" aria-label="Live Memory and Tab Usage">
+            <div class="tag-row">
+              <span class="tag-indicator" id="tagStatusDot"></span>
+              <span class="tag-text" id="tagStatusText">12 Tabs (3 Duplicates)</span>
+            </div>
+            <div class="tag-divider"></div>
+            <div class="tag-row">
+              <span class="tag-label">Memory</span>
+              <span class="tag-value text-red" id="tagRamValue">2,240 MB</span>
+            </div>
+            <div class="tag-badge hidden" id="tagSavedBadge">
+              <span>-1,748 MB</span>
+            </div>
+          </aside>
         </div>
 
         <!-- Chromium Navigation & Extension URL Bar -->

@@ -2337,34 +2337,37 @@ body {
   color: #ffffff;
 }
 
-/* Simulator Stage Wrapper & Floating RAM Tag */
+/* Simulator Stage Wrapper & Docked Top-Right Telemetry Badge */
 .simulator-stage-wrapper {
   position: relative;
   width: 100%;
 }
 
+.sim-telemetry-badge,
 .sim-floating-tag {
-  position: absolute;
-  top: -18px;
-  right: 24px;
-  z-index: 30;
+  position: static;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  height: 26px;
+  padding: 0 10px;
   background: var(--bg-surface, #121214);
   border: 1px solid var(--border-medium, rgba(255, 255, 255, 0.15));
-  padding: 6px 14px;
-  border-radius: 24px;
-  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 13px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 11px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   user-select: none;
+  flex-shrink: 0;
+  margin-left: auto;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+[data-theme="light"] .sim-telemetry-badge,
 [data-theme="light"] .sim-floating-tag {
   background: #ffffff;
-  border-color: #e4e4e7;
-  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .tag-row {
@@ -2374,12 +2377,13 @@ body {
 }
 
 .tag-indicator {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: #ef4444;
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .tag-indicator.green {
@@ -2392,33 +2396,37 @@ body {
   font-weight: 600;
   color: var(--text-secondary, #a1a1aa);
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 [data-theme="light"] .tag-text {
-  color: #52525b;
+  color: #475569;
 }
 
 .tag-divider {
   width: 1px;
-  height: 14px;
-  background: var(--border-subtle, rgba(255, 255, 255, 0.1));
+  height: 12px;
+  background: var(--border-subtle, rgba(255, 255, 255, 0.12));
 }
 
 [data-theme="light"] .tag-divider {
-  background: #e4e4e7;
+  background: #e2e8f0;
 }
 
 .tag-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   color: var(--text-tertiary, #71717a);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .tag-value {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .tag-value.text-red {
@@ -2430,14 +2438,15 @@ body {
 }
 
 .tag-badge {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--accent-green, #22c55e);
   background: rgba(34, 197, 94, 0.15);
   border: 1px solid rgba(34, 197, 94, 0.3);
-  padding: 2px 8px;
-  border-radius: 12px;
+  padding: 1px 6px;
+  border-radius: 8px;
   letter-spacing: -0.01em;
+  white-space: nowrap;
   transition: all 0.2s ease;
 }
 
@@ -2445,12 +2454,16 @@ body {
   display: none !important;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .sim-telemetry-badge,
   .sim-floating-tag {
-    top: -12px;
-    right: 12px;
-    padding: 4px 10px;
-    gap: 8px;
+    height: 22px;
+    padding: 0 7px;
+    gap: 5px;
+    font-size: 10px;
+  }
+  .tag-label {
+    display: none;
   }
 }
 
