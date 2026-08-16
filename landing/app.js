@@ -428,17 +428,13 @@ function init() {
   // 5. Setup Interactive Simulator
   setupSimulator();
 
-  // 6. Setup Interactive Bento Features
-  setupBentoFeatures();
-
-  // 7. Setup feature view switcher and interactive walkthrough
-  setupOptionSwitcher();
-  setupDeepDiveStudio();
-
-  // 8. Setup Split Comparison Slider (Chaos vs Calm)
+  // 6. Setup Split Comparison Slider (Chaos vs Calm)
   setupCompareSlider();
 
-  // 9. Setup Auto Tour Observer
+  // 7. Setup Sticky Storytelling Tabs (Chaos to Calm Walkthrough)
+  setupStickyStorytelling();
+
+  // 8. Setup Auto Tour Observer
   setupTourObserver();
 }
 
@@ -457,269 +453,65 @@ function setupCompareSlider() {
   });
 }
 
-function setupOptionSwitcher() {
-  const switchBtns = document.querySelectorAll('.view-switch-btn');
-  const bentoGrid = document.getElementById('bentoFeatureGrid');
-  const deepdiveStudio = document.getElementById('deepdiveStudio');
-
-  switchBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const view = btn.dataset.featureView;
-      switchBtns.forEach(b => b.classList.toggle('active', b === btn));
-
-      if (view === 'bento') {
-        bentoGrid?.classList.remove('hidden');
-        deepdiveStudio?.classList.add('hidden');
-      } else {
-        bentoGrid?.classList.add('hidden');
-        deepdiveStudio?.classList.remove('hidden');
-      }
-    });
-  });
-}
-
-function setupDeepDiveStudio() {
-  const tabBtns = document.querySelectorAll('.studio-tab-btn');
-  const panes = {
-    cluster: document.getElementById('paneCluster'),
-    focus: document.getElementById('paneFocus'),
-    hibernate: document.getElementById('paneHibernate')
+function setupStickyStorytelling() {
+  const stepBlocks = document.querySelectorAll('.story-step-block');
+  const visualPanes = {
+    1: document.getElementById('visualPane-1'),
+    2: document.getElementById('visualPane-2'),
+    3: document.getElementById('visualPane-3')
   };
 
-  function switchTab(tabKey) {
-    tabBtns.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.deepdiveTab === tabKey);
+  if (!stepBlocks.length) return;
+
+  function setActiveStep(stepNum) {
+    stepBlocks.forEach(block => {
+      const isCurrent = parseInt(block.dataset.step, 10) === stepNum;
+      block.classList.toggle('active', isCurrent);
     });
 
-    Object.entries(panes).forEach(([key, pane]) => {
+    Object.entries(visualPanes).forEach(([num, pane]) => {
       if (pane) {
-        pane.classList.toggle('hidden', key !== tabKey);
-        pane.classList.toggle('active', key === tabKey);
+        pane.classList.toggle('active', parseInt(num, 10) === stepNum);
       }
     });
   }
 
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      switchTab(btn.dataset.deepdiveTab);
+  // Scroll-driven Intersection Observer
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const stepNum = parseInt(entry.target.dataset.step, 10);
+        if (stepNum) {
+          setActiveStep(stepNum);
+        }
+      }
     });
+  }, {
+    threshold: 0.5,
+    rootMargin: '0px 0px -20% 0px'
   });
 
-  // Keyboard accelerators (Option/Alt + 1, 2, 3)
-  window.addEventListener('keydown', (e) => {
-    if (e.altKey && e.key === '1') { switchTab('cluster'); }
-    if (e.altKey && e.key === '2') { switchTab('focus'); }
-    if (e.altKey && e.key === '3') { switchTab('hibernate'); }
-  });
+  stepBlocks.forEach(block => {
+    observer.observe(block);
 
-  // 1. Cluster Scatter/Cluster Toggle
-  const btnToggleCluster = document.getElementById('btnToggleClusterDemo');
-  const clusterBtnText = document.getElementById('clusterBtnText');
-  const clusterStatusText = document.getElementById('clusterStatusText');
-  const clusterGroups = document.querySelectorAll('.studio-group-cluster');
-  let isClustered = true;
-
-  btnToggleCluster?.addEventListener('click', () => {
-    isClustered = !isClustered;
-    if (isClustered) {
-      if (clusterBtnText) clusterBtnText.textContent = 'Show it scattered';
-      if (clusterStatusText) clusterStatusText.textContent = '● 3 sites · 9 tabs · grouped automatically';
-      clusterGroups.forEach(g => {
-        g.style.transform = 'translateY(0)';
-        g.style.opacity = '1';
-      });
-    } else {
-      if (clusterBtnText) clusterBtnText.textContent = 'Group these tabs';
-      if (clusterStatusText) clusterStatusText.textContent = '○ 9 loose tabs · ready to group';
-      clusterGroups.forEach((g, idx) => {
-        g.style.transform = `translateY(${idx % 2 === 0 ? '-4px' : '4px'})`;
-      });
-    }
-  });
-
-  // 2. Focus Rack Switcher
-  const focusGroups = document.querySelectorAll('.studio-focus-group');
-  const focusData = {
-    yt: {
-      domain: 'youtube.com',
-      badge: 'Focused',
-      meta: '3 tabs open',
-      dotClass: 'red',
-      tabs: [
-        { title: '$1 vs $1,000,000,000 Yacht!', active: true },
-        { title: 'Rick Astley - Never Gonna Give You Up', active: false },
-        { title: 'lofi hip hop radio - beats to relax/study to', active: false }
-      ]
-    },
-    gh: {
-      domain: 'github.com',
-      badge: 'Focused',
-      meta: '3 tabs open',
-      dotClass: 'purple',
-      tabs: [
-        { title: 'qray/tabstack · Pull Requests #42', active: true },
-        { title: 'Extension Service Worker Architecture', active: false },
-        { title: 'Commits · feat/landing-redesign', active: false }
-      ]
-    },
-    fig: {
-      domain: 'figma.com',
-      badge: 'Focused',
-      meta: '3 tabs open',
-      dotClass: 'blue',
-      tabs: [
-        { title: 'TabStack Design System v2.4 (Active)', active: true },
-        { title: 'Hero 3D Slabs & Canvas Shaders', active: false },
-        { title: 'Component Library & Token Styles', active: false }
-      ]
-    }
-  };
-
-  focusGroups.forEach(grp => {
-    grp.addEventListener('click', () => {
-      const activeId = grp.dataset.focusId;
-      if (!activeId || !focusData[activeId]) return;
-
-      focusGroups.forEach(g => {
-        const isCurrent = g === grp;
-        const gId = g.dataset.focusId;
-        g.className = `studio-focus-group ${isCurrent ? 'expanded' : 'collapsed'}`;
-        const data = focusData[gId];
-
-        if (isCurrent) {
-          g.innerHTML = `
-            <div class="focus-group-top">
-              <div class="focus-title-wrap">
-                <span class="cluster-dot ${data.dotClass}"></span>
-                <strong>${data.domain}</strong>
-                <span class="focus-badge-pill active">Focused</span>
-              </div>
-              <span class="focus-tab-meta">3 tabs open</span>
-            </div>
-            <div class="focus-group-drawer">
-              ${data.tabs.map(t => `
-                <div class="focus-drawer-item ${t.active ? 'active' : ''}">
-                  <span class="tab-dot ${t.active ? 'active' : ''}"></span> ${t.title}
-                </div>
-              `).join('')}
-            </div>
-          `;
-        } else {
-          g.innerHTML = `
-            <div class="focus-group-top">
-              <div class="focus-title-wrap">
-                <span class="cluster-dot ${data.dotClass}"></span>
-                <strong>${data.domain}</strong>
-                <span class="focus-badge-pill sleep">Folded away</span>
-              </div>
-              <span class="focus-tab-meta">3 tabs tucked away</span>
-            </div>
-          `;
-        }
-      });
+    block.addEventListener('click', () => {
+      const stepNum = parseInt(block.dataset.step, 10);
+      setActiveStep(stepNum);
+      block.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
-  });
 
-  // 3. Idle tab memory toggle
-  const btnToggleMemory = document.getElementById('btnToggleMemoryDemo');
-  const memoryBtnLabel = document.getElementById('memoryBtnLabel');
-  const telemetryMemVal = document.getElementById('telemetryMemVal');
-  const telemetrySavingsVal = document.getElementById('telemetrySavingsVal');
-  const telemetryStateVal = document.getElementById('telemetryStateVal');
-  const telemetryBarLabel = document.getElementById('telemetryBarLabel');
-  const telemetryBarActive = document.getElementById('telemetryBarActive');
-  const telemetryBarReclaimed = document.getElementById('telemetryBarReclaimed');
-  const memoryStatusHeader = document.getElementById('memoryStatusHeader');
-  let memoryDiscarded = true;
-
-  btnToggleMemory?.addEventListener('click', () => {
-    memoryDiscarded = !memoryDiscarded;
-    if (memoryDiscarded) {
-      if (memoryBtnLabel) memoryBtnLabel.textContent = 'Wake idle tabs';
-      if (telemetryMemVal) telemetryMemVal.innerHTML = '164 <small>MB</small>';
-      if (telemetrySavingsVal) {
-        telemetrySavingsVal.textContent = '1.2 GB free in this example';
-        telemetrySavingsVal.className = 'stat-badge-savings';
-      }
-      if (telemetryStateVal) {
-        telemetryStateVal.textContent = 'SLEEPING';
-        telemetryStateVal.className = 'stat-big-num';
-      }
-      if (telemetryBarLabel) telemetryBarLabel.textContent = '164 MB of 1.42 GB';
-      if (telemetryBarActive) telemetryBarActive.style.width = '12%';
-      if (telemetryBarReclaimed) telemetryBarReclaimed.style.width = '88%';
-      if (memoryStatusHeader) memoryStatusHeader.textContent = '● 2 groups sleeping · nothing sent anywhere';
-    } else {
-      if (memoryBtnLabel) memoryBtnLabel.textContent = 'Let tabs sleep';
-      if (telemetryMemVal) telemetryMemVal.innerHTML = '1,420 <small>MB</small>';
-      if (telemetrySavingsVal) {
-        telemetrySavingsVal.textContent = 'All memory in use';
-        telemetrySavingsVal.className = 'stat-badge-savings text-secondary';
-      }
-      if (telemetryStateVal) {
-        telemetryStateVal.textContent = 'AWAKE';
-        telemetryStateVal.className = 'stat-big-num';
-      }
-      if (telemetryBarLabel) telemetryBarLabel.textContent = '1.42 GB of 1.42 GB';
-      if (telemetryBarActive) telemetryBarActive.style.width = '100%';
-      if (telemetryBarReclaimed) telemetryBarReclaimed.style.width = '0%';
-      if (memoryStatusHeader) memoryStatusHeader.textContent = '○ 3 groups awake · 1.42 GB in use';
-    }
-  });
-}
-
-function setupBentoFeatures() {
-  const bentoCard = document.getElementById('bentoFocusCard');
-  if (!bentoCard) return;
-
-  const focusPills = bentoCard.querySelectorAll('.bento-focus-pill');
-  const subtabsContainer = document.getElementById('bentoFocusSubtabs');
-
-  const groupData = {
-    youtube: [
-      { title: '$1 vs $1,000,000,000 Yacht!', active: true },
-      { title: 'Rick Astley - Never Gonna Give You Up', active: false }
-    ],
-    spotify: [
-      { title: "Today's Top Hits · Espresso", active: true },
-      { title: 'Deep Focus · Ambient Beats', active: false }
-    ],
-    pinterest: [
-      { title: 'Minimalist Desk Setups & Workspace', active: true },
-      { title: 'Brutalist Architecture & Raw Concrete', active: false }
-    ]
-  };
-
-  focusPills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      const groupKey = pill.dataset.bentoGroup;
-      if (!groupKey || !groupData[groupKey]) return;
-
-      focusPills.forEach(p => {
-        const isCurrent = p === pill;
-        p.classList.toggle('active', isCurrent);
-        const statusDot = p.querySelector('.focus-status');
-        const tag = p.querySelector('.focus-tag, .focus-sleep-badge');
-        if (statusDot) {
-          statusDot.className = `focus-status ${isCurrent ? 'active-dot' : 'sleep-dot'}`;
-        }
-        if (tag) {
-          tag.className = isCurrent ? 'focus-tag' : 'focus-sleep-badge';
-          tag.textContent = isCurrent ? 'Focused' : 'zZ';
-        }
-      });
-
-      if (subtabsContainer) {
-        const items = groupData[groupKey];
-        subtabsContainer.innerHTML = items.map((item) => `
-          <div class="bento-pane-item ${item.active ? 'active' : ''}">
-            <span class="pane-dot ${item.active ? 'green' : ''}"></span> ${item.title}
-          </div>
-        `).join('');
+    block.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const stepNum = parseInt(block.dataset.step, 10);
+        setActiveStep(stepNum);
+        block.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     });
   });
 }
+
+
 
 function setupSimulator() {
   // Initial Viewport Render in Chaos Mode with 9 open tabs
