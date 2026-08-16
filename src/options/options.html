@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TabStack Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="settings-layout">
+    <!-- Sidebar / Nav -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Bottom layer (Charcoal) -->
+            <path d="M4 15.5L12 19.5L20 15.5L12 11.5L4 15.5Z" fill="#52525b"/>
+            <path d="M4 15.5L12 19.5V21L4 17V15.5Z" fill="#3f3f46"/>
+            <path d="M12 19.5L20 15.5V17L12 21V19.5Z" fill="#27272a"/>
+            <!-- Middle layer (Zinc) -->
+            <path d="M4 11.5L12 15.5L20 11.5L12 7.5L4 11.5Z" fill="#a1a1aa"/>
+            <path d="M4 11.5L12 15.5V17L4 13V11.5Z" fill="#71717a"/>
+            <path d="M12 15.5L20 11.5V13L12 17V15.5Z" fill="#52525b"/>
+            <!-- Top layer (Pure White) -->
+            <path d="M4 7.5L12 11.5L20 7.5L12 3.5L4 7.5Z" fill="#ffffff"/>
+            <path d="M4 7.5L12 11.5V13L4 9V7.5Z" fill="#d4d4d8"/>
+            <path d="M12 11.5L20 7.5V9L12 13V11.5Z" fill="#a1a1aa"/>
+            <path d="M9 6L12 4.5L15 6" stroke="#000000" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>TabStack</h1>
+          <span>Preferences</span>
+        </div>
+      </div>
+      <nav class="nav-menu">
+        <a href="#general" class="nav-item active">General & Grouping</a>
+        <a href="#ram" class="nav-item">RAM Saver & Hibernation</a>
+        <a href="#whitelist" class="nav-item">Domain Whitelist</a>
+        <a href="#stashes" class="nav-item">Saved Stashes</a>
+        <a href="#about" class="nav-item">About & Shortcuts</a>
+      </nav>
+    </aside>
+
+    <!-- Main Settings Form -->
+    <main class="content">
+      <!-- General Section -->
+      <section id="general" class="settings-section">
+        <h2>General & Grouping</h2>
+        <p class="section-desc">Customize how TabStack clusters and formats your tab groups.</p>
+
+        <div class="setting-card">
+          <div class="setting-row">
+            <div class="setting-info">
+              <label class="setting-title" for="optTheme">Interface Theme</label>
+              <span class="setting-subtitle">Select your preferred color theme or sync with system OS appearance.</span>
+            </div>
+            <select id="optTheme" class="select-input">
+              <option value="system">💻 System Default (Auto)</option>
+              <option value="light">☀️ Light Mode</option>
+              <option value="dark">🌙 Dark Mode</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <label class="setting-title" for="optAutoGroup">Enable Auto-Stacking</label>
+              <span class="setting-subtitle">Automatically cluster newly opened tabs by domain in real time.</span>
+            </div>
+            <input type="checkbox" id="optAutoGroup" class="switch">
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <label class="setting-title" for="optAccordion">Accordion / Focus Mode</label>
+              <span class="setting-subtitle">Automatically expand the active tab's stack and collapse all inactive stacks.</span>
+            </div>
+            <input type="checkbox" id="optAccordion" class="switch">
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <label class="setting-title" for="optMinTabs">Minimum Tabs to Group</label>
+              <span class="setting-subtitle">Only form a tab stack when at least this many same-domain tabs exist.</span>
+            </div>
+            <select id="optMinTabs" class="select-input">
+              <option value="1">1 Tab (Always group domain)</option>
+              <option value="2">2 Tabs (Recommended)</option>
+              <option value="3">3 Tabs</option>
+              <option value="4">4 Tabs</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <label class="setting-title" for="optDomainMode">Domain Clustering Granularity</label>
+              <span class="setting-subtitle">Choose whether subdomains (e.g. docs.github.com) form separate stacks.</span>
+            </div>
+            <select id="optDomainMode" class="select-input">
+              <option value="root">Root Domain (e.g., github.com)</option>
+              <option value="subdomain">Full Subdomain (e.g., docs.github.com)</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <label class="setting-title" for="optShowCount">Show Tab Count in Stack Title</label>
+              <span class="setting-subtitle">Displays the number of tabs inside the stack title (e.g., "GitHub (4)").</span>
+            </div>
+            <input type="checkbox" id="optShowCount" class="switch">
+          </div>
+        </div>
+      </section>
+
+      <!-- RAM Saver Section -->
+      <section id="ram" class="settings-section">
+        <h2>RAM Saver & Tab Hibernation</h2>
+        <p class="section-desc">Free gigabytes of memory by safely hibernating background tabs.</p>
+
+        <div class="setting-card">
+          <div class="setting-row">
+            <div class="setting-info">
+              <label class="setting-title" for="optRamSaver">Enable Tab Hibernation</label>
+              <span class="setting-subtitle">Uses native Chromium tab discard API to sleep inactive tabs without losing place or history.</span>
+            </div>
+            <input type="checkbox" id="optRamSaver" class="switch">
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <label class="setting-title" for="optDiscardTimeout">Inactivity Timeout</label>
+              <span class="setting-subtitle">Hibernate tabs in collapsed stacks after this period of inactivity.</span>
+            </div>
+            <select id="optDiscardTimeout" class="select-input">
+              <option value="5">5 minutes</option>
+              <option value="15">15 minutes</option>
+              <option value="20">20 minutes (Default)</option>
+              <option value="30">30 minutes</option>
+              <option value="60">1 hour</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Whitelist Section -->
+      <section id="whitelist" class="settings-section">
+        <h2>Domain Whitelist</h2>
+        <p class="section-desc">Domains listed here will never be automatically grouped or collapsed.</p>
+
+        <div class="setting-card">
+          <div class="whitelist-input-group">
+            <input type="text" id="whitelistInput" placeholder="e.g., localhost, spotify.com, figma.com" class="text-input">
+            <button id="btnAddWhitelist" class="btn btn-primary">Add Domain</button>
+          </div>
+          <div id="whitelistTags" class="tag-cloud">
+            <!-- Dynamic tags -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Saved Stashes Section -->
+      <section id="stashes" class="settings-section">
+        <h2>Saved Stashes & Backups</h2>
+        <p class="section-desc">Manage stashed sessions and export/import your configuration.</p>
+
+        <div class="setting-card">
+          <div class="stashes-header">
+            <span id="stashStatusText">0 stashed session(s) saved</span>
+            <div class="button-group">
+              <button id="btnExportData" class="btn btn-secondary">Export JSON</button>
+              <button id="btnClearStashes" class="btn btn-danger">Clear All Stashes</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About Section -->
+      <section id="about" class="settings-section">
+        <h2>Keyboard Shortcuts & About</h2>
+        <div class="setting-card">
+          <div class="shortcut-row">
+            <span>Open TabStack Popup</span>
+            <kbd>Alt + Shift + T</kbd>
+          </div>
+          <div class="shortcut-row">
+            <span>Stack Active Window Tabs</span>
+            <kbd>Alt + Shift + S</kbd>
+          </div>
+          <div class="shortcut-row">
+            <span>Toggle Accordion Mode</span>
+            <kbd>Alt + Shift + A</kbd>
+          </div>
+          <p class="about-note">You can customize keyboard shortcuts anytime at <code>chrome://extensions/shortcuts</code>.</p>
+        </div>
+      </section>
+
+      <!-- Save & Status Feedback -->
+      <div class="footer-bar">
+        <button id="btnResetDefaults" class="btn btn-secondary">Reset to Defaults</button>
+        <span id="statusMessage" class="status-msg"></span>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

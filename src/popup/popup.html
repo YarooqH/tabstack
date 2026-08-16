@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TabStack</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Bottom layer (Charcoal) -->
+            <path d="M4 15.5L12 19.5L20 15.5L12 11.5L4 15.5Z" fill="#52525b"/>
+            <path d="M4 15.5L12 19.5V21L4 17V15.5Z" fill="#3f3f46"/>
+            <path d="M12 19.5L20 15.5V17L12 21V19.5Z" fill="#27272a"/>
+            <!-- Middle layer (Zinc) -->
+            <path d="M4 11.5L12 15.5L20 11.5L12 7.5L4 11.5Z" fill="#a1a1aa"/>
+            <path d="M4 11.5L12 15.5V17L4 13V11.5Z" fill="#71717a"/>
+            <path d="M12 15.5L20 11.5V13L12 17V15.5Z" fill="#52525b"/>
+            <!-- Top layer (Pure White) -->
+            <path d="M4 7.5L12 11.5L20 7.5L12 3.5L4 7.5Z" fill="#ffffff"/>
+            <path d="M4 7.5L12 11.5V13L4 9V7.5Z" fill="#d4d4d8"/>
+            <path d="M12 11.5L20 7.5V9L12 13V11.5Z" fill="#a1a1aa"/>
+            <path d="M9 6L12 4.5L15 6" stroke="#000000" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">TabStack</span>
+          <span class="brand-tag">v1.0</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="theme-segmented-control" id="themeControl">
+          <button class="theme-btn" data-theme-val="system" title="System Theme (Auto)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </button>
+          <button class="theme-btn" data-theme-val="light" title="Light Mode">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          </button>
+          <button class="theme-btn" data-theme-val="dark" title="Dark Mode">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+        </div>
+        <button id="btnOptions" class="icon-btn" title="Open Settings">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Live Metrics Pills -->
+    <div class="metrics-bar">
+      <div class="metric-chip">
+        <span class="metric-val" id="statTotalTabs">0</span>
+        <span class="metric-label">Tabs</span>
+      </div>
+      <div class="metric-chip">
+        <span class="metric-val" id="statTotalGroups">0</span>
+        <span class="metric-label">Stacks</span>
+      </div>
+      <div class="metric-chip" title="Estimated RAM saved by discarded idle tabs">
+        <span class="metric-val text-green" id="statRamSaved">0 MB</span>
+        <span class="metric-label">RAM Saved</span>
+      </div>
+    </div>
+
+    <!-- Quick Toggles -->
+    <div class="toggles-card">
+      <label class="toggle-row" title="Automatically cluster tabs with same domain">
+        <span class="toggle-title">Auto-Stack</span>
+        <input type="checkbox" id="toggleAutoGroup" class="switch">
+      </label>
+      <div class="toggle-divider"></div>
+      <label class="toggle-row" title="Keep only the active domain stack open, collapse all others">
+        <span class="toggle-title">Accordion Focus</span>
+        <input type="checkbox" id="toggleAccordion" class="switch">
+      </label>
+      <div class="toggle-divider"></div>
+      <label class="toggle-row" title="Hibernate inactive tabs in collapsed groups to save RAM">
+        <span class="toggle-title">RAM Saver</span>
+        <input type="checkbox" id="toggleRamSaver" class="switch">
+      </label>
+    </div>
+
+    <!-- Navigation Tabs (Live Stacks vs Saved Stashes vs Whitelist) -->
+    <div class="tab-nav">
+      <button class="nav-btn active" id="tabNavLive">Live Stacks</button>
+      <button class="nav-btn" id="tabNavStash">Saved (<span id="stashCount">0</span>)</button>
+      <button class="nav-btn" id="tabNavWhitelist">Whitelist (<span id="whitelistCount">0</span>)</button>
+    </div>
+
+    <!-- Search Input -->
+    <div class="search-box" id="searchContainer">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search tabs by title, domain or url..." autocomplete="off">
+      <button id="btnClearSearch" class="btn-clear hidden">&times;</button>
+    </div>
+
+    <!-- Main View: Live Stacks -->
+    <main id="liveView" class="view-content">
+      <div id="stacksList" class="stacks-list">
+        <!-- Rendered dynamically -->
+      </div>
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-icon">🗂️</div>
+        <p class="empty-text">No tabs found matching your query</p>
+      </div>
+    </main>
+
+    <!-- Main View: Stashed Sessions -->
+    <main id="stashView" class="view-content hidden">
+      <div id="stashesList" class="stashes-list">
+        <!-- Rendered dynamically -->
+      </div>
+      <div id="emptyStash" class="empty-state hidden">
+        <div class="empty-icon">📦</div>
+        <p class="empty-text">No stashed stacks yet.<br>Click the stash icon on any group to save it for later.</p>
+      </div>
+    </main>
+
+    <!-- Main View: Whitelist Manager -->
+    <main id="whitelistView" class="view-content hidden">
+      <div class="whitelist-popup-card">
+        <div class="whitelist-quick-action" id="currentDomainSection">
+          <button id="btnWhitelistCurrent" class="action-btn action-primary full-width">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+            Whitelist Current Domain (<span id="currentDomainText">--</span>)
+          </button>
+        </div>
+
+        <div class="whitelist-input-row">
+          <input type="text" id="popupWhitelistInput" placeholder="e.g., github.com, jira.atlassian.com" autocomplete="off">
+          <button id="btnPopupAddWhitelist" class="action-btn">Add</button>
+        </div>
+
+        <div class="whitelist-header-label">
+          <span>Protected Domains</span>
+          <span class="subtext">Never auto-grouped or collapsed</span>
+        </div>
+
+        <div id="popupWhitelistTags" class="popup-tag-cloud">
+          <!-- Dynamic tags -->
+        </div>
+
+        <div id="emptyWhitelist" class="empty-state hidden">
+          <p class="empty-text">No whitelisted domains.<br>All sites with 2+ tabs will be eligible for stacking.</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer Quick Actions -->
+    <footer class="footer">
+      <button id="btnStackNow" class="action-btn action-primary" title="Group and sort all open tabs now">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        Stack Now
+      </button>
+      <button id="btnDeduplicate" class="action-btn" title="Close duplicate URLs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        Deduplicate
+      </button>
+      <button id="btnCollapseAll" class="action-btn" title="Collapse all groups">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 15l-6-6-6 6"/></svg>
+        Collapse All
+      </button>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden"></div>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+.agents/
+.claude/
+/agent-docs/
+/graphify-out/
+
+.GEMINI.md
+skills-lock.json
+
+node_modules

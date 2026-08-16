@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TabStack — Make your tab bar usable again</title>
+  
+  <meta name="description" content="TabStack groups tabs by domain, collapses what you are not using, and frees the RAM those tabs were wasting. Open source and offline.">
+  <meta property="og:title" content="TabStack — Make your tab bar usable again">
+  <meta property="og:description" content="Group tabs by domain, keep your current task in focus, and reclaim memory without scripts, accounts, or telemetry.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#000000">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'><path d='M4 15.5L12 19.5L20 15.5L12 11.5L4 15.5Z' fill='%2352525b'/><path d='M4 15.5L12 19.5V21L4 17V15.5Z' fill='%233f3f46'/><path d='M12 19.5L20 15.5V17L12 21V19.5Z' fill='%2327272a'/><path d='M4 11.5L12 15.5L20 11.5L12 7.5L4 11.5Z' fill='%23a1a1aa'/><path d='M4 11.5L12 15.5V17L4 13V11.5Z' fill='%2371717a'/><path d='M12 15.5L20 11.5V13L12 17V15.5Z' fill='%2352525b'/><path d='M4 7.5L12 11.5L20 7.5L12 3.5L4 7.5Z' fill='%23ffffff'/><path d='M4 7.5L12 11.5V13L4 9V7.5Z' fill='%23d4d4d8'/><path d='M12 11.5L20 7.5V9L12 13V11.5Z' fill='%23a1a1aa'/><path d='M9 6L12 4.5L15 6' stroke='%23000000' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+
+  <!-- Typography: Figtree & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Subtle WebGL Background -->
+  <canvas id="bgShader" class="bg-shader" aria-hidden="true"></canvas>
+
+  <!-- Navigation -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="#" class="brand-link" aria-label="TabStack Home">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="brand-icon-svg" xmlns="http://www.w3.org/2000/svg">
+          <!-- Bottom layer (Charcoal / Rounded) -->
+          <path d="M4.8 15.3 C4.3 15.5 4.3 15.9 4.8 16.1 L11.3 19.8 C11.7 20 12.3 20 12.7 19.8 L19.2 16.1 C19.7 15.9 19.7 15.5 19.2 15.3 L12.7 11.6 C12.3 11.4 11.7 11.4 11.3 11.6 Z" fill="var(--logo-bot-face, #52525b)"/>
+          <path d="M4.8 16.1 L11.3 19.8 C11.7 20 12 20 12 20 V21.5 C12 21.5 11.7 21.5 11.3 21.3 L4.8 17.6 C4.3 17.4 4.3 17 4.3 16.6 V15.8 C4.3 15.9 4.5 16 4.8 16.1 Z" fill="var(--logo-bot-sidel, #3f3f46)"/>
+          <path d="M12 20 C12 20 12.3 20 12.7 19.8 L19.2 16.1 C19.5 16 19.7 15.9 19.7 15.8 V16.6 C19.7 17 19.7 17.4 19.2 17.6 L12.7 21.3 C12.3 21.5 12 21.5 12 21.5 Z" fill="var(--logo-bot-sider, #27272a)"/>
+
+          <!-- Middle layer (Zinc / Rounded) -->
+          <path d="M4.8 11.3 C4.3 11.5 4.3 11.9 4.8 12.1 L11.3 15.8 C11.7 16 12.3 16 12.7 15.8 L19.2 12.1 C19.7 11.9 19.7 11.5 19.2 11.3 L12.7 7.6 C12.3 7.4 11.7 7.4 11.3 7.6 Z" fill="var(--logo-mid-face, #a1a1aa)"/>
+          <path d="M4.8 12.1 L11.3 15.8 C11.7 16 12 16 12 16 V17.5 C12 17.5 11.7 17.5 11.3 17.3 L4.8 13.6 C4.3 13.4 4.3 13 4.3 12.6 V11.8 C4.3 11.9 4.5 12 4.8 12.1 Z" fill="var(--logo-mid-sidel, #71717a)"/>
+          <path d="M12 16 C12 16 12.3 16 12.7 15.8 L19.2 12.1 C19.5 12 19.7 11.9 19.7 11.8 V12.6 C19.7 13 19.7 13.4 19.2 13.6 L12.7 17.3 C12.3 17.5 12 17.5 12 17.5 Z" fill="var(--logo-mid-sider, #52525b)"/>
+
+          <!-- Top layer (Pure White / Adaptive / Rounded) -->
+          <path d="M4.8 7.3 C4.3 7.5 4.3 7.9 4.8 8.1 L11.3 11.8 C11.7 12 12.3 12 12.7 11.8 L19.2 8.1 C19.7 7.9 19.7 7.5 19.2 7.3 L12.7 3.6 C12.3 3.4 11.7 3.4 11.3 3.6 Z" fill="var(--logo-top-face, #ffffff)"/>
+          <path d="M4.8 8.1 L11.3 11.8 C11.7 12 12 12 12 12 V13.5 C12 13.5 11.7 13.5 11.3 13.3 L4.8 9.6 C4.3 9.4 4.3 9 4.3 8.6 V7.8 C4.3 7.9 4.5 8 4.8 8.1 Z" fill="var(--logo-top-sidel, #d4d4d8)"/>
+          <path d="M12 12 C12 12 12.3 12 12.7 11.8 L19.2 8.1 C19.5 8 19.7 7.9 19.7 7.8 V8.6 C19.7 9 19.7 9.4 19.2 9.6 L12.7 13.3 C12.3 13.5 12 13.5 12 13.5 Z" fill="var(--logo-top-sider, #a1a1aa)"/>
+          <path d="M9.2 6.2 L12 4.6 L14.8 6.2" stroke="var(--logo-notch, #000000)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-title">TabStack</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#problems" class="nav-anchor">Why TabStack</a>
+        <a href="#how-it-works" class="nav-anchor">How it works</a>
+        <a href="#privacy" class="nav-anchor">Privacy</a>
+        <a href="#install" class="nav-anchor">Install</a>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Segmented Theme Switcher -->
+        <div class="theme-segmented-ctrl" id="themeSwitcher" role="group" aria-label="Theme Switcher">
+          <button class="theme-btn active" data-theme-val="dark" title="Dark theme" aria-label="Dark theme">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+          <button class="theme-btn" data-theme-val="light" title="Light theme" aria-label="Light theme">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </button>
+          <button class="theme-btn" data-theme-val="system" title="System preference" aria-label="System preference">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </button>
+        </div>
+
+        <a href="https://github.com/qray/tabstack" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-icon" aria-label="GitHub repository">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+
+        <a href="#install" class="btn btn-primary">
+          <span>Install Extension</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section with Real 3D Tab Stacking & Brand Morph Engine -->
+  <section class="hero-section">
+    <div class="container hero-split-grid">
+      
+      <!-- Left Column: Copy, Metrics & CTAs -->
+      <div class="hero-copy-col">
+        <div class="hero-badge-tag">
+          <span class="pulse-dot-green"></span>
+          <span>Open source · Chromium extension</span>
+        </div>
+
+        <h1 class="hero-headline">Your tab bar broke<br><span class="headline-gradient">around tab 12.</span></h1>
+        
+        <p class="hero-description">
+          TabStack groups same-domain tabs automatically, collapses the ones you are not using, and frees the RAM they were wasting — without touching your pages.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="#install" class="btn btn-primary btn-cta">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v14M5 9l7 7 7-7M2 19v1a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-1"/></svg>
+            <span>Get TabStack</span>
+          </a>
+          <a href="https://github.com/qray/tabstack" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-cta">
+            <span>Source Code</span>
+          </a>
+        </div>
+
+        <div class="hero-metrics-pill-row">
+          <div class="metric-pill-item">
+            <span class="metric-bold">84%</span>
+            <span class="metric-sub">less RAM in testing</span>
+          </div>
+          <div class="metric-pill-divider"></div>
+          <div class="metric-pill-item">
+            <span class="metric-bold">0</span>
+            <span class="metric-sub">page scripts</span>
+          </div>
+          <div class="metric-pill-divider"></div>
+          <div class="metric-pill-item">
+            <span class="metric-bold">0</span>
+            <span class="metric-sub">accounts or telemetry</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Clean Floating 3D Stacking Monolith (No box, no buttons, pure transparent SVGs) -->
+      <div class="hero-visual-col">
+        <div class="hero-logo-stage-wrap" id="heroLogoStageWrap">
+          
+          <!-- Ambient Radiant Backlight -->
+          <div class="hero-logo-glow" aria-hidden="true"></div>
+
+          <!-- The Authentic 1:1 TabStack Icon Isometric Stage -->
+          <div class="icon-engine-stage" id="iconEngineStage">
+            <svg class="icon-engine-svg" viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <filter id="iconSlabShadow" x="-20%" y="-20%" width="140%" height="150%">
+                  <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+                </filter>
+              </defs>
+
+              <!-- ================= 1. BOTTOM TIER (YouTube / Red) ================= -->
+              <g class="slab-layer slab-bot" id="slabLayer1" filter="url(#iconSlabShadow)">
+
+                <!-- The Living Morphing Slab (Starts thin, thickens with every tab impact) -->
+                <g class="slab-growing-body" id="slabBody1">
+                  <path class="slab-face" d="M65 200 L150 242.5 C156.25 245.5 163.75 245.5 170 242.5 L255 200 C262.5 196.25 262.5 188.75 255 185 L170 142.5 C163.75 139.5 156.25 139.5 150 142.5 L65 185 C57.5 188.75 57.5 196.25 65 200 Z" fill="#ef4444"/>
+                  <path class="slab-sidel" d="M65 200 L150 242.5 C156.25 245.5 160 245.5 160 245.5 V260 C160 260 156.25 260 150 257 L65 214.5 C57.5 210.75 57.5 203.25 57.5 198.75 V193.75 C57.5 196.25 61.25 198 65 200 Z" fill="#dc2626"/>
+                  <path class="slab-sider" d="M160 245.5 C160 245.5 163.75 245.5 170 242.5 L255 200 C258.75 198 262.5 196.25 262.5 193.75 V198.75 C262.5 203.25 262.5 210.75 255 214.5 L170 257 C163.75 260 160 260 160 260 V245.5 Z" fill="#991b1b"/>
+                  
+                  <!-- Clean Transparent YouTube Icon (No background badge) -->
+                  <g class="slab-brand-icon" transform="translate(144, 180.5) scale(1.33)">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#ffffff" opacity="0.95"/>
+                  </g>
+                </g>
+
+                <!-- Incoming Physics Tabs (Drop, impact, and absorb into the slab) -->
+                <g class="incoming-tabs-group" id="slabTabs1">
+                  <g class="incoming-tab-card" data-tab-idx="0">
+                    <path class="tab-top" d="M65 200 L150 242.5 C156.25 245.5 163.75 245.5 170 242.5 L255 200 C262.5 196.25 262.5 188.75 255 185 L170 142.5 C163.75 139.5 156.25 139.5 150 142.5 L65 185 C57.5 188.75 57.5 196.25 65 200 Z" fill="#ef4444" stroke="#dc2626" stroke-width="1.5"/>
+                    <g transform="translate(144, 180.5) scale(1.33)">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#ffffff" opacity="0.95"/>
+                    </g>
+                  </g>
+                  <g class="incoming-tab-card" data-tab-idx="1">
+                    <path class="tab-top" d="M65 200 L150 242.5 C156.25 245.5 163.75 245.5 170 242.5 L255 200 C262.5 196.25 262.5 188.75 255 185 L170 142.5 C163.75 139.5 156.25 139.5 150 142.5 L65 185 C57.5 188.75 57.5 196.25 65 200 Z" fill="#ef4444" stroke="#dc2626" stroke-width="1.5"/>
+                    <g transform="translate(144, 180.5) scale(1.33)">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#ffffff" opacity="0.95"/>
+                    </g>
+                  </g>
+                  <g class="incoming-tab-card" data-tab-idx="2">
+                    <path class="tab-top" d="M65 200 L150 242.5 C156.25 245.5 163.75 245.5 170 242.5 L255 200 C262.5 196.25 262.5 188.75 255 185 L170 142.5 C163.75 139.5 156.25 139.5 150 142.5 L65 185 C57.5 188.75 57.5 196.25 65 200 Z" fill="#ef4444" stroke="#dc2626" stroke-width="1.5"/>
+                    <g transform="translate(144, 180.5) scale(1.33)">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#ffffff" opacity="0.95"/>
+                    </g>
+                  </g>
+                </g>
+              </g>
+
+              <!-- ================= 2. MIDDLE TIER (Pinterest / Crimson Rose) ================= -->
+              <g class="slab-layer slab-mid" id="slabLayer2" filter="url(#iconSlabShadow)">
+
+                <!-- The Living Morphing Slab -->
+                <g class="slab-growing-body" id="slabBody2">
+                  <path class="slab-face" d="M65 150 L150 192.5 C156.25 195.5 163.75 195.5 170 192.5 L255 150 C262.5 146.25 262.5 138.75 255 135 L170 92.5 C163.75 89.5 156.25 89.5 150 92.5 L65 135 C57.5 138.75 57.5 146.25 65 150 Z" fill="#e60023"/>
+                  <path class="slab-sidel" d="M65 150 L150 192.5 C156.25 195.5 160 195.5 160 195.5 V210 C160 210 156.25 210 150 207 L65 164.5 C57.5 160.75 57.5 153.25 57.5 148.75 V143.75 C57.5 146.25 61.25 148 65 150 Z" fill="#be123c"/>
+                  <path class="slab-sider" d="M160 195.5 C160 195.5 163.75 195.5 170 192.5 L255 150 C258.75 148 262.5 146.25 262.5 143.75 V148.75 C262.5 153.25 262.5 160.75 255 164.5 L170 207 C163.75 210 160 210 160 210 V195.5 Z" fill="#881337"/>
+                  
+                  <!-- Clean Transparent Pinterest Icon (No background badge) -->
+                  <g class="slab-brand-icon" transform="translate(147, 129.5) scale(1.08)">
+                    <path d="M12 0a12 12 0 0 0-4.37 23.18c-.07-.99-.13-2.52.03-3.61.14-.98.93-6.52.93-6.52s-.24-.48-.24-1.18c0-1.11.64-1.94 1.44-1.94.68 0 1 .51 1 1.12 0 .68-.43 1.7-.66 2.65-.19.79.4 1.44 1.18 1.44 1.42 0 2.51-1.5 2.51-3.66 0-1.91-1.37-3.25-3.34-3.25-2.44 0-3.87 1.83-3.87 3.72 0 .74.28 1.53.64 1.96.07.09.08.16.06.25-.07.28-.22.88-.25 1-.04.16-.13.2-.3.12-1.12-.52-1.82-2.15-1.82-3.46 0-2.82 2.05-5.41 5.91-5.41 3.1 0 5.51 2.21 5.51 5.16 0 3.08-1.94 5.56-4.63 5.56-.9 0-1.75-.47-2.04-1.02l-.56 2.12c-.2 1.05-.75 2.37-1.12 3.18A12 12 0 1 0 12 0z" fill="#ffffff" opacity="0.95"/>
+                  </g>
+                </g>
+
+                <!-- Incoming Physics Tabs -->
+                <g class="incoming-tabs-group" id="slabTabs2">
+                  <g class="incoming-tab-card" data-tab-idx="0">
+                    <path class="tab-top" d="M65 150 L150 192.5 C156.25 195.5 163.75 195.5 170 192.5 L255 150 C262.5 146.25 262.5 138.75 255 135 L170 92.5 C163.75 89.5 156.25 89.5 150 92.5 L65 135 C57.5 138.75 57.5 146.25 65 150 Z" fill="#e60023" stroke="#be123c" stroke-width="1.5"/>
+                    <g transform="translate(147, 129.5) scale(1.08)">
+                      <path d="M12 0a12 12 0 0 0-4.37 23.18c-.07-.99-.13-2.52.03-3.61.14-.98.93-6.52.93-6.52s-.24-.48-.24-1.18c0-1.11.64-1.94 1.44-1.94.68 0 1 .51 1 1.12 0 .68-.43 1.7-.66 2.65-.19.79.4 1.44 1.18 1.44 1.42 0 2.51-1.5 2.51-3.66 0-1.91-1.37-3.25-3.34-3.25-2.44 0-3.87 1.83-3.87 3.72 0 .74.28 1.53.64 1.96.07.09.08.16.06.25-.07.28-.22.88-.25 1-.04.16-.13.2-.3.12-1.12-.52-1.82-2.15-1.82-3.46 0-2.82 2.05-5.41 5.91-5.41 3.1 0 5.51 2.21 5.51 5.16 0 3.08-1.94 5.56-4.63 5.56-.9 0-1.75-.47-2.04-1.02l-.56 2.12c-.2 1.05-.75 2.37-1.12 3.18A12 12 0 1 0 12 0z" fill="#ffffff" opacity="0.95"/>
+                    </g>
+                  </g>
+                  <g class="incoming-tab-card" data-tab-idx="1">
+                    <path class="tab-top" d="M65 150 L150 192.5 C156.25 195.5 163.75 195.5 170 192.5 L255 150 C262.5 146.25 262.5 138.75 255 135 L170 92.5 C163.75 89.5 156.25 89.5 150 92.5 L65 135 C57.5 138.75 57.5 146.25 65 150 Z" fill="#e60023" stroke="#be123c" stroke-width="1.5"/>
+                    <g transform="translate(147, 129.5) scale(1.08)">
+                      <path d="M12 0a12 12 0 0 0-4.37 23.18c-.07-.99-.13-2.52.03-3.61.14-.98.93-6.52.93-6.52s-.24-.48-.24-1.18c0-1.11.64-1.94 1.44-1.94.68 0 1 .51 1 1.12 0 .68-.43 1.7-.66 2.65-.19.79.4 1.44 1.18 1.44 1.42 0 2.51-1.5 2.51-3.66 0-1.91-1.37-3.25-3.34-3.25-2.44 0-3.87 1.83-3.87 3.72 0 .74.28 1.53.64 1.96.07.09.08.16.06.25-.07.28-.22.88-.25 1-.04.16-.13.2-.3.12-1.12-.52-1.82-2.15-1.82-3.46 0-2.82 2.05-5.41 5.91-5.41 3.1 0 5.51 2.21 5.51 5.16 0 3.08-1.94 5.56-4.63 5.56-.9 0-1.75-.47-2.04-1.02l-.56 2.12c-.2 1.05-.75 2.37-1.12 3.18A12 12 0 1 0 12 0z" fill="#ffffff" opacity="0.95"/>
+                    </g>
+                  </g>
+                  <g class="incoming-tab-card" data-tab-idx="2">
+                    <path class="tab-top" d="M65 150 L150 192.5 C156.25 195.5 163.75 195.5 170 192.5 L255 150 C262.5 146.25 262.5 138.75 255 135 L170 92.5 C163.75 89.5 156.25 89.5 150 92.5 L65 135 C57.5 138.75 57.5 146.25 65 150 Z" fill="#e60023" stroke="#be123c" stroke-width="1.5"/>
+                    <g transform="translate(147, 129.5) scale(1.08)">
+                      <path d="M12 0a12 12 0 0 0-4.37 23.18c-.07-.99-.13-2.52.03-3.61.14-.98.93-6.52.93-6.52s-.24-.48-.24-1.18c0-1.11.64-1.94 1.44-1.94.68 0 1 .51 1 1.12 0 .68-.43 1.7-.66 2.65-.19.79.4 1.44 1.18 1.44 1.42 0 2.51-1.5 2.51-3.66 0-1.91-1.37-3.25-3.34-3.25-2.44 0-3.87 1.83-3.87 3.72 0 .74.28 1.53.64 1.96.07.09.08.16.06.25-.07.28-.22.88-.25 1-.04.16-.13.2-.3.12-1.12-.52-1.82-2.15-1.82-3.46 0-2.82 2.05-5.41 5.91-5.41 3.1 0 5.51 2.21 5.51 5.16 0 3.08-1.94 5.56-4.63 5.56-.9 0-1.75-.47-2.04-1.02l-.56 2.12c-.2 1.05-.75 2.37-1.12 3.18A12 12 0 1 0 12 0z" fill="#ffffff" opacity="0.95"/>
+                    </g>
+                  </g>
+                </g>
+              </g>
+
+              <!-- ================= 3. TOP TIER (Spotify / Emerald Green) ================= -->
+              <g class="slab-layer slab-top" id="slabLayer3" filter="url(#iconSlabShadow)">
+
+                <!-- The Living Morphing Slab -->
+                <g class="slab-growing-body" id="slabBody3">
+                  <path class="slab-face" d="M65 100 L150 142.5 C156.25 145.5 163.75 145.5 170 142.5 L255 100 C262.5 96.25 262.5 88.75 255 85 L170 42.5 C163.75 39.5 156.25 39.5 150 42.5 L65 85 C57.5 88.75 57.5 96.25 65 100 Z" fill="#10b981"/>
+                  <path class="slab-sidel" d="M65 100 L150 142.5 C156.25 145.5 160 145.5 160 145.5 V160 C160 160 156.25 160 150 157 L65 114.5 C57.5 110.75 57.5 103.25 57.5 98.75 V93.75 C57.5 96.25 61.25 98 65 100 Z" fill="#059669"/>
+                  <path class="slab-sider" d="M160 145.5 C160 145.5 163.75 145.5 170 142.5 L255 100 C258.75 98 262.5 96.25 262.5 93.75 V98.75 C262.5 103.25 262.5 110.75 255 114.5 L170 157 C163.75 160 160 160 160 160 V145.5 Z" fill="#047857"/>
+                  
+                  <!-- Clean Transparent Spotify Icon (No background badge) -->
+                  <g class="slab-brand-icon" transform="translate(147, 79.5) scale(1.08)">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z" fill="#ffffff" opacity="0.95"/>
+                  </g>
+                  
+                  <!-- 1:1 TabStack Signature Chevron Top Notch -->
+                  <path class="tabstack-chevron-notch" id="iconTopNotch" d="M120 77.5 L160 55 L200 77.5" stroke="var(--logo-notch, #000000)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+                </g>
+
+                <!-- Incoming Physics Tabs -->
+                <g class="incoming-tabs-group" id="slabTabs3">
+                  <g class="incoming-tab-card" data-tab-idx="0">
+                    <path class="tab-top" d="M65 100 L150 142.5 C156.25 145.5 163.75 145.5 170 142.5 L255 100 C262.5 96.25 262.5 88.75 255 85 L170 42.5 C163.75 39.5 156.25 39.5 150 42.5 L65 85 C57.5 88.75 57.5 96.25 65 100 Z" fill="#10b981" stroke="#059669" stroke-width="1.5"/>
+                    <g transform="translate(147, 79.5) scale(1.08)">
+                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z" fill="#ffffff" opacity="0.95"/>
+                    </g>
+                  </g>
+                  <g class="incoming-tab-card" data-tab-idx="1">
+                    <path class="tab-top" d="M65 100 L150 142.5 C156.25 145.5 163.75 145.5 170 142.5 L255 100 C262.5 96.25 262.5 88.75 255 85 L170 42.5 C163.75 39.5 156.25 39.5 150 42.5 L65 85 C57.5 88.75 57.5 96.25 65 100 Z" fill="#10b981" stroke="#059669" stroke-width="1.5"/>
+                    <g transform="translate(147, 79.5) scale(1.08)">
+                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z" fill="#ffffff" opacity="0.95"/>
+                    </g>
+                  </g>
+                  <g class="incoming-tab-card" data-tab-idx="2">
+                    <path class="tab-top" d="M65 100 L150 142.5 C156.25 145.5 163.75 145.5 170 142.5 L255 100 C262.5 96.25 262.5 88.75 255 85 L170 42.5 C163.75 39.5 156.25 39.5 150 42.5 L65 85 C57.5 88.75 57.5 96.25 65 100 Z" fill="#10b981" stroke="#059669" stroke-width="1.5"/>
+                    <g transform="translate(147, 79.5) scale(1.08)">
+                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z" fill="#ffffff" opacity="0.95"/>
+                    </g>
+                  </g>
+                </g>
+              </g>
+
+            </svg>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Showcase Section: Interactive Simulator -->
+  <section id="showcase" class="showcase-section">
+    <div class="container">
+      <div class="section-header simulator-intro">
+        <p class="section-kicker">See the difference</p>
+        <h2 class="section-title">Watch your tab bar sort itself out.</h2>
+        <p class="section-subtitle">Press <strong>Stack Now</strong>, switch between sites, and see inactive tabs collapse and sleep.</p>
+      </div>
+      
+      <div class="simulator-stage-wrapper">
+        
+        <!-- Sticky RAM Price Tag Container -->
+        <aside class="sim-floating-tag" id="simFloatingTag" aria-label="Live Memory and Tab Usage">
+          <div class="tag-row">
+            <span class="tag-indicator" id="tagStatusDot"></span>
+            <span class="tag-text" id="tagStatusText">9 Tabs</span>
+          </div>
+          <div class="tag-divider"></div>
+          <div class="tag-row">
+            <span class="tag-label">Memory</span>
+            <span class="tag-value text-red" id="tagRamValue">1,890 MB</span>
+          </div>
+          <div class="tag-badge hidden" id="tagSavedBadge">
+            <span>-1,748 MB</span>
+          </div>
+        </aside>
+
+        <div class="showcase-simulator-window" id="simulatorWindow">
+        
+        <!-- Chromium Window Header & Real Tab Strip -->
+        <div class="chrome-window-topbar">
+          <div class="chrome-traffic-lights">
+            <span class="light red"></span>
+            <span class="light yellow"></span>
+            <span class="light green"></span>
+          </div>
+
+          <!-- Top Titlebar Tab Count & State Indicator -->
+          <div class="chrome-top-meta-badge" id="chromeTopMetaBadge" title="Total open tabs & active stacks">
+            <span class="top-meta-dot"></span>
+            <span id="chromeTopTabCount">12 tabs</span>
+            <span class="top-meta-dup-tag" id="chromeTopDupTag">3 dups</span>
+          </div>
+
+          <!-- Tab strip scroll left button -->
+          <button class="tab-strip-scroll-btn" id="simScrollLeftBtn" title="Scroll tabs left" aria-label="Scroll left">‹</button>
+
+          <!-- Live Dynamic Chromium Tab Bar -->
+          <div class="chrome-tab-strip" id="chromeTabStrip">
+            
+            <!-- Chaos Ungrouped State (12 tabs with duplicates) -->
+            <div class="tab-strip-state chaos-strip" id="simChaosStrip">
+              <div class="chrome-tab active" data-tab-id="yt-mrbeast">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#ef4444" class="tab-favicon"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                <span class="tab-title-text">$1 vs $1,000,000,000 Yacht!</span>
+                <span class="close-btn">×</span>
+              </div>
+              <div class="chrome-tab" data-tab-id="pin-desk">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#e60023" class="tab-favicon"><path d="M12 0a12 12 0 0 0-4.37 23.18c-.07-.99-.13-2.52.03-3.61.14-.98.93-6.52.93-6.52s-.24-.48-.24-1.18c0-1.11.64-1.94 1.44-1.94.68 0 1 .51 1 1.12 0 .68-.43 1.7-.66 2.65-.19.79.4 1.44 1.18 1.44 1.42 0 2.51-1.5 2.51-3.66 0-1.91-1.37-3.25-3.34-3.25-2.44 0-3.87 1.83-3.87 3.72 0 .74.28 1.53.64 1.96.07.09.08.16.06.25-.07.28-.22.88-.25 1-.04.16-.13.2-.3.12-1.12-.52-1.82-2.15-1.82-3.46 0-2.82 2.05-5.41 5.91-5.41 3.1 0 5.51 2.21 5.51 5.16 0 3.08-1.94 5.56-4.63 5.56-.9 0-1.75-.47-2.04-1.02l-.56 2.12c-.2 1.05-.75 2.37-1.12 3.18A12 12 0 1 0 12 0z"/></svg>
+                <span class="tab-title-text">Minimalist Desk Setups</span>
+                <span class="close-btn">×</span>
+              </div>
+              <div class="chrome-tab" data-tab-id="spot-hits">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#10b981" class="tab-favicon"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z"/></svg>
+                <span class="tab-title-text">Today's Top Hits · Playlist</span>
+                <span class="close-btn">×</span>
+              </div>
+              <div class="chrome-tab sim-duplicate-tab" data-tab-id="yt-mrbeast-dup">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#ef4444" class="tab-favicon"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                <span class="tab-title-text">$1 vs $1,000,000,000 Yacht!</span>
+                <span class="close-btn">×</span>
+              </div>
+              <div class="chrome-tab" data-tab-id="yt-rick">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#ef4444" class="tab-favicon"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                <span class="tab-title-text">Rick Astley - Never Gonna...</span>
+                <span class="close-btn">×</span>
+              </div>
+              <div class="chrome-tab sim-duplicate-tab" data-tab-id="spot-hits-dup">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#10b981" class="tab-favicon"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z"/></svg>
+                <span class="tab-title-text">Today's Top Hits · Playlist</span>
+                <span class="close-btn">×</span>
+              </div>
+              <div class="chrome-tab" data-tab-id="pin-arch">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#e60023" class="tab-favicon"><path d="M12 0a12 12 0 0 0-4.37 23.18c-.07-.99-.13-2.52.03-3.61.14-.98.93-6.52.93-6.52s-.24-.48-.24-1.18c0-1.11.64-1.94 1.44-1.94.68 0 1 .51 1 1.12 0 .68-.43 1.7-.66 2.65-.19.79.4 1.44 1.18 1.44 1.42 0 2.51-1.5 2.51-3.66 0-1.91-1.37-3.25-3.34-3.25-2.44 0-3.87 1.83-3.87 3.72 0 .74.28 1.53.64 1.96.07.09.08.16.06.25-.07.28-.22.88-.25 1-.04.16-.13.2-.3.12-1.12-.52-1.82-2.15-1.82-3.46 0-2.82 2.05-5.41 5.91-5.41 3.1 0 5.51 2.21 5.51 5.16 0 3.08-1.94 5.56-4.63 5.56-.9 0-1.75-.47-2.04-1.02l-.56 2.12c-.2 1.05-.75 2.37-1.12 3.18A12 12 0 1 0 12 0z"/></svg>
+                <span class="tab-title-text">Brutalist Architecture</span>
+                <span class="close-btn">×</span>
+              </div>
+              <div class="chrome-tab sim-duplicate-tab" data-tab-id="yt-rick-dup">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#ef4444" class="tab-favicon"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                <span class="tab-title-text">Rick Astley - Never Gonna...</span>
+                <span class="close-btn">×</span>
+              </div>
+              <div class="chrome-tab" data-tab-id="spot-focus">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#10b981" class="tab-favicon"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z"/></svg>
+                <span class="tab-title-text">Deep Focus · Ambient Beats</span>
+                <span class="close-btn">×</span>
+              </div>
+              <div class="chrome-tab" data-tab-id="pin-ui">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#e60023" class="tab-favicon"><path d="M12 0a12 12 0 0 0-4.37 23.18c-.07-.99-.13-2.52.03-3.61.14-.98.93-6.52.93-6.52s-.24-.48-.24-1.18c0-1.11.64-1.94 1.44-1.94.68 0 1 .51 1 1.12 0 .68-.43 1.7-.66 2.65-.19.79.4 1.44 1.18 1.44 1.42 0 2.51-1.5 2.51-3.66 0-1.91-1.37-3.25-3.34-3.25-2.44 0-3.87 1.83-3.87 3.72 0 .74.28 1.53.64 1.96.07.09.08.16.06.25-.07.28-.22.88-.25 1-.04.16-.13.2-.3.12-1.12-.52-1.82-2.15-1.82-3.46 0-2.82 2.05-5.41 5.91-5.41 3.1 0 5.51 2.21 5.51 5.16 0 3.08-1.94 5.56-4.63 5.56-.9 0-1.75-.47-2.04-1.02l-.56 2.12c-.2 1.05-.75 2.37-1.12 3.18A12 12 0 1 0 12 0z"/></svg>
+                <span class="tab-title-text">Dark UI Tokens</span>
+                <span class="close-btn">×</span>
+              </div>
+              <div class="chrome-tab" data-tab-id="yt-lofi">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#ef4444" class="tab-favicon"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                <span class="tab-title-text">Lofi Beats Stream 24/7</span>
+                <span class="close-btn">×</span>
+              </div>
+              <div class="chrome-tab" data-tab-id="spot-weekly">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#10b981" class="tab-favicon"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z"/></svg>
+                <span class="tab-title-text">Discover Weekly Mix</span>
+                <span class="close-btn">×</span>
+              </div>
+            </div>
+
+            <!-- Grouped Stacked State (Chromium Native Groups) -->
+            <div class="tab-strip-state grouped-strip hidden" id="simGroupedStrip">
+              
+              <!-- 1. YouTube Group (Active / Expanded) -->
+              <div class="chrome-group group-red active-group" id="simGroupYoutube" data-group="youtube">
+                <div class="chrome-group-pill" title="Click to collapse/expand YouTube stack">
+                  <span class="group-dot"></span>
+                  <span class="group-label">YouTube</span>
+                  <span class="group-count" id="simYtGroupCount">5</span>
+                  <span class="sleep-pill hidden" id="simYoutubeSleep" title="Hibernated in background">zZ</span>
+                </div>
+                <div class="chrome-group-tabs" id="simYoutubeTabs">
+                  <div class="chrome-tab active" data-tab-id="yt-mrbeast">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#ef4444" class="tab-favicon"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    <span class="tab-title-text">$1 vs $1,000,000,000 Yacht!</span>
+                    <span class="close-btn">×</span>
+                  </div>
+                  <div class="chrome-tab sim-duplicate-tab" data-tab-id="yt-mrbeast-dup">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#ef4444" class="tab-favicon"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    <span class="tab-title-text">$1 vs $1,000,000,000 Yacht!</span>
+                    <span class="close-btn">×</span>
+                  </div>
+                  <div class="chrome-tab" data-tab-id="yt-rick">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#ef4444" class="tab-favicon"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    <span class="tab-title-text">Rick Astley - Never Gonna...</span>
+                    <span class="close-btn">×</span>
+                  </div>
+                  <div class="chrome-tab sim-duplicate-tab" data-tab-id="yt-rick-dup">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#ef4444" class="tab-favicon"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    <span class="tab-title-text">Rick Astley - Never Gonna...</span>
+                    <span class="close-btn">×</span>
+                  </div>
+                  <div class="chrome-tab" data-tab-id="yt-lofi">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#ef4444" class="tab-favicon"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    <span class="tab-title-text">Lofi Beats Stream 24/7</span>
+                    <span class="close-btn">×</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. Pinterest Group (Collapsed / Sleep) -->
+              <div class="chrome-group group-red collapsed" id="simGroupPinterest" data-group="pinterest">
+                <div class="chrome-group-pill" title="Click to expand Pinterest stack">
+                  <span class="group-dot"></span>
+                  <span class="group-label">Pinterest</span>
+                  <span class="group-count" id="simPinGroupCount">3</span>
+                  <span class="sleep-pill hidden" id="simPinterestSleep" title="Hibernated in background">zZ</span>
+                </div>
+                <div class="chrome-group-tabs hidden" id="simPinterestTabs">
+                  <div class="chrome-tab" data-tab-id="pin-desk">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#e60023" class="tab-favicon"><path d="M12 0a12 12 0 0 0-4.37 23.18c-.07-.99-.13-2.52.03-3.61.14-.98.93-6.52.93-6.52s-.24-.48-.24-1.18c0-1.11.64-1.94 1.44-1.94.68 0 1 .51 1 1.12 0 .68-.43 1.7-.66 2.65-.19.79.4 1.44 1.18 1.44 1.42 0 2.51-1.5 2.51-3.66 0-1.91-1.37-3.25-3.34-3.25-2.44 0-3.87 1.83-3.87 3.72 0 .74.28 1.53.64 1.96.07.09.08.16.06.25-.07.28-.22.88-.25 1-.04.16-.13.2-.3.12-1.12-.52-1.82-2.15-1.82-3.46 0-2.82 2.05-5.41 5.91-5.41 3.1 0 5.51 2.21 5.51 5.16 0 3.08-1.94 5.56-4.63 5.56-.9 0-1.75-.47-2.04-1.02l-.56 2.12c-.2 1.05-.75 2.37-1.12 3.18A12 12 0 1 0 12 0z"/></svg>
+                    <span class="tab-title-text">Minimalist Desk Setups</span>
+                    <span class="close-btn">×</span>
+                  </div>
+                  <div class="chrome-tab" data-tab-id="pin-arch">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#e60023" class="tab-favicon"><path d="M12 0a12 12 0 0 0-4.37 23.18c-.07-.99-.13-2.52.03-3.61.14-.98.93-6.52.93-6.52s-.24-.48-.24-1.18c0-1.11.64-1.94 1.44-1.94.68 0 1 .51 1 1.12 0 .68-.43 1.7-.66 2.65-.19.79.4 1.44 1.18 1.44 1.42 0 2.51-1.5 2.51-3.66 0-1.91-1.37-3.25-3.34-3.25-2.44 0-3.87 1.83-3.87 3.72 0 .74.28 1.53.64 1.96.07.09.08.16.06.25-.07.28-.22.88-.25 1-.04.16-.13.2-.3.12-1.12-.52-1.82-2.15-1.82-3.46 0-2.82 2.05-5.41 5.91-5.41 3.1 0 5.51 2.21 5.51 5.16 0 3.08-1.94 5.56-4.63 5.56-.9 0-1.75-.47-2.04-1.02l-.56 2.12c-.2 1.05-.75 2.37-1.12 3.18A12 12 0 1 0 12 0z"/></svg>
+                    <span class="tab-title-text">Brutalist Architecture</span>
+                    <span class="close-btn">×</span>
+                  </div>
+                  <div class="chrome-tab" data-tab-id="pin-ui">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#e60023" class="tab-favicon"><path d="M12 0a12 12 0 0 0-4.37 23.18c-.07-.99-.13-2.52.03-3.61.14-.98.93-6.52.93-6.52s-.24-.48-.24-1.18c0-1.11.64-1.94 1.44-1.94.68 0 1 .51 1 1.12 0 .68-.43 1.7-.66 2.65-.19.79.4 1.44 1.18 1.44 1.42 0 2.51-1.5 2.51-3.66 0-1.91-1.37-3.25-3.34-3.25-2.44 0-3.87 1.83-3.87 3.72 0 .74.28 1.53.64 1.96.07.09.08.16.06.25-.07.28-.22.88-.25 1-.04.16-.13.2-.3.12-1.12-.52-1.82-2.15-1.82-3.46 0-2.82 2.05-5.41 5.91-5.41 3.1 0 5.51 2.21 5.51 5.16 0 3.08-1.94 5.56-4.63 5.56-.9 0-1.75-.47-2.04-1.02l-.56 2.12c-.2 1.05-.75 2.37-1.12 3.18A12 12 0 1 0 12 0z"/></svg>
+                    <span class="tab-title-text">Dark UI Tokens</span>
+                    <span class="close-btn">×</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. Spotify Group (Collapsed / Sleep) -->
+              <div class="chrome-group group-cyan collapsed" id="simGroupSpotify" data-group="spotify">
+                <div class="chrome-group-pill" title="Click to expand Spotify stack">
+                  <span class="group-dot"></span>
+                  <span class="group-label">Spotify</span>
+                  <span class="group-count" id="simSpotGroupCount">4</span>
+                  <span class="sleep-pill hidden" id="simSpotifySleep" title="Hibernated in background">zZ</span>
+                </div>
+                <div class="chrome-group-tabs hidden" id="simSpotifyTabs">
+                  <div class="chrome-tab" data-tab-id="spot-hits">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#10b981" class="tab-favicon"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z"/></svg>
+                    <span class="tab-title-text">Today's Top Hits · Playlist</span>
+                    <span class="close-btn">×</span>
+                  </div>
+                  <div class="chrome-tab sim-duplicate-tab" data-tab-id="spot-hits-dup">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#10b981" class="tab-favicon"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z"/></svg>
+                    <span class="tab-title-text">Today's Top Hits · Playlist</span>
+                    <span class="close-btn">×</span>
+                  </div>
+                  <div class="chrome-tab" data-tab-id="spot-focus">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#10b981" class="tab-favicon"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z"/></svg>
+                    <span class="tab-title-text">Deep Focus · Ambient Beats</span>
+                    <span class="close-btn">×</span>
+                  </div>
+                  <div class="chrome-tab" data-tab-id="spot-weekly">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#10b981" class="tab-favicon"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z"/></svg>
+                    <span class="tab-title-text">Discover Weekly Mix</span>
+                    <span class="close-btn">×</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Tab strip scroll right button -->
+          <button class="tab-strip-scroll-btn" id="simScrollRightBtn" title="Scroll tabs right" aria-label="Scroll right">›</button>
+
+          <div class="chrome-window-controls">
+            <span class="new-tab-btn" title="New Tab">+</span>
+          </div>
+        </div>
+
+        <!-- Chromium Navigation & Extension URL Bar -->
+        <div class="chrome-navbar">
+          <div class="nav-btn-group">
+            <button class="nav-circle-btn" disabled>‹</button>
+            <button class="nav-circle-btn" disabled>›</button>
+            <button class="nav-circle-btn">⟳</button>
+          </div>
+
+          <div class="chrome-omnibox">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span class="url-text" id="simOmniboxUrl">https://www.youtube.com/watch?v=48h57PspBec</span>
+          </div>
+
+          <div class="chrome-extension-slot">
+            <div class="extension-icon-btn active" id="simExtIconBtn" title="TabStack Extension Active">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Bottom layer (Charcoal / Rounded) -->
+                <path d="M4.8 15.3 C4.3 15.5 4.3 15.9 4.8 16.1 L11.3 19.8 C11.7 20 12.3 20 12.7 19.8 L19.2 16.1 C19.7 15.9 19.7 15.5 19.2 15.3 L12.7 11.6 C12.3 11.4 11.7 11.4 11.3 11.6 Z" fill="var(--logo-bot-face, #52525b)"/>
+                <path d="M4.8 16.1 L11.3 19.8 C11.7 20 12 20 12 20 V21.5 C12 21.5 11.7 21.5 11.3 21.3 L4.8 17.6 C4.3 17.4 4.3 17 4.3 16.6 V15.8 C4.3 15.9 4.5 16 4.8 16.1 Z" fill="var(--logo-bot-sidel, #3f3f46)"/>
+                <path d="M12 20 C12 20 12.3 20 12.7 19.8 L19.2 16.1 C19.5 16 19.7 15.9 19.7 15.8 V16.6 C19.7 17 19.7 17.4 19.2 17.6 L12.7 21.3 C12.3 21.5 12 21.5 12 21.5 Z" fill="var(--logo-bot-sider, #27272a)"/>
+
+                <!-- Middle layer (Zinc / Rounded) -->
+                <path d="M4.8 11.3 C4.3 11.5 4.3 11.9 4.8 12.1 L11.3 15.8 C11.7 16 12.3 16 12.7 15.8 L19.2 12.1 C19.7 11.9 19.7 11.5 19.2 11.3 L12.7 7.6 C12.3 7.4 11.7 7.4 11.3 7.6 Z" fill="var(--logo-mid-face, #a1a1aa)"/>
+                <path d="M4.8 12.1 L11.3 15.8 C11.7 16 12 16 12 16 V17.5 C12 17.5 11.7 17.5 11.3 17.3 L4.8 13.6 C4.3 13.4 4.3 13 4.3 12.6 V11.8 C4.3 11.9 4.5 12 4.8 12.1 Z" fill="var(--logo-mid-sidel, #71717a)"/>
+                <path d="M12 16 C12 16 12.3 16 12.7 15.8 L19.2 12.1 C19.5 12 19.7 11.9 19.7 11.8 V12.6 C19.7 13 19.7 13.4 19.2 13.6 L12.7 17.3 C12.3 17.5 12 17.5 12 17.5 Z" fill="var(--logo-mid-sider, #52525b)"/>
+
+                <!-- Top layer (Pure White / Adaptive / Rounded) -->
+                <path d="M4.8 7.3 C4.3 7.5 4.3 7.9 4.8 8.1 L11.3 11.8 C11.7 12 12.3 12 12.7 11.8 L19.2 8.1 C19.7 7.9 19.7 7.5 19.2 7.3 L12.7 3.6 C12.3 3.4 11.7 3.4 11.3 3.6 Z" fill="var(--logo-top-face, #ffffff)"/>
+                <path d="M4.8 8.1 L11.3 11.8 C11.7 12 12 12 12 12 V13.5 C12 13.5 11.7 13.5 11.3 13.3 L4.8 9.6 C4.3 9.4 4.3 9 4.3 8.6 V7.8 C4.3 7.9 4.5 8 4.8 8.1 Z" fill="var(--logo-top-sidel, #d4d4d8)"/>
+                <path d="M12 12 C12 12 12.3 12 12.7 11.8 L19.2 8.1 C19.5 8 19.7 7.9 19.7 7.8 V8.6 C19.7 9 19.7 9.4 19.2 9.6 L12.7 13.3 C12.3 13.5 12 13.5 12 13.5 Z" fill="var(--logo-top-sider, #a1a1aa)"/>
+                <path d="M9.2 6.2 L12 4.6 L14.8 6.2" stroke="var(--logo-notch, #000000)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Browser Viewport Stage (Page Context + Real TabStack Popup) -->
+        <div class="chrome-viewport-stage">
+          
+          <!-- Background Web Page Preview Context -->
+          <div class="webpage-context" id="simWebpageContext">
+            <!-- Dynamic Page Preview injected via JavaScript -->
+          </div>
+
+          <!-- THE AUTHENTIC TABSTACK POPUP FLYOUT -->
+          <div class="popup-flyout-container" id="simPopupFlyout">
+            
+            <!-- Popup Top Header -->
+            <header class="pop-header">
+              <div class="pop-brand">
+                <div class="pop-logo">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4.8 15.3 C4.3 15.5 4.3 15.9 4.8 16.1 L11.3 19.8 C11.7 20 12.3 20 12.7 19.8 L19.2 16.1 C19.7 15.9 19.7 15.5 19.2 15.3 L12.7 11.6 C12.3 11.4 11.7 11.4 11.3 11.6 Z" fill="var(--logo-bot-face, #52525b)"/>
+                    <path d="M4.8 16.1 L11.3 19.8 C11.7 20 12 20 12 20 V21.5 C12 21.5 11.7 21.5 11.3 21.3 L4.8 17.6 C4.3 17.4 4.3 17 4.3 16.6 V15.8 C4.3 15.9 4.5 16 4.8 16.1 Z" fill="var(--logo-bot-sidel, #3f3f46)"/>
+                    <path d="M12 20 C12 20 12.3 20 12.7 19.8 L19.2 16.1 C19.5 16 19.7 15.9 19.7 15.8 V16.6 C19.7 17 19.7 17.4 19.2 17.6 L12.7 21.3 C12.3 21.5 12 21.5 12 21.5 Z" fill="var(--logo-bot-sider, #27272a)"/>
+
+                    <path d="M4.8 11.3 C4.3 11.5 4.3 11.9 4.8 12.1 L11.3 15.8 C11.7 16 12.3 16 12.7 15.8 L19.2 12.1 C19.7 11.9 19.7 11.5 19.2 11.3 L12.7 7.6 C12.3 7.4 11.7 7.4 11.3 7.6 Z" fill="var(--logo-mid-face, #a1a1aa)"/>
+                    <path d="M4.8 12.1 L11.3 15.8 C11.7 16 12 16 12 16 V17.5 C12 17.5 11.7 17.5 11.3 17.3 L4.8 13.6 C4.3 13.4 4.3 13 4.3 12.6 V11.8 C4.3 11.9 4.5 12 4.8 12.1 Z" fill="var(--logo-mid-sidel, #71717a)"/>
+                    <path d="M12 16 C12 16 12.3 16 12.7 15.8 L19.2 12.1 C19.5 12 19.7 11.9 19.7 11.8 V12.6 C19.7 13 19.7 13.4 19.2 13.6 L12.7 17.3 C12.3 17.5 12 17.5 12 17.5 Z" fill="var(--logo-mid-sider, #52525b)"/>
+
+                    <path d="M4.8 7.3 C4.3 7.5 4.3 7.9 4.8 8.1 L11.3 11.8 C11.7 12 12.3 12 12.7 11.8 L19.2 8.1 C19.7 7.9 19.7 7.5 19.2 7.3 L12.7 3.6 C12.3 3.4 11.7 3.4 11.3 3.6 Z" fill="var(--logo-top-face, #ffffff)"/>
+                    <path d="M4.8 8.1 L11.3 11.8 C11.7 12 12 12 12 12 V13.5 C12 13.5 11.7 13.5 11.3 13.3 L4.8 9.6 C4.3 9.4 4.3 9 4.3 8.6 V7.8 C4.3 7.9 4.5 8 4.8 8.1 Z" fill="var(--logo-top-sidel, #d4d4d8)"/>
+                    <path d="M12 12 C12 12 12.3 12 12.7 11.8 L19.2 8.1 C19.5 8 19.7 7.9 19.7 7.8 V8.6 C19.7 9 19.7 9.4 19.2 9.6 L12.7 13.3 C12.3 13.5 12 13.5 12 13.5 Z" fill="var(--logo-top-sider, #a1a1aa)"/>
+                    <path d="M9.2 6.2 L12 4.6 L14.8 6.2" stroke="var(--logo-notch, #000000)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div class="pop-title-wrap">
+                  <span class="pop-name">TabStack</span>
+                  <span class="pop-version">v1.0</span>
+                </div>
+              </div>
+              <div class="pop-actions">
+                <div class="pop-theme-toggle">
+                  <button class="pop-theme-btn active" title="Dark theme">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                  </button>
+                </div>
+                <button class="pop-icon-btn" title="Settings">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </button>
+              </div>
+            </header>
+
+            <!-- Metrics Pills -->
+            <div class="pop-metrics-bar">
+              <div class="pop-metric-chip">
+                <span class="chip-val" id="popStatTabs">9</span>
+                <span class="chip-label">Tabs</span>
+              </div>
+              <div class="pop-metric-chip">
+                <span class="chip-val" id="popStatStacks">3</span>
+                <span class="chip-label">Stacks</span>
+              </div>
+              <div class="pop-metric-chip">
+                <span class="chip-val text-green" id="popStatRam">0 MB</span>
+                <span class="chip-label">RAM Saved</span>
+              </div>
+            </div>
+
+            <!-- Toggles Card (3 in a Flex Row) -->
+            <div class="pop-toggles-card">
+              <label class="pop-toggle-row" title="Automatically cluster tabs with same domain">
+                <span class="pop-toggle-title">Auto-Stack</span>
+                <input type="checkbox" id="simToggleAutoGroup" class="pop-switch" checked>
+              </label>
+              <div class="pop-toggle-divider"></div>
+              <label class="pop-toggle-row" title="Keep only the active domain stack open, collapse all others">
+                <span class="pop-toggle-title">Accordion Focus</span>
+                <input type="checkbox" id="simToggleAccordion" class="pop-switch" checked>
+              </label>
+              <div class="pop-toggle-divider"></div>
+              <label class="pop-toggle-row" id="simToggleRamSaverRow" title="Hibernate inactive tabs in collapsed groups to save RAM">
+                <span class="pop-toggle-title">RAM Saver</span>
+                <input type="checkbox" id="simToggleRamSaver" class="pop-switch">
+              </label>
+            </div>
+
+            <!-- Navigation Tabs (Live Stacks / Saved / Whitelist) -->
+            <div class="pop-tab-nav">
+              <button class="pop-nav-btn active" id="simNavLive">Live Stacks</button>
+              <button class="pop-nav-btn" id="simNavSaved">Saved (3)</button>
+              <button class="pop-nav-btn" id="simNavWhitelist">Whitelist (2)</button>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="pop-search-bar" id="simPopSearchBar">
+              <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="simSearchInput" placeholder="Search tabs by title, domain or url..." autocomplete="off">
+            </div>
+
+            <!-- Tab View 1: Live Stacks List -->
+            <div class="pop-view-tab-content" id="simPopLiveView">
+              <div class="pop-stacks-list" id="simPopStacksList">
+                
+                <!-- 1. YouTube Stack -->
+                <div class="pop-stack-item active" data-group="youtube" data-domain="youtube.com">
+                  <div class="pop-stack-header">
+                    <div class="stack-meta">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="#ef4444" class="site-icon"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                      <span class="domain-title">youtube.com</span>
+                      <span class="count-badge" id="simPopYtCount">5</span>
+                    </div>
+                    <button class="pop-chevron-btn active">▾</button>
+                  </div>
+                  <div class="pop-tabs-container">
+                    <div class="pop-tab active" data-tab-id="yt-mrbeast"><span class="tab-dot active"></span><span>$1 vs $1,000,000,000 Yacht! - MrBeast</span></div>
+                    <div class="pop-tab sim-duplicate-tab" data-tab-id="yt-mrbeast-dup"><span class="tab-dot"></span><span>$1 vs $1,000,000,000 Yacht! - MrBeast</span><span class="dup-badge">DUP</span></div>
+                    <div class="pop-tab" data-tab-id="yt-rick"><span class="tab-dot"></span><span>Rick Astley - Never Gonna Give You Up</span></div>
+                    <div class="pop-tab sim-duplicate-tab" data-tab-id="yt-rick-dup"><span class="tab-dot"></span><span>Rick Astley - Never Gonna Give You Up</span><span class="dup-badge">DUP</span></div>
+                    <div class="pop-tab" data-tab-id="yt-lofi"><span class="tab-dot"></span><span>lofi hip hop radio - beats to relax/study to</span></div>
+                  </div>
+                </div>
+
+                <!-- 2. Pinterest Stack -->
+                <div class="pop-stack-item" data-group="pinterest" data-domain="pinterest.com">
+                  <div class="pop-stack-header">
+                    <div class="stack-meta">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="#e60023" class="site-icon"><path d="M12 0a12 12 0 0 0-4.37 23.18c-.07-.99-.13-2.52.03-3.61.14-.98.93-6.52.93-6.52s-.24-.48-.24-1.18c0-1.11.64-1.94 1.44-1.94.68 0 1 .51 1 1.12 0 .68-.43 1.7-.66 2.65-.19.79.4 1.44 1.18 1.44 1.42 0 2.51-1.5 2.51-3.66 0-1.91-1.37-3.25-3.34-3.25-2.44 0-3.87 1.83-3.87 3.72 0 .74.28 1.53.64 1.96.07.09.08.16.06.25-.07.28-.22.88-.25 1-.04.16-.13.2-.3.12-1.12-.52-1.82-2.15-1.82-3.46 0-2.82 2.05-5.41 5.91-5.41 3.1 0 5.51 2.21 5.51 5.16 0 3.08-1.94 5.56-4.63 5.56-.9 0-1.75-.47-2.04-1.02l-.56 2.12c-.2 1.05-.75 2.37-1.12 3.18A12 12 0 1 0 12 0z"/></svg>
+                      <span class="domain-title">pinterest.com</span>
+                      <span class="count-badge" id="simPopPinCount">3</span>
+                    </div>
+                    <button class="pop-chevron-btn">▾</button>
+                  </div>
+                  <div class="pop-tabs-container hidden">
+                    <div class="pop-tab" data-tab-id="pin-desk"><span class="tab-dot"></span><span>Minimalist Desk Setup Inspo</span></div>
+                    <div class="pop-tab" data-tab-id="pin-arch"><span class="tab-dot"></span><span>Modern Architecture & Brutalist Interiors</span></div>
+                    <div class="pop-tab" data-tab-id="pin-ui"><span class="tab-dot"></span><span>Dark UI Typography & Tokens</span></div>
+                  </div>
+                </div>
+
+                <!-- 3. Spotify Stack -->
+                <div class="pop-stack-item" data-group="spotify" data-domain="spotify.com">
+                  <div class="pop-stack-header">
+                    <div class="stack-meta">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="#10b981" class="site-icon"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.495 17.305c-.215.352-.674.464-1.026.248-2.812-1.718-6.353-2.107-10.523-1.155-.401.092-.802-.16-.893-.561-.092-.402.16-.803.561-.894 4.568-1.043 8.49-.604 11.633 1.314.353.216.465.674.248 1.048zm1.467-3.262c-.27.441-.85.58-1.29.31-3.22-1.979-8.13-2.55-11.94-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.135-1.028.633-1.179 4.354-1.321 9.774-.683 13.466 1.584.44.27.58.85.31 1.311zm.126-3.41c-3.86-2.292-10.23-2.503-13.916-1.385-.59.18-1.218-.16-1.397-.751-.18-.592.16-1.219.751-1.398 4.238-1.286 11.272-1.042 15.698 1.587.531.315.706 1.002.391 1.533-.314.53-.997.705-1.527.414z"/></svg>
+                      <span class="domain-title">spotify.com</span>
+                      <span class="count-badge" id="simPopSpotCount">4</span>
+                    </div>
+                    <button class="pop-chevron-btn">▾</button>
+                  </div>
+                  <div class="pop-tabs-container hidden">
+                    <div class="pop-tab" data-tab-id="spot-hits"><span class="tab-dot"></span><span>Today's Top Hits - Playlist</span></div>
+                    <div class="pop-tab sim-duplicate-tab" data-tab-id="spot-hits-dup"><span class="tab-dot"></span><span>Today's Top Hits - Playlist</span><span class="dup-badge">DUP</span></div>
+                    <div class="pop-tab" data-tab-id="spot-focus"><span class="tab-dot"></span><span>Deep Focus - Ambient Beats</span></div>
+                    <div class="pop-tab" data-tab-id="spot-weekly"><span class="tab-dot"></span><span>Discover Weekly Mix</span></div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Tab View 2: Saved Sessions View -->
+            <div class="pop-view-tab-content hidden" id="simPopSavedView">
+              <div class="pop-saved-list">
+                
+                <div class="pop-saved-card">
+                  <div class="saved-card-header">
+                    <div class="saved-card-meta">
+                      <span class="saved-card-title">Focus & Dev Workspace</span>
+                      <span class="saved-card-sub">4 tabs · Saved 2h ago</span>
+                    </div>
+                    <button class="saved-restore-btn" data-preset="dev">Restore</button>
+                  </div>
+                  <div class="saved-pill-row">
+                    <span class="saved-chip">youtube.com</span>
+                    <span class="saved-chip">spotify.com</span>
+                    <span class="saved-chip">github.com</span>
+                  </div>
+                </div>
+
+                <div class="pop-saved-card">
+                  <div class="saved-card-header">
+                    <div class="saved-card-meta">
+                      <span class="saved-card-title">Design Moodboard 2026</span>
+                      <span class="saved-card-sub">5 tabs · Saved yesterday</span>
+                    </div>
+                    <button class="saved-restore-btn" data-preset="design">Restore</button>
+                  </div>
+                  <div class="saved-pill-row">
+                    <span class="saved-chip">pinterest.com</span>
+                    <span class="saved-chip">figma.com</span>
+                    <span class="saved-chip">spotify.com</span>
+                  </div>
+                </div>
+
+                <div class="pop-saved-card">
+                  <div class="saved-card-header">
+                    <div class="saved-card-meta">
+                      <span class="saved-card-title">Weekend Audio & Lo-Fi</span>
+                      <span class="saved-card-sub">3 tabs · Saved 3d ago</span>
+                    </div>
+                    <button class="saved-restore-btn" data-preset="audio">Restore</button>
+                  </div>
+                  <div class="saved-pill-row">
+                    <span class="saved-chip">youtube.com</span>
+                    <span class="saved-chip">spotify.com</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Tab View 3: Whitelist Rules View -->
+            <div class="pop-view-tab-content hidden" id="simPopWhitelistView">
+              <div class="pop-whitelist-wrap">
+                
+                <div class="whitelist-rule-item">
+                  <div class="whitelist-info">
+                    <span class="whitelist-domain">github.com</span>
+                    <span class="whitelist-desc">Always Pin · Never Auto-Group</span>
+                  </div>
+                  <label class="pop-toggle-row">
+                    <input type="checkbox" class="pop-switch" checked />
+                  </label>
+                </div>
+
+                <div class="whitelist-rule-item">
+                  <div class="whitelist-info">
+                    <span class="whitelist-domain">spotify.com</span>
+                    <span class="whitelist-desc">RAM Saver Exception · Keep Awake</span>
+                  </div>
+                  <label class="pop-toggle-row">
+                    <input type="checkbox" class="pop-switch" checked />
+                  </label>
+                </div>
+
+                <div class="whitelist-rule-item">
+                  <div class="whitelist-info">
+                    <span class="whitelist-domain">meet.google.com</span>
+                    <span class="whitelist-desc">Active Stream · Never Hibernate</span>
+                  </div>
+                  <label class="pop-toggle-row">
+                    <input type="checkbox" class="pop-switch" checked />
+                  </label>
+                </div>
+
+                <div class="whitelist-add-row">
+                  <input type="text" class="whitelist-input" placeholder="e.g. docs.google.com" id="simWhitelistInput" />
+                  <button class="whitelist-add-btn" id="simBtnAddWhitelist">+ Add Rule</button>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Footer Actions -->
+            <footer class="pop-footer">
+              <button class="pop-action-btn primary" id="simBtnStackNow" title="Group and sort all open tabs now">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                <span>Stack Now</span>
+              </button>
+              <button class="pop-action-btn" id="simBtnDeduplicate" title="Close duplicate URLs">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                <span>Deduplicate</span>
+              </button>
+              <button class="pop-action-btn" id="simBtnCollapseAll" title="Collapse all groups">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 15l-6-6-6 6"/></svg>
+                <span>Collapse All</span>
+              </button>
+            </footer>
+
+          </div>
+
+        </div>
+
+        <!-- Scoped Pointer Tooltip strictly inside simulator window -->
+        <div class="sim-tour-popover hidden" id="simTourPopover">
+          <div class="sim-popover-header">
+            <span class="sim-popover-title" id="simPopTitle">Stack Tabs</span>
+            <span class="sim-popover-step" id="simPopStep">1 of 3</span>
+          </div>
+          <div class="sim-popover-desc" id="simPopDesc">Click "Stack Now" below to group tabs.</div>
+        </div>
+
+        <!-- Simulator Bottom Bar -->
+        <div class="simulator-control-bar">
+          <div class="sim-live-status-group">
+            <span class="sim-status-dot"></span>
+            <span class="sim-live-feedback" id="simLiveFeedback">Ready</span>
+          </div>
+
+          <div class="sim-interactive-badge">
+            <button class="sim-quick-reset-btn" id="simBtnReset" title="Reset simulator to unstacked chaos mode">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              <span>Reset</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      </div>
+
+    </div>
+  </section>
+
+      <!-- 
+      ==========================================================================
+      PREVIOUS STEPPER SHOWCASE (COMMENTED OUT FOR NOW AS REQUESTED)
+      ==========================================================================
+      <div class="showcase-tabs" role="tablist" aria-label="Showcase steps">
+        <button class="showcase-tab active" data-step="0" role="tab" aria-selected="true">
+          <span class="tab-index">1</span>
+          <span class="tab-title">The Problem</span>
+        </button>
+        <button class="showcase-tab" data-step="1" role="tab" aria-selected="false">
+          <span class="tab-index">2</span>
+          <span class="tab-title">Domain Clustering</span>
+        </button>
+        <button class="showcase-tab" data-step="2" role="tab" aria-selected="false">
+          <span class="tab-index">3</span>
+          <span class="tab-title">Accordion Focus</span>
+        </button>
+        <button class="showcase-tab" data-step="3" role="tab" aria-selected="false">
+          <span class="tab-index">4</span>
+          <span class="tab-title">Memory Hibernation</span>
+        </button>
+      </div>
+
+      <div class="mockup-window">
+        <div class="mockup-header">
+          <div class="mockup-controls">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <div class="mockup-tab-bar" id="mockupTabBar">
+            ...
+          </div>
+        </div>
+        ...
+      </div>
+      -->
+
+    </div>
+  </section>
+
+  <!-- Pain Points -->
+  <section id="problems" class="section border-top">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-kicker">The tab bar problem</p>
+        <h2 class="section-title">Three things it fixes</h2>
+        <p class="section-subtitle">Less tab hunting. Less idle memory. More context when you switch tasks.</p>
+      </div>
+
+      <div class="problem-grid">
+        <article class="problem-card">
+          <span class="problem-kicker">Focus</span>
+          <h3 class="problem-title">Your tab bar is unreadable past eight tabs.</h3>
+          <p class="problem-text">TabStack collapses everything except the domain you are in. One group. One focus.</p>
+        </article>
+
+        <article class="problem-card">
+          <span class="problem-kicker">Memory</span>
+          <h3 class="problem-title">Idle tabs keep taking up space in RAM.</h3>
+          <p class="problem-text">Dormant tabs are discarded by the browser when they sleep. Your place and history stay put.</p>
+        </article>
+
+        <article class="problem-card">
+          <span class="problem-kicker">Context</span>
+          <h3 class="problem-title">Every task switch makes you rebuild your workspace.</h3>
+          <p class="problem-text">Switch to Pinterest and your YouTube and Spotify groups fold away automatically.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" class="section">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-kicker">No setup ritual</p>
+        <h2 class="section-title">How it works</h2>
+        <p class="section-subtitle">TabStack stays out of your way and uses the browser features you already have.</p>
+      </div>
+
+      <ol class="steps-grid">
+        <li class="step-card">
+          <span class="step-number">01</span>
+          <div>
+            <h3 class="step-title">Browse normally</h3>
+            <p class="step-text">Open tabs the way you always do. TabStack starts organizing in the background.</p>
+          </div>
+        </li>
+        <li class="step-card">
+          <span class="step-number">02</span>
+          <div>
+            <h3 class="step-title">Group by domain</h3>
+            <p class="step-text">Tabs from the same site become one native browser group with no page changes.</p>
+          </div>
+        </li>
+        <li class="step-card">
+          <span class="step-number">03</span>
+          <div>
+            <h3 class="step-title">Sleep what you leave</h3>
+            <p class="step-text">Inactive groups collapse and background tabs can be discarded to reclaim memory.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Privacy Principles -->
+  <section id="privacy" class="section border-top">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-kicker">A small extension with clear boundaries</p>
+        <h2 class="section-title">What TabStack doesn't do</h2>
+        <p class="section-subtitle">The fastest way to understand a tool is to know what it refuses to touch.</p>
+      </div>
+
+      <div class="table-container privacy-table-wrap">
+        <table class="benchmark-table privacy-table">
+          <thead>
+            <tr>
+              <th>TabStack never...</th>
+              <th>Why it matters</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-highlight">
+              <td><strong>Injects scripts into your pages</strong></td>
+              <td>Your pages stay exactly as the server sent them.</td>
+            </tr>
+            <tr>
+              <td><strong>Stores data remotely</strong></td>
+              <td>Preferences and saved sessions stay on your machine.</td>
+            </tr>
+            <tr>
+              <td><strong>Modifies URLs</strong></td>
+              <td>Your history, bookmarks, and scroll position remain intact.</td>
+            </tr>
+            <tr>
+              <td><strong>Phones home</strong></td>
+              <td>Zero analytics, zero telemetry, and no remote server.</td>
+            </tr>
+            <tr>
+              <td><strong>Requires an account</strong></td>
+              <td>Install it, open your tabs, and get back to work.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Installation -->
+  <section id="install" class="section border-top">
+    <div class="container">
+      <div class="install-container">
+        <p class="section-kicker">Try it without changing your workflow</p>
+        <h2 class="section-title">Install TabStack</h2>
+        <p class="section-subtitle">TabStack runs on Chrome, Brave, Arc, and Edge. There is no build step and no account to create.</p>
+
+        <div class="install-methods">
+          <div class="install-card">
+            <h3 class="install-method-title">Developer Mode (Unpacked)</h3>
+            <p class="install-method-desc">Zero-build install directly from the repository source.</p>
+            
+            <ol class="install-steps">
+              <li>Clone or download this repository to your computer.</li>
+              <li>Open <code>chrome://extensions</code> (or <code>brave://extensions</code>) in your browser.</li>
+              <li>Enable <strong>Developer mode</strong> in the top-right corner.</li>
+              <li>Click <strong>Load unpacked</strong> and select the <code>tabstack</code> folder.</li>
+            </ol>
+
+            <div class="code-box">
+              <code>git clone https://github.com/qray/tabstack.git</code>
+              <button class="btn-copy" id="btnCopyGitCommand" aria-label="Copy clone command">Copy</button>
+            </div>
+          </div>
+
+          <div class="install-status" aria-label="Chrome Web Store availability">
+            <span class="install-status-dot"></span>
+            <span><strong>Chrome Web Store</strong> listing coming soon</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-left">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Bottom layer (Charcoal / Rounded) -->
+          <path d="M4.8 15.3 C4.3 15.5 4.3 15.9 4.8 16.1 L11.3 19.8 C11.7 20 12.3 20 12.7 19.8 L19.2 16.1 C19.7 15.9 19.7 15.5 19.2 15.3 L12.7 11.6 C12.3 11.4 11.7 11.4 11.3 11.6 Z" fill="var(--logo-bot-face, #52525b)"/>
+          <path d="M4.8 16.1 L11.3 19.8 C11.7 20 12 20 12 20 V21.5 C12 21.5 11.7 21.5 11.3 21.3 L4.8 17.6 C4.3 17.4 4.3 17 4.3 16.6 V15.8 C4.3 15.9 4.5 16 4.8 16.1 Z" fill="var(--logo-bot-sidel, #3f3f46)"/>
+          <path d="M12 20 C12 20 12.3 20 12.7 19.8 L19.2 16.1 C19.5 16 19.7 15.9 19.7 15.8 V16.6 C19.7 17 19.7 17.4 19.2 17.6 L12.7 21.3 C12.3 21.5 12 21.5 12 21.5 Z" fill="var(--logo-bot-sider, #27272a)"/>
+
+          <!-- Middle layer (Zinc / Rounded) -->
+          <path d="M4.8 11.3 C4.3 11.5 4.3 11.9 4.8 12.1 L11.3 15.8 C11.7 16 12.3 16 12.7 15.8 L19.2 12.1 C19.7 11.9 19.7 11.5 19.2 11.3 L12.7 7.6 C12.3 7.4 11.7 7.4 11.3 7.6 Z" fill="var(--logo-mid-face, #a1a1aa)"/>
+          <path d="M4.8 12.1 L11.3 15.8 C11.7 16 12 16 12 16 V17.5 C12 17.5 11.7 17.5 11.3 17.3 L4.8 13.6 C4.3 13.4 4.3 13 4.3 12.6 V11.8 C4.3 11.9 4.5 12 4.8 12.1 Z" fill="var(--logo-mid-sidel, #71717a)"/>
+          <path d="M12 16 C12 16 12.3 16 12.7 15.8 L19.2 12.1 C19.5 12 19.7 11.9 19.7 11.8 V12.6 C19.7 13 19.7 13.4 19.2 13.6 L12.7 17.3 C12.3 17.5 12 17.5 12 17.5 Z" fill="var(--logo-mid-sider, #52525b)"/>
+
+          <!-- Top layer (Pure White / Adaptive / Rounded) -->
+          <path d="M4.8 7.3 C4.3 7.5 4.3 7.9 4.8 8.1 L11.3 11.8 C11.7 12 12.3 12 12.7 11.8 L19.2 8.1 C19.7 7.9 19.7 7.5 19.2 7.3 L12.7 3.6 C12.3 3.4 11.7 3.4 11.3 3.6 Z" fill="var(--logo-top-face, #ffffff)"/>
+          <path d="M4.8 8.1 L11.3 11.8 C11.7 12 12 12 12 12 V13.5 C12 13.5 11.7 13.5 11.3 13.3 L4.8 9.6 C4.3 9.4 4.3 9 4.3 8.6 V7.8 C4.3 7.9 4.5 8 4.8 8.1 Z" fill="var(--logo-top-sidel, #d4d4d8)"/>
+          <path d="M12 12 C12 12 12.3 12 12.7 11.8 L19.2 8.1 C19.5 8 19.7 7.9 19.7 7.8 V8.6 C19.7 9 19.7 9.4 19.2 9.6 L12.7 13.3 C12.3 13.5 12 13.5 12 13.5 Z" fill="var(--logo-top-sider, #a1a1aa)"/>
+          <path d="M9.2 6.2 L12 4.6 L14.8 6.2" stroke="var(--logo-notch, #000000)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>TabStack · MIT License</span>
+      </div>
+
+      <div class="footer-links">
+        <a href="https://github.com/qray/tabstack" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="#showcase">Live demo</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#privacy">Privacy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

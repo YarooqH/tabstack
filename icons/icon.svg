@@ -1,0 +1,83 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+
+    <!-- Top Slab (Monochrome Pure White / Silver) -->
+    <linearGradient id="topFace" x1="28" y1="18" x2="100" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e4e4e7"/>
+    </linearGradient>
+    <linearGradient id="topSideL" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4d4d8"/>
+      <stop offset="100%" stop-color="#a1a1aa"/>
+    </linearGradient>
+    <linearGradient id="topSideR" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a1a1aa"/>
+      <stop offset="100%" stop-color="#71717a"/>
+    </linearGradient>
+
+    <!-- Middle Slab (Silver / Zinc) -->
+    <linearGradient id="midFace" x1="28" y1="38" x2="100" y2="72" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#a1a1aa"/>
+      <stop offset="100%" stop-color="#71717a"/>
+    </linearGradient>
+    <linearGradient id="midSideL" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#71717a"/>
+      <stop offset="100%" stop-color="#52525b"/>
+    </linearGradient>
+    <linearGradient id="midSideR" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#52525b"/>
+      <stop offset="100%" stop-color="#3f3f46"/>
+    </linearGradient>
+
+    <!-- Bottom Slab (Dark Graphite / Charcoal) -->
+    <linearGradient id="botFace" x1="28" y1="58" x2="100" y2="92" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#52525b"/>
+      <stop offset="100%" stop-color="#3f3f46"/>
+    </linearGradient>
+    <linearGradient id="botSideL" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3f3f46"/>
+      <stop offset="100%" stop-color="#27272a"/>
+    </linearGradient>
+    <linearGradient id="botSideR" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#27272a"/>
+      <stop offset="100%" stop-color="#18181b"/>
+    </linearGradient>
+
+    <!-- Drop Shadows -->
+    <filter id="slabShadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Container Base -->
+  <rect width="128" height="128" rx="28" fill="url(#bgGrad)"/>
+  <rect x="1" y="1" width="126" height="126" rx="27" stroke="#222222" stroke-width="1.5"/>
+
+  <!-- ================= 3. BOTTOM SLAB (Rounded) ================= -->
+  <g filter="url(#slabShadow)">
+    <path d="M26 80 L60 97 C62.5 98.2 65.5 98.2 68 97 L102 80 C105 78.5 105 75.5 102 74 L68 57 C65.5 55.8 62.5 55.8 60 57 L26 74 C23 75.5 23 78.5 26 80 Z" fill="url(#botFace)"/>
+    <path d="M26 80 L60 97 C62.5 98.2 64 98.2 64 98.2 V106 C64 106 62.5 106 60 104.8 L26 87.8 C23 86.3 23 83.3 23 81.5 V77.5 C23 78.5 24.5 79.2 26 80 Z" fill="url(#botSideL)"/>
+    <path d="M64 98.2 C64 98.2 65.5 98.2 68 97 L102 80 C103.5 79.2 105 78.5 105 77.5 V81.5 C105 83.3 105 86.3 102 87.8 L68 104.8 C65.5 106 64 106 64 106 V98.2 Z" fill="url(#botSideR)"/>
+  </g>
+
+  <!-- ================= 2. MIDDLE SLAB (Rounded) ================= -->
+  <g filter="url(#slabShadow)">
+    <path d="M26 60 L60 77 C62.5 78.2 65.5 78.2 68 77 L102 60 C105 58.5 105 55.5 102 54 L68 37 C65.5 35.8 62.5 35.8 60 37 L26 54 C23 55.5 23 58.5 26 60 Z" fill="url(#midFace)"/>
+    <path d="M26 60 L60 77 C62.5 78.2 64 78.2 64 78.2 V86 C64 86 62.5 86 60 84.8 L26 67.8 C23 66.3 23 63.3 23 61.5 V57.5 C23 58.5 24.5 59.2 26 60 Z" fill="url(#midSideL)"/>
+    <path d="M64 78.2 C64 78.2 65.5 78.2 68 77 L102 60 C103.5 59.2 105 58.5 105 57.5 V61.5 C105 63.3 105 66.3 102 67.8 L68 84.8 C65.5 86 64 86 64 86 V78.2 Z" fill="url(#midSideR)"/>
+  </g>
+
+  <!-- ================= 1. TOP SLAB (Rounded & Pure White) ================= -->
+  <g filter="url(#slabShadow)">
+    <path d="M26 40 L60 57 C62.5 58.2 65.5 58.2 68 57 L102 40 C105 38.5 105 35.5 102 34 L68 17 C65.5 15.8 62.5 15.8 60 17 L26 34 C23 35.5 23 38.5 26 40 Z" fill="url(#topFace)"/>
+    <path d="M26 40 L60 57 C62.5 58.2 64 58.2 64 58.2 V66 C64 66 62.5 66 60 64.8 L26 47.8 C23 46.3 23 43.3 23 41.5 V37.5 C23 38.5 24.5 39.2 26 40 Z" fill="url(#topSideL)"/>
+    <path d="M64 58.2 C64 58.2 65.5 58.2 68 57 L102 40 C103.5 39.2 105 38.5 105 37.5 V41.5 C105 43.3 105 46.3 102 47.8 L68 64.8 C65.5 66 64 66 64 66 V58.2 Z" fill="url(#topSideR)"/>
+    <!-- Crisp top accent notch -->
+    <path d="M48 31 L64 22 L80 31" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+  </g>
+</svg>
