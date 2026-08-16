@@ -463,15 +463,26 @@ function setupStickyStorytelling() {
 
   if (!stepBlocks.length) return;
 
+  let currentActiveStep = null;
+
   function setActiveStep(stepNum) {
+    if (currentActiveStep === stepNum) return;
+    currentActiveStep = stepNum;
+
     stepBlocks.forEach(block => {
       const isCurrent = parseInt(block.dataset.step, 10) === stepNum;
       block.classList.toggle('active', isCurrent);
     });
 
     Object.entries(visualPanes).forEach(([num, pane]) => {
-      if (pane) {
-        pane.classList.toggle('active', parseInt(num, 10) === stepNum);
+      if (!pane) return;
+      const isCurrent = parseInt(num, 10) === stepNum;
+      if (isCurrent) {
+        pane.classList.remove('active');
+        void pane.offsetWidth; // Force reflow to re-trigger smooth keyframe animations
+        pane.classList.add('active');
+      } else {
+        pane.classList.remove('active');
       }
     });
   }

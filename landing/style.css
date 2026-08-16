@@ -5109,6 +5109,12 @@ body {
 }
 
 /* Mock Chrome Tab Elements */
+.anim-tab-collapse-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
 .mock-group-badge {
   display: inline-flex;
   align-items: center;
@@ -5121,6 +5127,13 @@ body {
   font-size: 11px;
   font-weight: 600;
   color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.mock-accordion-cluster {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 4px;
   flex-shrink: 0;
 }
 
@@ -5164,6 +5177,7 @@ body {
   color: var(--text-tertiary);
   margin-bottom: 6px;
   flex-shrink: 0;
+  transition: opacity 0.3s ease, border-color 0.3s ease;
 }
 
 .mock-group-pill-collapsed.idle {
@@ -5181,11 +5195,21 @@ body {
 .idle-tag {
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--text-tertiary);
+  color: var(--accent-green);
   background: var(--bg-input);
   border: 1px solid var(--border-subtle);
   padding: 1px 5px;
   border-radius: 3px;
+}
+
+.pulse-dot-green {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+  margin-right: 4px;
 }
 
 .pane-stage-body {
@@ -5203,7 +5227,27 @@ body {
   justify-content: center;
 }
 
-/* Step 1: Collapsed Stacks Overview */
+/* =========================================================================
+   Scroll Story Animations (Emil Kowalski Philosophy & Performance Rules)
+   ========================================================================= */
+
+/* Step 1: Stacks Clustering Animations */
+.story-visual-pane.active .anim-stack-pill.stack-1 { animation: stackPillPop 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.04s backwards; }
+.story-visual-pane.active .anim-stack-pill.stack-2 { animation: stackPillPop 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.11s backwards; }
+.story-visual-pane.active .anim-stack-pill.stack-3 { animation: stackPillPop 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.18s backwards; }
+.story-visual-pane.active .anim-stack-pill.stack-4 { animation: stackPillPop 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.25s backwards; }
+
+@keyframes stackPillPop {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
 .mock-collapse-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -5212,6 +5256,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.story-visual-pane.active .anim-collapse-box {
+  animation: cardFadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .collapse-card-header {
@@ -5255,10 +5303,27 @@ body {
   border-radius: 4px;
 }
 
+.story-visual-pane.active .anim-row-1 { animation: slideRowIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) 0.08s backwards; }
+.story-visual-pane.active .anim-row-2 { animation: slideRowIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) 0.16s backwards; }
+.story-visual-pane.active .anim-row-3 { animation: slideRowIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) 0.24s backwards; }
+.story-visual-pane.active .anim-row-4 { animation: slideRowIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) 0.32s backwards; }
+
+@keyframes slideRowIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .row-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .row-dot.red { background: #ef4444; }
@@ -5266,7 +5331,42 @@ body {
 .row-dot.green { background: #10b981; }
 .row-dot.red-orange { background: #ff4500; }
 
-/* Step 2: Domain-Specific Grouping (Shopping Mockup) */
+/* Step 2: Accordion Focus Animations */
+.story-visual-pane.active .anim-accordion-unfold {
+  animation: accordionUnfold 0.42s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes accordionUnfold {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.93);
+    transform-origin: left center;
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+.story-visual-pane.active .anim-tab-reveal-1 {
+  animation: tabRevealIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) 0.12s backwards;
+}
+.story-visual-pane.active .anim-tab-reveal-2 {
+  animation: tabRevealIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
+}
+
+@keyframes tabRevealIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
 .mock-shop-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -5276,6 +5376,10 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
+}
+
+.story-visual-pane.active .anim-viewport-focus {
+  animation: cardFadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
 }
 
 .shop-card-left {
@@ -5321,7 +5425,25 @@ body {
   white-space: nowrap;
 }
 
-/* Step 3: RAM Saver Mockup */
+/* Step 3: RAM Saver Animations */
+.story-visual-pane.active .anim-sleep-pill.sleep-1 { animation: sleepFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards; }
+.story-visual-pane.active .anim-sleep-pill.sleep-2 { animation: sleepFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.18s backwards; }
+.story-visual-pane.active .anim-sleep-pill.sleep-3 { animation: sleepFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.26s backwards; }
+
+@keyframes sleepFadeIn {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+}
+
 .mock-ramsaver-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -5329,7 +5451,11 @@ body {
   padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+}
+
+.story-visual-pane.active .anim-ram-card {
+  animation: cardFadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .ramsaver-card-header {
@@ -5364,7 +5490,36 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--accent-green);
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.ramsaver-meter-container {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 4px 0 2px;
+}
+
+.ramsaver-meter-fill {
+  height: 100%;
+  width: 78%;
+  background: linear-gradient(90deg, var(--accent-green), #34d399);
+  border-radius: 3px;
+}
+
+.story-visual-pane.active .anim-meter-fill {
+  animation: meterFillReclaim 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.15s backwards;
+}
+
+@keyframes meterFillReclaim {
+  0% {
+    width: 20%;
+  }
+  100% {
+    width: 78%;
+  }
 }
 
 .ramsaver-desc {
@@ -5372,6 +5527,17 @@ body {
   color: var(--text-secondary);
   line-height: 1.5;
   margin: 0;
+}
+
+@keyframes cardFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Responsive */
