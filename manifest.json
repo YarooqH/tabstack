@@ -3,7 +3,7 @@
   "name": "TabStack: Smart Tab Auto-Collapse & RAM Saver",
   "short_name": "TabStack",
   "version": "1.0.0",
-  "description": "Automatically clusters same-site tabs into native collapsible groups, expands only your active stack (Accordion Mode), and saves RAM.",
+  "description": "Automatically clusters same-site tabs into native collapsible groups, expands only active stacks, and saves memory.",
   "permissions": [
     "tabs",
     "tabGroups",
