@@ -5029,7 +5029,6 @@ body {
   padding: 24px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-left: 3px solid var(--border-medium);
   border-radius: 12px;
   opacity: 0.4;
   transform: scale(0.98);
@@ -5050,7 +5049,6 @@ body {
   transform: scale(1) translateX(4px);
   background: var(--bg-elevated);
   border-color: var(--border-strong);
-  border-left-color: var(--text-primary);
   box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.15);
 }
 
