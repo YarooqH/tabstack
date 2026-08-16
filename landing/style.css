@@ -493,9 +493,21 @@ body {
   transform: translateY(-6px) scale(1.03);
 }
 
-/* Individual Slab Layers */
+/* Individual Slab Layers - Tight, cohesive isometric vertical spacing */
 .slab-layer {
   transition: transform 0.5s var(--ease-spring);
+}
+
+.slab-layer.slab-bot {
+  transform: translateY(-18px);
+}
+
+.slab-layer.slab-mid {
+  transform: translateY(0);
+}
+
+.slab-layer.slab-top {
+  transform: translateY(18px);
 }
 
 /* ==========================================================================
