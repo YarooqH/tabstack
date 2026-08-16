@@ -6034,6 +6034,12 @@ body {
     grid-template-columns: 1fr;
     gap: 20px;
   }
+
+  /* Remove sticky storytelling section & before/after metric cards on mobile */
+  .sticky-story-section,
+  .compare-metrics-row {
+    display: none !important;
+  }
 }
 
 @media (max-width: 680px) {
