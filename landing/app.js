@@ -431,12 +431,30 @@ function init() {
   // 6. Setup Interactive Bento Features
   setupBentoFeatures();
 
-  // 7. Setup Option Switcher & Deep-Dive Studio (Options 1 & 3)
+  // 7. Setup feature view switcher and interactive walkthrough
   setupOptionSwitcher();
   setupDeepDiveStudio();
 
-  // 8. Setup Auto Tour Observer
+  // 8. Setup Split Comparison Slider (Chaos vs Calm)
+  setupCompareSlider();
+
+  // 9. Setup Auto Tour Observer
   setupTourObserver();
+}
+
+function setupCompareSlider() {
+  const slider = document.getElementById('compareSlider');
+  const stage = document.getElementById('compareStage');
+  if (!slider || !stage) return;
+
+  function updatePosition(val) {
+    stage.style.setProperty('--split-pos', `${val}%`);
+  }
+
+  slider.addEventListener('input', (e) => {
+    stage.style.transition = ''; // Instant 60fps tracking during drag
+    updatePosition(e.target.value);
+  });
 }
 
 function setupOptionSwitcher() {
@@ -504,15 +522,15 @@ function setupDeepDiveStudio() {
   btnToggleCluster?.addEventListener('click', () => {
     isClustered = !isClustered;
     if (isClustered) {
-      if (clusterBtnText) clusterBtnText.textContent = 'Scatter Tabs';
-      if (clusterStatusText) clusterStatusText.textContent = '● 3 Stacks Clustered · 9 Tabs Active';
+      if (clusterBtnText) clusterBtnText.textContent = 'Show it scattered';
+      if (clusterStatusText) clusterStatusText.textContent = '● 3 sites · 9 tabs · grouped automatically';
       clusterGroups.forEach(g => {
         g.style.transform = 'translateY(0)';
         g.style.opacity = '1';
       });
     } else {
-      if (clusterBtnText) clusterBtnText.textContent = 'Cluster Stacks';
-      if (clusterStatusText) clusterStatusText.textContent = '○ 9 Loose Tabs (Unclustered Chaos)';
+      if (clusterBtnText) clusterBtnText.textContent = 'Group these tabs';
+      if (clusterStatusText) clusterStatusText.textContent = '○ 9 loose tabs · ready to group';
       clusterGroups.forEach((g, idx) => {
         g.style.transform = `translateY(${idx % 2 === 0 ? '-4px' : '4px'})`;
       });
@@ -592,9 +610,9 @@ function setupDeepDiveStudio() {
               <div class="focus-title-wrap">
                 <span class="cluster-dot ${data.dotClass}"></span>
                 <strong>${data.domain}</strong>
-                <span class="focus-badge-pill sleep">zZ Folded</span>
+                <span class="focus-badge-pill sleep">Folded away</span>
               </div>
-              <span class="focus-tab-meta">3 tabs dormant</span>
+              <span class="focus-tab-meta">3 tabs tucked away</span>
             </div>
           `;
         }
@@ -602,7 +620,7 @@ function setupDeepDiveStudio() {
     });
   });
 
-  // 3. Memory Telemetry Toggle
+  // 3. Idle tab memory toggle
   const btnToggleMemory = document.getElementById('btnToggleMemoryDemo');
   const memoryBtnLabel = document.getElementById('memoryBtnLabel');
   const telemetryMemVal = document.getElementById('telemetryMemVal');
@@ -617,35 +635,35 @@ function setupDeepDiveStudio() {
   btnToggleMemory?.addEventListener('click', () => {
     memoryDiscarded = !memoryDiscarded;
     if (memoryDiscarded) {
-      if (memoryBtnLabel) memoryBtnLabel.textContent = 'Wake All Stacks';
+      if (memoryBtnLabel) memoryBtnLabel.textContent = 'Wake idle tabs';
       if (telemetryMemVal) telemetryMemVal.innerHTML = '164 <small>MB</small>';
       if (telemetrySavingsVal) {
-        telemetrySavingsVal.textContent = '-88% Memory Reclaimed';
+        telemetrySavingsVal.textContent = '1.2 GB free in this example';
         telemetrySavingsVal.className = 'stat-badge-savings';
       }
       if (telemetryStateVal) {
-        telemetryStateVal.textContent = 'HIBERNATED';
+        telemetryStateVal.textContent = 'SLEEPING';
         telemetryStateVal.className = 'stat-big-num';
       }
-      if (telemetryBarLabel) telemetryBarLabel.textContent = '164 MB / 1,420 MB';
+      if (telemetryBarLabel) telemetryBarLabel.textContent = '164 MB of 1.42 GB';
       if (telemetryBarActive) telemetryBarActive.style.width = '12%';
       if (telemetryBarReclaimed) telemetryBarReclaimed.style.width = '88%';
-      if (memoryStatusHeader) memoryStatusHeader.textContent = '● 2 Stacks Discarded · Zero Telemetry';
+      if (memoryStatusHeader) memoryStatusHeader.textContent = '● 2 groups sleeping · nothing sent anywhere';
     } else {
-      if (memoryBtnLabel) memoryBtnLabel.textContent = 'Hibernate Background';
+      if (memoryBtnLabel) memoryBtnLabel.textContent = 'Let tabs sleep';
       if (telemetryMemVal) telemetryMemVal.innerHTML = '1,420 <small>MB</small>';
       if (telemetrySavingsVal) {
-        telemetrySavingsVal.textContent = 'Full Process Footprint';
+        telemetrySavingsVal.textContent = 'All memory in use';
         telemetrySavingsVal.className = 'stat-badge-savings text-secondary';
       }
       if (telemetryStateVal) {
-        telemetryStateVal.textContent = 'ACTIVE (9 TABS)';
+        telemetryStateVal.textContent = 'AWAKE';
         telemetryStateVal.className = 'stat-big-num';
       }
-      if (telemetryBarLabel) telemetryBarLabel.textContent = '1,420 MB / 1,420 MB';
+      if (telemetryBarLabel) telemetryBarLabel.textContent = '1.42 GB of 1.42 GB';
       if (telemetryBarActive) telemetryBarActive.style.width = '100%';
       if (telemetryBarReclaimed) telemetryBarReclaimed.style.width = '0%';
-      if (memoryStatusHeader) memoryStatusHeader.textContent = '○ All 3 Stacks Active · 1,420 MB In Use';
+      if (memoryStatusHeader) memoryStatusHeader.textContent = '○ 3 groups awake · 1.42 GB in use';
     }
   });
 }
