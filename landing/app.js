@@ -431,8 +431,145 @@ function init() {
   // 6. Setup Interactive Bento Features
   setupBentoFeatures();
 
-  // 6. Setup Auto Tour Observer
+  // 7. Setup Option Switcher & Deep-Dive Studio (Options 1 & 3)
+  setupOptionSwitcher();
+  setupDeepDiveStudio();
+
+  // 8. Setup Auto Tour Observer
   setupTourObserver();
+}
+
+function setupOptionSwitcher() {
+  const switchBtns = document.querySelectorAll('.view-switch-btn');
+  const bentoGrid = document.getElementById('bentoFeatureGrid');
+  const deepdiveStudio = document.getElementById('deepdiveStudio');
+
+  switchBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const view = btn.dataset.featureView;
+      switchBtns.forEach(b => b.classList.toggle('active', b === btn));
+
+      if (view === 'bento') {
+        bentoGrid?.classList.remove('hidden');
+        deepdiveStudio?.classList.add('hidden');
+      } else {
+        bentoGrid?.classList.add('hidden');
+        deepdiveStudio?.classList.remove('hidden');
+      }
+    });
+  });
+}
+
+function setupDeepDiveStudio() {
+  const tabBtns = document.querySelectorAll('.deepdive-tab-btn');
+  const panes = {
+    cluster: document.getElementById('paneCluster'),
+    focus: document.getElementById('paneFocus'),
+    hibernate: document.getElementById('paneHibernate')
+  };
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabKey = btn.dataset.deepdiveTab;
+      tabBtns.forEach(b => b.classList.toggle('active', b === btn));
+
+      Object.entries(panes).forEach(([key, pane]) => {
+        if (pane) {
+          pane.classList.toggle('hidden', key !== tabKey);
+          pane.classList.toggle('active', key === tabKey);
+        }
+      });
+    });
+  });
+
+  // Playground 1: Spawn Tab
+  const btnSpawn = document.getElementById('btnSpawnTestTab');
+  const ytItems = document.getElementById('ytClusterItems');
+  const ytBadge = document.getElementById('ytCountBadge');
+  let spawnIdx = 1;
+
+  btnSpawn?.addEventListener('click', () => {
+    if (!ytItems) return;
+    const newTab = document.createElement('span');
+    newTab.className = 'deepdive-subtab';
+    newTab.textContent = `New Video #${spawnIdx++}`;
+    newTab.style.animation = 'scaleIn 0.2s ease-out';
+    ytItems.appendChild(newTab);
+    if (ytBadge) ytBadge.textContent = String(ytItems.children.length);
+  });
+
+  // Playground 2: Focus switcher
+  const focusPills = document.querySelectorAll('#deepdiveFocusRow .focus-group-pill');
+  focusPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      focusPills.forEach(p => {
+        const isCurrent = p === pill;
+        p.className = `focus-group-pill ${isCurrent ? 'expanded' : 'collapsed'}`;
+        const grp = p.dataset.focusGrp;
+        if (isCurrent) {
+          const name = grp === 'yt' ? 'YouTube' : grp === 'spot' ? 'Spotify' : 'Pinterest';
+          p.innerHTML = `
+            <div class="focus-pill-head">
+              <span class="focus-status active-dot"></span>
+              <strong>${name} Stack (Active)</strong>
+              <span class="focus-tag">Focused</span>
+            </div>
+            <div class="focus-pill-body">
+              <div class="focus-tab-row active"><span class="pane-dot green"></span> ${name} Primary Tab</div>
+              <div class="focus-tab-row"><span class="pane-dot"></span> ${name} Secondary Tab</div>
+            </div>
+          `;
+        } else {
+          const name = grp === 'yt' ? 'YouTube (3 tabs)' : grp === 'spot' ? 'Spotify (3 tabs)' : 'Pinterest (4 tabs)';
+          p.innerHTML = `
+            <span class="focus-status sleep-dot"></span>
+            <span>${name}</span>
+            <span class="focus-sleep-badge">zZ Hibernated</span>
+          `;
+        }
+      });
+    });
+  });
+
+  // Playground 3: RAM Toggle
+  const btnToggleSleep = document.getElementById('btnToggleSleepDemo');
+  const ramStatVal = document.getElementById('ramStatVal');
+  const ramStatSub = document.getElementById('ramStatSub');
+  const ramStatusVal = document.getElementById('ramStatusVal');
+  const ramBarActive = document.getElementById('ramBarActive');
+  const ramBarReclaimed = document.getElementById('ramBarReclaimed');
+  let isHibernated = true;
+
+  btnToggleSleep?.addEventListener('click', () => {
+    isHibernated = !isHibernated;
+    if (isHibernated) {
+      if (ramStatVal) ramStatVal.textContent = '164 MB';
+      if (ramStatSub) {
+        ramStatSub.textContent = '-88% Memory Reclaimed';
+        ramStatSub.className = 'ram-stat-sub text-green';
+      }
+      if (ramStatusVal) {
+        ramStatusVal.textContent = 'Discarded (zZ)';
+        ramStatusVal.className = 'ram-stat-number text-green';
+      }
+      if (ramBarActive) ramBarActive.style.width = '14%';
+      if (ramBarReclaimed) ramBarReclaimed.style.width = '86%';
+      btnToggleSleep.textContent = 'Wake All Tabs';
+    } else {
+      if (ramStatVal) ramStatVal.textContent = '1,420 MB';
+      if (ramStatSub) {
+        ramStatSub.textContent = 'Full Active Memory';
+        ramStatSub.className = 'ram-stat-sub text-secondary';
+      }
+      if (ramStatusVal) {
+        ramStatusVal.textContent = 'Active (All Awoken)';
+        ramStatusVal.className = 'ram-stat-number';
+      }
+      if (ramBarActive) ramBarActive.style.width = '100%';
+      if (ramBarReclaimed) ramBarReclaimed.style.width = '0%';
+      btnToggleSleep.textContent = 'Sleep Stack';
+    }
+  });
 }
 
 function setupBentoFeatures() {

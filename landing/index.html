@@ -848,13 +848,25 @@
   <!-- Core Features: Interactive Bento Visual Suite -->
   <section id="problems" class="section border-top">
     <div class="container">
-      <div class="section-header">
-        <p class="section-kicker">Core features</p>
-        <h2 class="section-title">Three things TabStack does</h2>
-        <p class="section-subtitle">A focused toolkit to keep your browser fast, organized, and light.</p>
+      <div class="section-header section-header-split">
+        <div>
+          <p class="section-kicker">Core features</p>
+          <h2 class="section-title">Three things TabStack does</h2>
+          <p class="section-subtitle">A focused toolkit to keep your browser fast, organized, and light.</p>
+        </div>
+        <div class="features-view-switcher">
+          <button class="view-switch-btn active" data-feature-view="bento">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Bento Suite
+          </button>
+          <button class="view-switch-btn" data-feature-view="deepdive">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+            Deep-Dive Studio
+          </button>
+        </div>
       </div>
 
-      <div class="bento-feature-grid">
+      <div class="bento-feature-grid" id="bentoFeatureGrid">
         <!-- 1. Auto-Clustering Bento Card -->
         <article class="bento-card">
           <div class="bento-visual bento-clustering-visual">
@@ -962,6 +974,148 @@
             <p class="problem-text">Puts dormant tabs to sleep at the browser level. Your scroll position and history stay put.</p>
           </div>
         </article>
+      </div>
+
+      <!-- Deep-Dive Studio (Option 3) -->
+      <div class="deepdive-studio-wrap hidden" id="deepdiveStudio">
+        <div class="deepdive-nav-tabs">
+          <button class="deepdive-tab-btn active" data-deepdive-tab="cluster">
+            <span class="deepdive-tab-num">01</span>
+            <div class="deepdive-tab-info">
+              <span class="deepdive-tab-title">Auto-Clustering</span>
+              <span class="deepdive-tab-desc">Stacks same-domain tabs</span>
+            </div>
+          </button>
+          <button class="deepdive-tab-btn" data-deepdive-tab="focus">
+            <span class="deepdive-tab-num">02</span>
+            <div class="deepdive-tab-info">
+              <span class="deepdive-tab-title">Active Focus</span>
+              <span class="deepdive-tab-desc">Auto-folds background stacks</span>
+            </div>
+          </button>
+          <button class="deepdive-tab-btn" data-deepdive-tab="hibernate">
+            <span class="deepdive-tab-num">03</span>
+            <div class="deepdive-tab-info">
+              <span class="deepdive-tab-title">RAM Hibernation</span>
+              <span class="deepdive-tab-desc">Reclaims idle memory</span>
+            </div>
+          </button>
+        </div>
+
+        <div class="deepdive-stage-card">
+          <!-- Pane 1: Clustering Playground -->
+          <div class="deepdive-pane active" id="paneCluster">
+            <div class="deepdive-pane-header">
+              <div>
+                <h3 class="deepdive-pane-headline">Native Domain Clustering</h3>
+                <p class="deepdive-pane-sub">Tabs from the same website automatically cluster into native Chromium groups in real time without cluttering your browser tab strip.</p>
+              </div>
+              <button class="btn-micro-action" id="btnSpawnTestTab">+ Spawn New Tab</button>
+            </div>
+            <div class="deepdive-tabstrip-playground" id="clusterPlayground">
+              <div class="deepdive-cluster-group group-red" data-group="youtube">
+                <div class="deepdive-group-badge">
+                  <span class="cluster-dot"></span>
+                  <span>youtube.com</span>
+                  <span class="cluster-badge" id="ytCountBadge">3</span>
+                </div>
+                <div class="deepdive-group-items" id="ytClusterItems">
+                  <span class="deepdive-subtab">MrBeast Yacht</span>
+                  <span class="deepdive-subtab">Rick Astley</span>
+                  <span class="deepdive-subtab">Lofi Girl</span>
+                </div>
+              </div>
+              <div class="deepdive-cluster-group group-purple" data-group="github">
+                <div class="deepdive-group-badge">
+                  <span class="cluster-dot"></span>
+                  <span>github.com</span>
+                  <span class="cluster-badge" id="ghCountBadge">2</span>
+                </div>
+                <div class="deepdive-group-items" id="ghClusterItems">
+                  <span class="deepdive-subtab">qray/tabstack</span>
+                  <span class="deepdive-subtab">Pull Requests</span>
+                </div>
+              </div>
+              <div class="deepdive-cluster-group group-blue" data-group="figma">
+                <div class="deepdive-group-badge">
+                  <span class="cluster-dot"></span>
+                  <span>figma.com</span>
+                  <span class="cluster-badge" id="figCountBadge">1</span>
+                </div>
+                <div class="deepdive-group-items" id="figClusterItems">
+                  <span class="deepdive-subtab">Design System v2</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pane 2: Focus Playground -->
+          <div class="deepdive-pane hidden" id="paneFocus">
+            <div class="deepdive-pane-header">
+              <div>
+                <h3 class="deepdive-pane-headline">Single-Focus Workspace</h3>
+                <p class="deepdive-pane-sub">Only your current task is expanded. Background groups fold into clean, space-saving sleep pills until you need them.</p>
+              </div>
+              <span class="shortcut-tag">Alt + Shift + ↑ / ↓</span>
+            </div>
+            <div class="deepdive-focus-demo">
+              <div class="focus-group-row" id="deepdiveFocusRow">
+                <div class="focus-group-pill expanded" id="deepFocusYt" data-focus-grp="yt">
+                  <div class="focus-pill-head">
+                    <span class="focus-status active-dot"></span>
+                    <strong>YouTube Stack (Active)</strong>
+                    <span class="focus-tag">Focused</span>
+                  </div>
+                  <div class="focus-pill-body">
+                    <div class="focus-tab-row active"><span class="pane-dot green"></span> $1 vs $1,000,000,000 Yacht!</div>
+                    <div class="focus-tab-row"><span class="pane-dot"></span> Rick Astley - Never Gonna Give You Up</div>
+                  </div>
+                </div>
+                <div class="focus-group-pill collapsed" id="deepFocusSpot" data-focus-grp="spot">
+                  <span class="focus-status sleep-dot"></span>
+                  <span>Spotify (3 tabs)</span>
+                  <span class="focus-sleep-badge">zZ Hibernated</span>
+                </div>
+                <div class="focus-group-pill collapsed" id="deepFocusPin" data-focus-grp="pin">
+                  <span class="focus-status sleep-dot"></span>
+                  <span>Pinterest (4 tabs)</span>
+                  <span class="focus-sleep-badge">zZ Hibernated</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pane 3: Hibernation Playground -->
+          <div class="deepdive-pane hidden" id="paneHibernate">
+            <div class="deepdive-pane-header">
+              <div>
+                <h3 class="deepdive-pane-headline">Native Chromium Memory Discard</h3>
+                <p class="deepdive-pane-sub">Reclaim up to 88% of memory from idle background tabs. When you click back, tabs wake up instantly with your exact scroll position intact.</p>
+              </div>
+              <button class="btn-micro-action green" id="btnToggleSleepDemo">Toggle Stack Sleep</button>
+            </div>
+            <div class="deepdive-ram-studio">
+              <div class="ram-studio-stats">
+                <div class="ram-stat-card">
+                  <span class="ram-stat-label">Memory Footprint</span>
+                  <span class="ram-stat-number" id="ramStatVal">164 MB</span>
+                  <span class="ram-stat-sub text-green" id="ramStatSub">-88% Memory Reclaimed</span>
+                </div>
+                <div class="ram-stat-card">
+                  <span class="ram-stat-label">Stack Status</span>
+                  <span class="ram-stat-number text-green" id="ramStatusVal">Discarded (zZ)</span>
+                  <span class="ram-stat-sub">Zero DOM scripts running</span>
+                </div>
+              </div>
+              <div class="ram-bar-container large">
+                <div class="ram-bar-fill">
+                  <div class="ram-bar-active" id="ramBarActive" style="width: 14%;"></div>
+                  <div class="ram-bar-reclaimed" id="ramBarReclaimed" style="width: 86%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
