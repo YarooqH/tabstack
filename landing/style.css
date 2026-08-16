@@ -3288,7 +3288,7 @@ body {
 /* Footer */
 .site-footer {
   padding: 48px 0 40px;
-  border-top: 1px solid var(--border-subtle);
+  border-top: none;
   background: transparent !important;
   font-size: 13px;
   color: var(--text-tertiary);
@@ -3296,7 +3296,7 @@ body {
 
 [data-theme="light"] .site-footer {
   background: transparent !important;
-  border-top: 1px solid var(--border-subtle);
+  border-top: none;
 }
 
 .footer-content {
