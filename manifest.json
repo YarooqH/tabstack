@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "TabStack: Smart Tab Auto-Collapse & RAM Saver",
+  "name": "TabStack",
   "short_name": "TabStack",
   "version": "1.0.0",
   "description": "Automatically clusters same-site tabs into native collapsible groups, expands only active stacks, and saves memory.",
