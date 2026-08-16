@@ -3354,6 +3354,54 @@ body {
   background: var(--text-tertiary);
 }
 
+/* Keyboard Shortcuts Strip */
+.shortcuts-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.shortcut-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.shortcut-chip:hover {
+  border-color: var(--border-medium);
+  background: var(--bg-elevated);
+}
+
+.shortcut-keys {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.shortcut-keys kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
+  border-bottom: 2px solid var(--border-medium);
+  padding: 1px 5px;
+  border-radius: 3px;
+  line-height: 1.3;
+}
+
+.shortcut-label {
+  color: var(--text-secondary);
+}
+
 /* Responsive */
 @media (max-width: 840px) {
   .gallery-grid { grid-template-columns: 1fr; }
