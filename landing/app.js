@@ -581,7 +581,7 @@ function setupDeepDiveStudio() {
             <div class="focus-group-drawer">
               ${data.tabs.map(t => `
                 <div class="focus-drawer-item ${t.active ? 'active' : ''}">
-                  <span class="tab-dot ${t.active ? 'green' : ''}"></span> ${t.title}
+                  <span class="tab-dot ${t.active ? 'active' : ''}"></span> ${t.title}
                 </div>
               `).join('')}
             </div>
@@ -621,17 +621,16 @@ function setupDeepDiveStudio() {
       if (telemetryMemVal) telemetryMemVal.innerHTML = '164 <small>MB</small>';
       if (telemetrySavingsVal) {
         telemetrySavingsVal.textContent = '-88% Memory Reclaimed';
-        telemetrySavingsVal.className = 'stat-badge-savings text-green';
+        telemetrySavingsVal.className = 'stat-badge-savings';
       }
       if (telemetryStateVal) {
         telemetryStateVal.textContent = 'HIBERNATED';
-        telemetryStateVal.className = 'stat-big-num text-green';
+        telemetryStateVal.className = 'stat-big-num';
       }
       if (telemetryBarLabel) telemetryBarLabel.textContent = '164 MB / 1,420 MB';
       if (telemetryBarActive) telemetryBarActive.style.width = '12%';
       if (telemetryBarReclaimed) telemetryBarReclaimed.style.width = '88%';
       if (memoryStatusHeader) memoryStatusHeader.textContent = '● 2 Stacks Discarded · Zero Telemetry';
-      btnToggleMemory.classList.add('green');
     } else {
       if (memoryBtnLabel) memoryBtnLabel.textContent = 'Hibernate Background';
       if (telemetryMemVal) telemetryMemVal.innerHTML = '1,420 <small>MB</small>';
@@ -647,7 +646,6 @@ function setupDeepDiveStudio() {
       if (telemetryBarActive) telemetryBarActive.style.width = '100%';
       if (telemetryBarReclaimed) telemetryBarReclaimed.style.width = '0%';
       if (memoryStatusHeader) memoryStatusHeader.textContent = '○ All 3 Stacks Active · 1,420 MB In Use';
-      btnToggleMemory.classList.remove('green');
     }
   });
 }

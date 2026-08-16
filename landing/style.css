@@ -3442,12 +3442,12 @@ body {
 }
 
 .studio-action-btn.green {
-  background: rgba(34, 197, 94, 0.12);
-  border-color: rgba(34, 197, 94, 0.3);
-  color: var(--accent-green);
+  background: transparent;
+  border-color: var(--text-primary);
+  color: var(--text-primary);
 }
 .studio-action-btn.green:hover {
-  background: rgba(34, 197, 94, 0.2);
+  background: var(--bg-elevated);
 }
 
 .shortcut-chip-badge {
@@ -3497,7 +3497,7 @@ body {
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 500;
-  color: var(--accent-green);
+  color: var(--text-secondary);
 }
 
 /* TabStrip Shelf */
@@ -3518,9 +3518,9 @@ body {
   transition: transform 0.25s var(--ease-out), border-color 0.2s ease, opacity 0.2s ease;
 }
 
-.studio-group-cluster.group-red { border-left: 3px solid #ef4444; }
-.studio-group-cluster.group-purple { border-left: 3px solid #a855f7; }
-.studio-group-cluster.group-blue { border-left: 3px solid #0ea5e9; }
+.studio-group-cluster.group-red { border-left: 2px solid var(--border-strong); }
+.studio-group-cluster.group-purple { border-left: 2px solid var(--border-strong); }
+.studio-group-cluster.group-blue { border-left: 2px solid var(--border-strong); }
 
 .group-pill-badge {
   display: flex;
@@ -3534,9 +3534,9 @@ body {
   height: 6px;
   border-radius: 50%;
 }
-.cluster-dot.red { background: #ef4444; box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }
-.cluster-dot.purple { background: #a855f7; box-shadow: 0 0 6px rgba(168, 85, 247, 0.4); }
-.cluster-dot.blue { background: #0ea5e9; box-shadow: 0 0 6px rgba(14, 165, 233, 0.4); }
+.cluster-dot.red { background: var(--text-secondary); box-shadow: none; }
+.cluster-dot.purple { background: var(--text-secondary); box-shadow: none; }
+.cluster-dot.blue { background: var(--text-secondary); box-shadow: none; }
 
 .group-name {
   font-size: 12px;
@@ -3588,7 +3588,7 @@ body {
   border-radius: 50%;
   background: var(--text-tertiary);
 }
-.tab-dot.green { background: var(--accent-green); }
+.tab-dot.active { background: var(--text-primary); }
 
 /* Focus Rack */
 .studio-focus-rack {
@@ -3636,9 +3636,9 @@ body {
   border-radius: 4px;
 }
 .focus-badge-pill.active {
-  background: rgba(34, 197, 94, 0.12);
-  color: var(--accent-green);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
 }
 .focus-badge-pill.sleep {
   background: var(--bg-input);
@@ -3684,10 +3684,11 @@ body {
 }
 
 .telemetry-stat-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  border-left: 1px solid var(--border-strong);
+  border-radius: 0;
+  padding: 8px 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -3703,8 +3704,8 @@ body {
 
 .stat-big-num {
   font-family: var(--font-mono);
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 400;
   color: var(--text-primary);
   line-height: 1.1;
 }
