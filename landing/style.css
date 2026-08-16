@@ -540,7 +540,7 @@ body {
   transform: scale(1);
 }
 
-.slab-face, .slab-sidel, .slab-sider {
+.slab-face, .slab-side {
   transition: fill 0.8s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -592,31 +592,25 @@ body {
   transition: opacity 0.3s ease;
 }
 
-/* Default Colors for Solid Slabs - Clean harmonious lighting */
+/* Default Colors for Solid Slabs - Unified Continuous Side Walls */
 .slab-bot .slab-face { fill: #ef4444; }
-.slab-bot .slab-sidel { fill: #ea3838; }
-.slab-bot .slab-sider { fill: #dc2626; }
+.slab-bot .slab-side { fill: url(#slabSideGrad1); }
 
 .slab-mid .slab-face { fill: #e11d48; }
-.slab-mid .slab-sidel { fill: #d41840; }
-.slab-mid .slab-sider { fill: #be123c; }
+.slab-mid .slab-side { fill: url(#slabSideGrad2); }
 
 .slab-top .slab-face { fill: #10b981; }
-.slab-top .slab-sidel { fill: #0d9668; }
-.slab-top .slab-sider { fill: #059669; }
+.slab-top .slab-side { fill: url(#slabSideGrad3); }
 
 /* 1:1 Unified TabStack Monochrome Gradient State */
 .slab-layer.unified.slab-bot .slab-face { fill: var(--logo-bot-face); }
-.slab-layer.unified.slab-bot .slab-sidel { fill: var(--logo-bot-sidel); }
-.slab-layer.unified.slab-bot .slab-sider { fill: var(--logo-bot-sider); }
+.slab-layer.unified.slab-bot .slab-side { fill: url(#slabSideGradBot); }
 
 .slab-layer.unified.slab-mid .slab-face { fill: var(--logo-mid-face); }
-.slab-layer.unified.slab-mid .slab-sidel { fill: var(--logo-mid-sidel); }
-.slab-layer.unified.slab-mid .slab-sider { fill: var(--logo-mid-sider); }
+.slab-layer.unified.slab-mid .slab-side { fill: url(#slabSideGradMid); }
 
 .slab-layer.unified.slab-top .slab-face { fill: var(--logo-top-face); }
-.slab-layer.unified.slab-top .slab-sidel { fill: var(--logo-top-sidel); }
-.slab-layer.unified.slab-top .slab-sider { fill: var(--logo-top-sider); }
+.slab-layer.unified.slab-top .slab-side { fill: url(#slabSideGradTop); }
 
 .slab-brand-tag {
   transition: opacity 0.4s ease;
