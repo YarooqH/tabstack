@@ -485,7 +485,6 @@ body {
   height: 100%;
   max-width: 340px;
   overflow: visible;
-  filter: drop-shadow(0 24px 36px rgba(0, 0, 0, 0.5));
   transition: transform 0.4s var(--ease-spring);
 }
 
@@ -632,15 +631,6 @@ body {
 
 .slab-layer.unified .slab-brand-tag {
   opacity: 0;
-}
-
-.tabstack-chevron-notch {
-  stroke: var(--logo-notch, #000000);
-  transition: opacity 0.4s ease, stroke 0.3s ease;
-}
-
-.slab-layer.unified .tabstack-chevron-notch {
-  opacity: 0.9;
 }
 
 .step-pill-btn.active {
