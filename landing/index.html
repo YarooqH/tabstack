@@ -976,141 +976,187 @@
         </article>
       </div>
 
-      <!-- Deep-Dive Studio (Option 3) -->
+      <!-- Deep-Dive Studio (Option 3: High-Craft Engine Inspector) -->
       <div class="deepdive-studio-wrap hidden" id="deepdiveStudio">
-        <div class="deepdive-nav-tabs">
-          <button class="deepdive-tab-btn active" data-deepdive-tab="cluster">
-            <span class="deepdive-tab-num">01</span>
-            <div class="deepdive-tab-info">
-              <span class="deepdive-tab-title">Auto-Clustering</span>
-              <span class="deepdive-tab-desc">Stacks same-domain tabs</span>
-            </div>
+        <div class="studio-nav-bar">
+          <button class="studio-tab-btn active" data-deepdive-tab="cluster">
+            <span class="studio-keycap">⌥1</span>
+            <span class="studio-tab-label">Domain Clustering</span>
           </button>
-          <button class="deepdive-tab-btn" data-deepdive-tab="focus">
-            <span class="deepdive-tab-num">02</span>
-            <div class="deepdive-tab-info">
-              <span class="deepdive-tab-title">Active Focus</span>
-              <span class="deepdive-tab-desc">Auto-folds background stacks</span>
-            </div>
+          <button class="studio-tab-btn" data-deepdive-tab="focus">
+            <span class="studio-keycap">⌥2</span>
+            <span class="studio-tab-label">Single-Focus Workspace</span>
           </button>
-          <button class="deepdive-tab-btn" data-deepdive-tab="hibernate">
-            <span class="deepdive-tab-num">03</span>
-            <div class="deepdive-tab-info">
-              <span class="deepdive-tab-title">RAM Hibernation</span>
-              <span class="deepdive-tab-desc">Reclaims idle memory</span>
-            </div>
+          <button class="studio-tab-btn" data-deepdive-tab="hibernate">
+            <span class="studio-keycap">⌥3</span>
+            <span class="studio-tab-label">Memory Telemetry</span>
           </button>
         </div>
 
-        <div class="deepdive-stage-card">
-          <!-- Pane 1: Clustering Playground -->
-          <div class="deepdive-pane active" id="paneCluster">
-            <div class="deepdive-pane-header">
-              <div>
-                <h3 class="deepdive-pane-headline">Native Domain Clustering</h3>
-                <p class="deepdive-pane-sub">Tabs from the same website automatically cluster into native Chromium groups in real time without cluttering your browser tab strip.</p>
+        <div class="studio-viewport-card">
+          <!-- Pane 1: Clustering Telemetry -->
+          <div class="studio-pane active" id="paneCluster">
+            <div class="studio-pane-topbar">
+              <div class="studio-meta-group">
+                <span class="studio-tag">ENGINE / CLUSTERING</span>
+                <h3 class="studio-pane-title">Deterministic Same-Domain Stacking</h3>
+                <p class="studio-pane-desc">Tabs matching the root domain cluster automatically into native Chromium tab groups without extensions or background scripts.</p>
               </div>
-              <button class="btn-micro-action" id="btnSpawnTestTab">+ Spawn New Tab</button>
+              <button class="studio-action-btn" id="btnToggleClusterDemo">
+                <span class="action-btn-icon">⚡</span>
+                <span id="clusterBtnText">Scatter Tabs</span>
+              </button>
             </div>
-            <div class="deepdive-tabstrip-playground" id="clusterPlayground">
-              <div class="deepdive-cluster-group group-red" data-group="youtube">
-                <div class="deepdive-group-badge">
-                  <span class="cluster-dot"></span>
-                  <span>youtube.com</span>
-                  <span class="cluster-badge" id="ytCountBadge">3</span>
-                </div>
-                <div class="deepdive-group-items" id="ytClusterItems">
-                  <span class="deepdive-subtab">MrBeast Yacht</span>
-                  <span class="deepdive-subtab">Rick Astley</span>
-                  <span class="deepdive-subtab">Lofi Girl</span>
-                </div>
+
+            <div class="studio-inspector-stage">
+              <div class="studio-stage-header">
+                <span class="stage-label">CHROMIUM TAB STRIP TELEMETRY</span>
+                <span class="stage-status" id="clusterStatusText">● 3 Stacks Clustered · 9 Tabs Active</span>
               </div>
-              <div class="deepdive-cluster-group group-purple" data-group="github">
-                <div class="deepdive-group-badge">
-                  <span class="cluster-dot"></span>
-                  <span>github.com</span>
-                  <span class="cluster-badge" id="ghCountBadge">2</span>
+              <div class="studio-tabstrip-shelf" id="studioClusterShelf">
+                <!-- Group 1: YouTube -->
+                <div class="studio-group-cluster group-red" data-group-cluster="yt">
+                  <div class="group-pill-badge">
+                    <span class="cluster-dot red"></span>
+                    <span class="group-name">YouTube</span>
+                    <span class="group-count">3</span>
+                  </div>
+                  <div class="group-subtabs-row">
+                    <div class="studio-tab-item active"><span class="tab-dot green"></span> MrBeast Yacht</div>
+                    <div class="studio-tab-item"><span class="tab-dot"></span> Rick Astley</div>
+                    <div class="studio-tab-item"><span class="tab-dot"></span> Lofi Girl</div>
+                  </div>
                 </div>
-                <div class="deepdive-group-items" id="ghClusterItems">
-                  <span class="deepdive-subtab">qray/tabstack</span>
-                  <span class="deepdive-subtab">Pull Requests</span>
+
+                <!-- Group 2: GitHub -->
+                <div class="studio-group-cluster group-purple" data-group-cluster="gh">
+                  <div class="group-pill-badge">
+                    <span class="cluster-dot purple"></span>
+                    <span class="group-name">GitHub</span>
+                    <span class="group-count">3</span>
+                  </div>
+                  <div class="group-subtabs-row">
+                    <div class="studio-tab-item"><span class="tab-dot"></span> qray/tabstack</div>
+                    <div class="studio-tab-item"><span class="tab-dot"></span> Pull Requests</div>
+                    <div class="studio-tab-item"><span class="tab-dot"></span> Issues (#42)</div>
+                  </div>
                 </div>
-              </div>
-              <div class="deepdive-cluster-group group-blue" data-group="figma">
-                <div class="deepdive-group-badge">
-                  <span class="cluster-dot"></span>
-                  <span>figma.com</span>
-                  <span class="cluster-badge" id="figCountBadge">1</span>
-                </div>
-                <div class="deepdive-group-items" id="figClusterItems">
-                  <span class="deepdive-subtab">Design System v2</span>
+
+                <!-- Group 3: Figma -->
+                <div class="studio-group-cluster group-blue" data-group-cluster="fig">
+                  <div class="group-pill-badge">
+                    <span class="cluster-dot blue"></span>
+                    <span class="group-name">Figma</span>
+                    <span class="group-count">3</span>
+                  </div>
+                  <div class="group-subtabs-row">
+                    <div class="studio-tab-item"><span class="tab-dot"></span> Design System v2</div>
+                    <div class="studio-tab-item"><span class="tab-dot"></span> Landing Assets</div>
+                    <div class="studio-tab-item"><span class="tab-dot"></span> Components</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Pane 2: Focus Playground -->
-          <div class="deepdive-pane hidden" id="paneFocus">
-            <div class="deepdive-pane-header">
-              <div>
-                <h3 class="deepdive-pane-headline">Single-Focus Workspace</h3>
-                <p class="deepdive-pane-sub">Only your current task is expanded. Background groups fold into clean, space-saving sleep pills until you need them.</p>
+          <!-- Pane 2: Focus Telemetry -->
+          <div class="studio-pane hidden" id="paneFocus">
+            <div class="studio-pane-topbar">
+              <div class="studio-meta-group">
+                <span class="studio-tag">ENGINE / ACTIVE FOCUS</span>
+                <h3 class="studio-pane-title">Single-Focus Context Isolation</h3>
+                <p class="studio-pane-desc">Only your active domain expands in your tab strip. Background stacks automatically collapse into compact sleep pills.</p>
               </div>
-              <span class="shortcut-tag">Alt + Shift + ↑ / ↓</span>
+              <div class="shortcut-chip-badge">
+                <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd>
+              </div>
             </div>
-            <div class="deepdive-focus-demo">
-              <div class="focus-group-row" id="deepdiveFocusRow">
-                <div class="focus-group-pill expanded" id="deepFocusYt" data-focus-grp="yt">
-                  <div class="focus-pill-head">
-                    <span class="focus-status active-dot"></span>
-                    <strong>YouTube Stack (Active)</strong>
-                    <span class="focus-tag">Focused</span>
+
+            <div class="studio-inspector-stage">
+              <div class="studio-stage-header">
+                <span class="stage-label">INTERACTIVE FOCUS SWITCHER</span>
+                <span class="stage-status">Click any stack below to focus</span>
+              </div>
+              <div class="studio-focus-rack" id="studioFocusRack">
+                <div class="studio-focus-group expanded" data-focus-id="yt">
+                  <div class="focus-group-top">
+                    <div class="focus-title-wrap">
+                      <span class="cluster-dot red"></span>
+                      <strong>youtube.com</strong>
+                      <span class="focus-badge-pill active">Focused</span>
+                    </div>
+                    <span class="focus-tab-meta">3 tabs open</span>
                   </div>
-                  <div class="focus-pill-body">
-                    <div class="focus-tab-row active"><span class="pane-dot green"></span> $1 vs $1,000,000,000 Yacht!</div>
-                    <div class="focus-tab-row"><span class="pane-dot"></span> Rick Astley - Never Gonna Give You Up</div>
+                  <div class="focus-group-drawer">
+                    <div class="focus-drawer-item active"><span class="tab-dot green"></span> $1 vs $1,000,000,000 Yacht!</div>
+                    <div class="focus-drawer-item"><span class="tab-dot"></span> Rick Astley - Never Gonna Give You Up</div>
+                    <div class="focus-drawer-item"><span class="tab-dot"></span> lofi hip hop radio - beats to relax/study to</div>
                   </div>
                 </div>
-                <div class="focus-group-pill collapsed" id="deepFocusSpot" data-focus-grp="spot">
-                  <span class="focus-status sleep-dot"></span>
-                  <span>Spotify (3 tabs)</span>
-                  <span class="focus-sleep-badge">zZ Hibernated</span>
+
+                <div class="studio-focus-group collapsed" data-focus-id="gh">
+                  <div class="focus-group-top">
+                    <div class="focus-title-wrap">
+                      <span class="cluster-dot purple"></span>
+                      <strong>github.com</strong>
+                      <span class="focus-badge-pill sleep">zZ Folded</span>
+                    </div>
+                    <span class="focus-tab-meta">3 tabs dormant</span>
+                  </div>
                 </div>
-                <div class="focus-group-pill collapsed" id="deepFocusPin" data-focus-grp="pin">
-                  <span class="focus-status sleep-dot"></span>
-                  <span>Pinterest (4 tabs)</span>
-                  <span class="focus-sleep-badge">zZ Hibernated</span>
+
+                <div class="studio-focus-group collapsed" data-focus-id="fig">
+                  <div class="focus-group-top">
+                    <div class="focus-title-wrap">
+                      <span class="cluster-dot blue"></span>
+                      <strong>figma.com</strong>
+                      <span class="focus-badge-pill sleep">zZ Folded</span>
+                    </div>
+                    <span class="focus-tab-meta">3 tabs dormant</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Pane 3: Hibernation Playground -->
-          <div class="deepdive-pane hidden" id="paneHibernate">
-            <div class="deepdive-pane-header">
-              <div>
-                <h3 class="deepdive-pane-headline">Native Chromium Memory Discard</h3>
-                <p class="deepdive-pane-sub">Reclaim up to 88% of memory from idle background tabs. When you click back, tabs wake up instantly with your exact scroll position intact.</p>
+          <!-- Pane 3: Memory Telemetry -->
+          <div class="studio-pane hidden" id="paneHibernate">
+            <div class="studio-pane-topbar">
+              <div class="studio-meta-group">
+                <span class="studio-tag">ENGINE / NATIVE DISCARD</span>
+                <h3 class="studio-pane-title">Process-Level Memory Hibernation</h3>
+                <p class="studio-pane-desc">Reclaims up to 88% of memory used by idle pages via Chromium's native tab discard API without closing tabs or breaking history.</p>
               </div>
-              <button class="btn-micro-action green" id="btnToggleSleepDemo">Toggle Stack Sleep</button>
+              <button class="studio-action-btn green" id="btnToggleMemoryDemo">
+                <span id="memoryBtnLabel">Wake All Stacks</span>
+              </button>
             </div>
-            <div class="deepdive-ram-studio">
-              <div class="ram-studio-stats">
-                <div class="ram-stat-card">
-                  <span class="ram-stat-label">Memory Footprint</span>
-                  <span class="ram-stat-number" id="ramStatVal">164 MB</span>
-                  <span class="ram-stat-sub text-green" id="ramStatSub">-88% Memory Reclaimed</span>
+
+            <div class="studio-inspector-stage">
+              <div class="studio-stage-header">
+                <span class="stage-label">LIVE PROCESS TELEMETRY</span>
+                <span class="stage-status" id="memoryStatusHeader">● 2 Stacks Discarded · Zero Telemetry</span>
+              </div>
+              <div class="studio-telemetry-grid">
+                <div class="telemetry-stat-card">
+                  <span class="stat-kicker">ALLOCATED MEMORY</span>
+                  <span class="stat-big-num" id="telemetryMemVal">164 <small>MB</small></span>
+                  <span class="stat-badge-savings text-green" id="telemetrySavingsVal">-88% Memory Reclaimed</span>
                 </div>
-                <div class="ram-stat-card">
-                  <span class="ram-stat-label">Stack Status</span>
-                  <span class="ram-stat-number text-green" id="ramStatusVal">Discarded (zZ)</span>
-                  <span class="ram-stat-sub">Zero DOM scripts running</span>
+                <div class="telemetry-stat-card">
+                  <span class="stat-kicker">PROCESS STATE</span>
+                  <span class="stat-big-num text-green" id="telemetryStateVal">HIBERNATED</span>
+                  <span class="stat-meta">DOM frozen · Scroll position preserved</span>
                 </div>
               </div>
-              <div class="ram-bar-container large">
-                <div class="ram-bar-fill">
-                  <div class="ram-bar-active" id="ramBarActive" style="width: 14%;"></div>
-                  <div class="ram-bar-reclaimed" id="ramBarReclaimed" style="width: 86%;"></div>
+              <div class="telemetry-bar-wrap">
+                <div class="telemetry-bar-header">
+                  <span>Renderer Memory Allocation</span>
+                  <span class="tabular-stat" id="telemetryBarLabel">164 MB / 1,420 MB</span>
+                </div>
+                <div class="telemetry-bar-track">
+                  <div class="telemetry-bar-active" id="telemetryBarActive" style="width: 12%;"></div>
+                  <div class="telemetry-bar-reclaimed" id="telemetryBarReclaimed" style="width: 88%;"></div>
                 </div>
               </div>
             </div>

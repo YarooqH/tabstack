@@ -461,113 +461,193 @@ function setupOptionSwitcher() {
 }
 
 function setupDeepDiveStudio() {
-  const tabBtns = document.querySelectorAll('.deepdive-tab-btn');
+  const tabBtns = document.querySelectorAll('.studio-tab-btn');
   const panes = {
     cluster: document.getElementById('paneCluster'),
     focus: document.getElementById('paneFocus'),
     hibernate: document.getElementById('paneHibernate')
   };
 
+  function switchTab(tabKey) {
+    tabBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.deepdiveTab === tabKey);
+    });
+
+    Object.entries(panes).forEach(([key, pane]) => {
+      if (pane) {
+        pane.classList.toggle('hidden', key !== tabKey);
+        pane.classList.toggle('active', key === tabKey);
+      }
+    });
+  }
+
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      const tabKey = btn.dataset.deepdiveTab;
-      tabBtns.forEach(b => b.classList.toggle('active', b === btn));
-
-      Object.entries(panes).forEach(([key, pane]) => {
-        if (pane) {
-          pane.classList.toggle('hidden', key !== tabKey);
-          pane.classList.toggle('active', key === tabKey);
-        }
-      });
+      switchTab(btn.dataset.deepdiveTab);
     });
   });
 
-  // Playground 1: Spawn Tab
-  const btnSpawn = document.getElementById('btnSpawnTestTab');
-  const ytItems = document.getElementById('ytClusterItems');
-  const ytBadge = document.getElementById('ytCountBadge');
-  let spawnIdx = 1;
-
-  btnSpawn?.addEventListener('click', () => {
-    if (!ytItems) return;
-    const newTab = document.createElement('span');
-    newTab.className = 'deepdive-subtab';
-    newTab.textContent = `New Video #${spawnIdx++}`;
-    newTab.style.animation = 'scaleIn 0.2s ease-out';
-    ytItems.appendChild(newTab);
-    if (ytBadge) ytBadge.textContent = String(ytItems.children.length);
+  // Keyboard accelerators (Option/Alt + 1, 2, 3)
+  window.addEventListener('keydown', (e) => {
+    if (e.altKey && e.key === '1') { switchTab('cluster'); }
+    if (e.altKey && e.key === '2') { switchTab('focus'); }
+    if (e.altKey && e.key === '3') { switchTab('hibernate'); }
   });
 
-  // Playground 2: Focus switcher
-  const focusPills = document.querySelectorAll('#deepdiveFocusRow .focus-group-pill');
-  focusPills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      focusPills.forEach(p => {
-        const isCurrent = p === pill;
-        p.className = `focus-group-pill ${isCurrent ? 'expanded' : 'collapsed'}`;
-        const grp = p.dataset.focusGrp;
+  // 1. Cluster Scatter/Cluster Toggle
+  const btnToggleCluster = document.getElementById('btnToggleClusterDemo');
+  const clusterBtnText = document.getElementById('clusterBtnText');
+  const clusterStatusText = document.getElementById('clusterStatusText');
+  const clusterGroups = document.querySelectorAll('.studio-group-cluster');
+  let isClustered = true;
+
+  btnToggleCluster?.addEventListener('click', () => {
+    isClustered = !isClustered;
+    if (isClustered) {
+      if (clusterBtnText) clusterBtnText.textContent = 'Scatter Tabs';
+      if (clusterStatusText) clusterStatusText.textContent = '● 3 Stacks Clustered · 9 Tabs Active';
+      clusterGroups.forEach(g => {
+        g.style.transform = 'translateY(0)';
+        g.style.opacity = '1';
+      });
+    } else {
+      if (clusterBtnText) clusterBtnText.textContent = 'Cluster Stacks';
+      if (clusterStatusText) clusterStatusText.textContent = '○ 9 Loose Tabs (Unclustered Chaos)';
+      clusterGroups.forEach((g, idx) => {
+        g.style.transform = `translateY(${idx % 2 === 0 ? '-4px' : '4px'})`;
+      });
+    }
+  });
+
+  // 2. Focus Rack Switcher
+  const focusGroups = document.querySelectorAll('.studio-focus-group');
+  const focusData = {
+    yt: {
+      domain: 'youtube.com',
+      badge: 'Focused',
+      meta: '3 tabs open',
+      dotClass: 'red',
+      tabs: [
+        { title: '$1 vs $1,000,000,000 Yacht!', active: true },
+        { title: 'Rick Astley - Never Gonna Give You Up', active: false },
+        { title: 'lofi hip hop radio - beats to relax/study to', active: false }
+      ]
+    },
+    gh: {
+      domain: 'github.com',
+      badge: 'Focused',
+      meta: '3 tabs open',
+      dotClass: 'purple',
+      tabs: [
+        { title: 'qray/tabstack · Pull Requests #42', active: true },
+        { title: 'Extension Service Worker Architecture', active: false },
+        { title: 'Commits · feat/landing-redesign', active: false }
+      ]
+    },
+    fig: {
+      domain: 'figma.com',
+      badge: 'Focused',
+      meta: '3 tabs open',
+      dotClass: 'blue',
+      tabs: [
+        { title: 'TabStack Design System v2.4 (Active)', active: true },
+        { title: 'Hero 3D Slabs & Canvas Shaders', active: false },
+        { title: 'Component Library & Token Styles', active: false }
+      ]
+    }
+  };
+
+  focusGroups.forEach(grp => {
+    grp.addEventListener('click', () => {
+      const activeId = grp.dataset.focusId;
+      if (!activeId || !focusData[activeId]) return;
+
+      focusGroups.forEach(g => {
+        const isCurrent = g === grp;
+        const gId = g.dataset.focusId;
+        g.className = `studio-focus-group ${isCurrent ? 'expanded' : 'collapsed'}`;
+        const data = focusData[gId];
+
         if (isCurrent) {
-          const name = grp === 'yt' ? 'YouTube' : grp === 'spot' ? 'Spotify' : 'Pinterest';
-          p.innerHTML = `
-            <div class="focus-pill-head">
-              <span class="focus-status active-dot"></span>
-              <strong>${name} Stack (Active)</strong>
-              <span class="focus-tag">Focused</span>
+          g.innerHTML = `
+            <div class="focus-group-top">
+              <div class="focus-title-wrap">
+                <span class="cluster-dot ${data.dotClass}"></span>
+                <strong>${data.domain}</strong>
+                <span class="focus-badge-pill active">Focused</span>
+              </div>
+              <span class="focus-tab-meta">3 tabs open</span>
             </div>
-            <div class="focus-pill-body">
-              <div class="focus-tab-row active"><span class="pane-dot green"></span> ${name} Primary Tab</div>
-              <div class="focus-tab-row"><span class="pane-dot"></span> ${name} Secondary Tab</div>
+            <div class="focus-group-drawer">
+              ${data.tabs.map(t => `
+                <div class="focus-drawer-item ${t.active ? 'active' : ''}">
+                  <span class="tab-dot ${t.active ? 'green' : ''}"></span> ${t.title}
+                </div>
+              `).join('')}
             </div>
           `;
         } else {
-          const name = grp === 'yt' ? 'YouTube (3 tabs)' : grp === 'spot' ? 'Spotify (3 tabs)' : 'Pinterest (4 tabs)';
-          p.innerHTML = `
-            <span class="focus-status sleep-dot"></span>
-            <span>${name}</span>
-            <span class="focus-sleep-badge">zZ Hibernated</span>
+          g.innerHTML = `
+            <div class="focus-group-top">
+              <div class="focus-title-wrap">
+                <span class="cluster-dot ${data.dotClass}"></span>
+                <strong>${data.domain}</strong>
+                <span class="focus-badge-pill sleep">zZ Folded</span>
+              </div>
+              <span class="focus-tab-meta">3 tabs dormant</span>
+            </div>
           `;
         }
       });
     });
   });
 
-  // Playground 3: RAM Toggle
-  const btnToggleSleep = document.getElementById('btnToggleSleepDemo');
-  const ramStatVal = document.getElementById('ramStatVal');
-  const ramStatSub = document.getElementById('ramStatSub');
-  const ramStatusVal = document.getElementById('ramStatusVal');
-  const ramBarActive = document.getElementById('ramBarActive');
-  const ramBarReclaimed = document.getElementById('ramBarReclaimed');
-  let isHibernated = true;
+  // 3. Memory Telemetry Toggle
+  const btnToggleMemory = document.getElementById('btnToggleMemoryDemo');
+  const memoryBtnLabel = document.getElementById('memoryBtnLabel');
+  const telemetryMemVal = document.getElementById('telemetryMemVal');
+  const telemetrySavingsVal = document.getElementById('telemetrySavingsVal');
+  const telemetryStateVal = document.getElementById('telemetryStateVal');
+  const telemetryBarLabel = document.getElementById('telemetryBarLabel');
+  const telemetryBarActive = document.getElementById('telemetryBarActive');
+  const telemetryBarReclaimed = document.getElementById('telemetryBarReclaimed');
+  const memoryStatusHeader = document.getElementById('memoryStatusHeader');
+  let memoryDiscarded = true;
 
-  btnToggleSleep?.addEventListener('click', () => {
-    isHibernated = !isHibernated;
-    if (isHibernated) {
-      if (ramStatVal) ramStatVal.textContent = '164 MB';
-      if (ramStatSub) {
-        ramStatSub.textContent = '-88% Memory Reclaimed';
-        ramStatSub.className = 'ram-stat-sub text-green';
+  btnToggleMemory?.addEventListener('click', () => {
+    memoryDiscarded = !memoryDiscarded;
+    if (memoryDiscarded) {
+      if (memoryBtnLabel) memoryBtnLabel.textContent = 'Wake All Stacks';
+      if (telemetryMemVal) telemetryMemVal.innerHTML = '164 <small>MB</small>';
+      if (telemetrySavingsVal) {
+        telemetrySavingsVal.textContent = '-88% Memory Reclaimed';
+        telemetrySavingsVal.className = 'stat-badge-savings text-green';
       }
-      if (ramStatusVal) {
-        ramStatusVal.textContent = 'Discarded (zZ)';
-        ramStatusVal.className = 'ram-stat-number text-green';
+      if (telemetryStateVal) {
+        telemetryStateVal.textContent = 'HIBERNATED';
+        telemetryStateVal.className = 'stat-big-num text-green';
       }
-      if (ramBarActive) ramBarActive.style.width = '14%';
-      if (ramBarReclaimed) ramBarReclaimed.style.width = '86%';
-      btnToggleSleep.textContent = 'Wake All Tabs';
+      if (telemetryBarLabel) telemetryBarLabel.textContent = '164 MB / 1,420 MB';
+      if (telemetryBarActive) telemetryBarActive.style.width = '12%';
+      if (telemetryBarReclaimed) telemetryBarReclaimed.style.width = '88%';
+      if (memoryStatusHeader) memoryStatusHeader.textContent = '● 2 Stacks Discarded · Zero Telemetry';
+      btnToggleMemory.classList.add('green');
     } else {
-      if (ramStatVal) ramStatVal.textContent = '1,420 MB';
-      if (ramStatSub) {
-        ramStatSub.textContent = 'Full Active Memory';
-        ramStatSub.className = 'ram-stat-sub text-secondary';
+      if (memoryBtnLabel) memoryBtnLabel.textContent = 'Hibernate Background';
+      if (telemetryMemVal) telemetryMemVal.innerHTML = '1,420 <small>MB</small>';
+      if (telemetrySavingsVal) {
+        telemetrySavingsVal.textContent = 'Full Process Footprint';
+        telemetrySavingsVal.className = 'stat-badge-savings text-secondary';
       }
-      if (ramStatusVal) {
-        ramStatusVal.textContent = 'Active (All Awoken)';
-        ramStatusVal.className = 'ram-stat-number';
+      if (telemetryStateVal) {
+        telemetryStateVal.textContent = 'ACTIVE (9 TABS)';
+        telemetryStateVal.className = 'stat-big-num';
       }
-      if (ramBarActive) ramBarActive.style.width = '100%';
-      if (ramBarReclaimed) ramBarReclaimed.style.width = '0%';
-      btnToggleSleep.textContent = 'Sleep Stack';
+      if (telemetryBarLabel) telemetryBarLabel.textContent = '1,420 MB / 1,420 MB';
+      if (telemetryBarActive) telemetryBarActive.style.width = '100%';
+      if (telemetryBarReclaimed) telemetryBarReclaimed.style.width = '0%';
+      if (memoryStatusHeader) memoryStatusHeader.textContent = '○ All 3 Stacks Active · 1,420 MB In Use';
+      btnToggleMemory.classList.remove('green');
     }
   });
 }
