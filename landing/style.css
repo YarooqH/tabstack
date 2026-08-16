@@ -4687,7 +4687,7 @@ body {
 .calm-pane {
   z-index: 2;
   background: var(--bg-surface);
-  clip-path: inset(0 calc(100% - var(--split-pos, 50%)) 0 0);
+  clip-path: inset(0 0 0 var(--split-pos, 50%));
   will-change: clip-path;
 }
 
