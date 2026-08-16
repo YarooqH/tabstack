@@ -3289,13 +3289,13 @@ body {
 .site-footer {
   padding: 48px 0 40px;
   border-top: 1px solid var(--border-subtle);
-  background: var(--bg-page);
+  background: transparent !important;
   font-size: 13px;
   color: var(--text-tertiary);
 }
 
 [data-theme="light"] .site-footer {
-  background: var(--bg-page);
+  background: transparent !important;
   border-top: 1px solid var(--border-subtle);
 }
 
