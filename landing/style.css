@@ -35,17 +35,17 @@
   --selection-bg: #3f3f46;
   --selection-text: #ffffff;
 
-  /* Adaptive Brand Logo Tokens (Dark Mode) */
+  /* Adaptive Brand Logo Tokens (Dark Mode - Smooth Natural Lighting) */
   --logo-top-face: #ffffff;
-  --logo-top-sidel: #d4d4d8;
-  --logo-top-sider: #a1a1aa;
+  --logo-top-sidel: #f4f4f5;
+  --logo-top-sider: #e4e4e7;
   --logo-mid-face: #a1a1aa;
-  --logo-mid-sidel: #71717a;
-  --logo-mid-sider: #52525b;
+  --logo-mid-sidel: #94949e;
+  --logo-mid-sider: #848490;
   --logo-bot-face: #52525b;
-  --logo-bot-sidel: #3f3f46;
-  --logo-bot-sider: #27272a;
-  --logo-notch: #000000;
+  --logo-bot-sidel: #474750;
+  --logo-bot-sider: #3f3f46;
+  --logo-notch: transparent;
 
   --font-sans: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', SFMono-Regular, Consolas, monospace;
@@ -83,17 +83,17 @@
   --selection-bg: #e4e4e7;
   --selection-text: #000000;
 
-  /* Adaptive Brand Logo Tokens (Light Mode - Inverted Contrast) */
+  /* Adaptive Brand Logo Tokens (Light Mode - Smooth Natural Lighting) */
   --logo-top-face: #18181b;
-  --logo-top-sidel: #27272a;
-  --logo-top-sider: #3f3f46;
+  --logo-top-sidel: #222226;
+  --logo-top-sider: #27272a;
   --logo-mid-face: #52525b;
-  --logo-mid-sidel: #71717a;
-  --logo-mid-sider: #a1a1aa;
+  --logo-mid-sidel: #5f5f69;
+  --logo-mid-sider: #71717a;
   --logo-bot-face: #a1a1aa;
-  --logo-bot-sidel: #d4d4d8;
-  --logo-bot-sider: #e4e4e7;
-  --logo-notch: #ffffff;
+  --logo-bot-sidel: #b8b8bf;
+  --logo-bot-sider: #d4d4d8;
+  --logo-notch: transparent;
 }
 
 /* Base */
@@ -458,14 +458,7 @@ body {
 }
 
 .hero-logo-glow {
-  position: absolute;
-  width: 320px;
-  height: 320px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(230, 0, 35, 0.06) 45%, rgba(239, 68, 68, 0.05) 70%, transparent 80%);
-  filter: blur(40px);
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 .icon-engine-stage {
@@ -599,18 +592,18 @@ body {
   transition: opacity 0.3s ease;
 }
 
-/* Default Colors for Solid Slabs */
+/* Default Colors for Solid Slabs - Clean harmonious lighting */
 .slab-bot .slab-face { fill: #ef4444; }
-.slab-bot .slab-sidel { fill: #dc2626; }
-.slab-bot .slab-sider { fill: #991b1b; }
+.slab-bot .slab-sidel { fill: #ea3838; }
+.slab-bot .slab-sider { fill: #dc2626; }
 
-.slab-mid .slab-face { fill: #e60023; }
-.slab-mid .slab-sidel { fill: #be123c; }
-.slab-mid .slab-sider { fill: #881337; }
+.slab-mid .slab-face { fill: #e11d48; }
+.slab-mid .slab-sidel { fill: #d41840; }
+.slab-mid .slab-sider { fill: #be123c; }
 
 .slab-top .slab-face { fill: #10b981; }
-.slab-top .slab-sidel { fill: #059669; }
-.slab-top .slab-sider { fill: #047857; }
+.slab-top .slab-sidel { fill: #0d9668; }
+.slab-top .slab-sider { fill: #059669; }
 
 /* 1:1 Unified TabStack Monochrome Gradient State */
 .slab-layer.unified.slab-bot .slab-face { fill: var(--logo-bot-face); }

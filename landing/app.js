@@ -1342,7 +1342,6 @@ function setupStackEngine() {
     // Normal non-stop continuous impact & morph cascade
     if (step === 1) {
       resetAll();
-      if (glow) glow.style.background = 'radial-gradient(circle, rgba(239, 68, 68, 0.16) 0%, rgba(239, 68, 68, 0.04) 55%, transparent 75%)';
 
       cascadeTier(tabs1, slabBody1, () => {
         runStep(2);
@@ -1352,7 +1351,6 @@ function setupStackEngine() {
       // Ensure Layer 1 is solid
       setSlabGrowth(slabBody1, 3);
       tabs1?.forEach(t => t.classList.add('dropping', 'absorbed'));
-      if (glow) glow.style.background = 'radial-gradient(circle, rgba(230, 0, 35, 0.16) 0%, rgba(230, 0, 35, 0.04) 55%, transparent 75%)';
 
       cascadeTier(tabs2, slabBody2, () => {
         runStep(3);
@@ -1364,7 +1362,6 @@ function setupStackEngine() {
       setSlabGrowth(slabBody2, 3);
       tabs1?.forEach(t => t.classList.add('dropping', 'absorbed'));
       tabs2?.forEach(t => t.classList.add('dropping', 'absorbed'));
-      if (glow) glow.style.background = 'radial-gradient(circle, rgba(16, 185, 129, 0.16) 0%, rgba(16, 185, 129, 0.04) 55%, transparent 75%)';
 
       cascadeTier(tabs3, slabBody3, () => {
         runStep(4);
@@ -1378,7 +1375,6 @@ function setupStackEngine() {
       tabs1?.forEach(t => t.classList.add('dropping', 'absorbed'));
       tabs2?.forEach(t => t.classList.add('dropping', 'absorbed'));
       tabs3?.forEach(t => t.classList.add('dropping', 'absorbed'));
-      if (glow) glow.style.background = 'radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 55%, transparent 75%)';
 
       // Smooth color morph wave across the 3 unified slabs
       setTimeout(() => slabLayer1?.classList.add('unified'), 150);
