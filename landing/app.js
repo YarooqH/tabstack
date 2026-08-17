@@ -1308,7 +1308,7 @@ function setupCopyButton() {
   const btnCopyGitCommand = document.getElementById('btnCopyGitCommand');
   btnCopyGitCommand?.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText('git clone https://github.com/qray/tabstack.git');
+      await navigator.clipboard.writeText('git clone https://github.com/YarooqH/tabstack.git');
       btnCopyGitCommand.textContent = 'Copied';
       setTimeout(() => { btnCopyGitCommand.textContent = 'Copy'; }, 2000);
     } catch {
