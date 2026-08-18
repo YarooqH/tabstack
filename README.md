@@ -64,6 +64,9 @@ Configure custom hibernation timeouts, root vs. subdomain grouping, minimum tab 
   <img src="docs/images/tabstack-options-settings.png" alt="TabStack Options & Whitelist" width="60%" />
 </p>
 
+### 5. 🧼 Clean, Minimal & Clutter-Free UI
+Designed with an intuitive, distraction-free interface that gets completely out of your way. Fast, accessible, lightweight, and works seamlessly out of the box with zero complex setup.
+
 ---
 
 ## ⌨️ Default Keyboard Shortcuts
