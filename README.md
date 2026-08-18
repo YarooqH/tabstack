@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://chromewebstore.google.com/detail/tabstack/pnjlcnpebjggdmkhbopnibjgechfbfjg"><img src="https://img.shields.io/badge/Chrome_Web_Store-Available-4285F4?style=flat-square&logo=googlechrome&logoColor=white" alt="Chrome Web Store" /></a>
   <a href="https://yarooqh.github.io/tabstack/"><img src="https://img.shields.io/badge/Live_Site-yarooqh.github.io%2Ftabstack-blue?style=flat-square" alt="Live Site" /></a>
   <img src="https://img.shields.io/badge/Manifest-V3-brightgreen?style=flat-square" alt="Manifest V3" />
   <img src="https://img.shields.io/badge/Privacy-100%25_Local-purple?style=flat-square" alt="100% Local" />
@@ -85,9 +86,15 @@ Configure custom hibernation timeouts, root vs. subdomain grouping, minimum tab 
 
 ---
 
-## 🚀 Installation & Local Development
+## 🚀 Installation
+ 
+### 🌐 Install from Chrome Web Store (Recommended)
+Get TabStack directly from the official store:
+👉 **[Add to Chrome / Brave / Edge / Arc](https://chromewebstore.google.com/detail/tabstack/pnjlcnpebjggdmkhbopnibjgechfbfjg)**
 
-### Load Unpacked Extension
+---
+
+### 🛠️ Developer Mode (Load Unpacked)
 1. Clone this repository:
    ```bash
    git clone https://github.com/YarooqH/tabstack.git
