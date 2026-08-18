@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "TabStack",
   "short_name": "TabStack",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Automatically clusters same-site tabs into native collapsible groups, expands only active stacks, and saves memory.",
   "permissions": [
     "tabs",
