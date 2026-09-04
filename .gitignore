@@ -10,3 +10,5 @@ node_modules
 dist/
 landing/dist/
 store-assets/
+videos
+tools/
