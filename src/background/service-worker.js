@@ -17,7 +17,11 @@ import {
   collapseAllGroups,
   expandAllGroups
 } from './accordion.js';
-import { runTabDiscarder } from './discarder.js';
+import {
+  runTabDiscarder,
+  discardEligibleTabs,
+  discardSingleTab
+} from './discarder.js';
 
 // Debounced tab group coordinator (150ms) to prevent CPU churn
 const debouncedGroupTabs = debounce((windowId) => {
@@ -152,6 +156,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       case MESSAGE_TYPES.EXPAND_ALL: {
         if (windowId) await expandAllGroups(windowId);
         return { success: true };
+      }
+
+      case MESSAGE_TYPES.DISCARD_NOW: {
+        const { groupId, forceImmediate } = message;
+        const count = await discardEligibleTabs({
+          windowId,
+          groupId: groupId || null,
+          forceImmediate: forceImmediate !== false
+        });
+        const stats = await getLiveStats();
+        return { success: true, count, data: stats };
+      }
+
+      case MESSAGE_TYPES.DISCARD_TAB: {
+        const { tabId } = message;
+        if (!tabId) return { success: false, error: 'No tabId specified' };
+        const ok = await discardSingleTab(tabId);
+        const stats = await getLiveStats();
+        return { success: ok, data: stats };
       }
 
       case MESSAGE_TYPES.STASH_GROUP: {

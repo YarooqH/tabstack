@@ -226,8 +226,8 @@ body {
 /* Metrics & Stats Bar */
 .metrics-bar {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
   padding: 12px 18px 8px;
   background: var(--bg-base);
 }
@@ -638,6 +638,35 @@ body {
   font-weight: 500;
   white-space: nowrap;
   display: inline-block;
+}
+
+.tab-item.sleeping {
+  opacity: 0.72;
+}
+
+.tab-item.sleeping:hover {
+  opacity: 1;
+}
+
+.tab-sleep-btn {
+  opacity: 0;
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0 4px;
+  border-radius: 3px;
+  line-height: 1;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.tab-item:hover .tab-sleep-btn {
+  opacity: 0.7;
+}
+
+.tab-sleep-btn:hover {
+  opacity: 1;
+  transform: scale(1.15);
 }
 
 .tab-close-btn {

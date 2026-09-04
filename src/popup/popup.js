@@ -15,11 +15,13 @@ let currentWindowId = null;
 let currentSettings = null;
 let activeFilterQuery = '';
 let currentActiveDomain = null;
+let liveListenersAttached = false;
 
 // DOM Elements
 const themeControl = document.getElementById('themeControl');
 const statTotalTabs = document.getElementById('statTotalTabs');
 const statTotalGroups = document.getElementById('statTotalGroups');
+const statSleepingTabs = document.getElementById('statSleepingTabs');
 const statRamSaved = document.getElementById('statRamSaved');
 const toggleAutoGroup = document.getElementById('toggleAutoGroup');
 const toggleAccordion = document.getElementById('toggleAccordion');
@@ -58,25 +60,20 @@ const btnOptions = document.getElementById('btnOptions');
 const toast = document.getElementById('toast');
 
 /**
- * Initialize popup
+ * Initialize Popup
  */
 async function init() {
-  // Initialize Theme
-  const activeTheme = await initTheme(updateThemeButtonsActiveState);
-  updateThemeButtonsActiveState(activeTheme);
+  await initTheme();
 
-  try {
-    let win = await chrome.windows.getCurrent();
-    if (!win || win.type === 'popup') {
-      win = await chrome.windows.getLastFocused({ populate: false });
-    }
-    currentWindowId = win ? win.id : null;
-  } catch {
-    const lastFocused = await chrome.windows.getLastFocused({ populate: false });
-    currentWindowId = lastFocused?.id;
-  }
+  // Get active window
+  const currentWindow = await chrome.windows.getCurrent();
+  currentWindowId = currentWindow.id;
 
+  // Load settings
   currentSettings = await getSettings();
+
+  // Setup theme control active state
+  updateThemeButtonsActiveState(currentSettings.theme || 'system');
 
   // Setup toggle states
   toggleAutoGroup.checked = !!currentSettings.autoGroupEnabled;
@@ -85,6 +82,7 @@ async function init() {
 
   // Event Listeners
   setupEventListeners();
+  setupRealtimeListeners();
 
   // Initial load
   await refreshData();
@@ -94,6 +92,36 @@ function updateThemeButtonsActiveState(theme) {
   themeControl?.querySelectorAll('.theme-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.themeVal === theme);
   });
+}
+
+/**
+ * Register live Chromium tab and tabGroup listeners so popup updates in real-time
+ */
+function setupRealtimeListeners() {
+  if (liveListenersAttached) return;
+  liveListenersAttached = true;
+
+  // Debounced refresh helper for tab updates
+  let refreshTimer = null;
+  const triggerLiveRefresh = () => {
+    if (refreshTimer) clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(() => {
+      refreshData();
+    }, 120);
+  };
+
+  chrome.tabs.onUpdated?.addListener((tabId, changeInfo) => {
+    if (changeInfo.discarded !== undefined || changeInfo.title || changeInfo.status === 'complete' || changeInfo.url) {
+      triggerLiveRefresh();
+    }
+  });
+
+  chrome.tabs.onActivated?.addListener(triggerLiveRefresh);
+  chrome.tabs.onCreated?.addListener(triggerLiveRefresh);
+  chrome.tabs.onRemoved?.addListener(triggerLiveRefresh);
+  chrome.tabGroups.onUpdated?.addListener(triggerLiveRefresh);
+  chrome.tabGroups.onCreated?.addListener(triggerLiveRefresh);
+  chrome.tabGroups.onRemoved?.addListener(triggerLiveRefresh);
 }
 
 /**
@@ -125,9 +153,27 @@ function setupEventListeners() {
     showToast(e.target.checked ? 'Accordion Focus Enabled' : 'Accordion Focus Disabled');
   });
 
+  // RAM Saver Toggle: triggers real-time discard across all eligible tabs when turned ON
   toggleRamSaver.addEventListener('change', async (e) => {
-    await setSetting('autoDiscardEnabled', e.target.checked);
-    showToast(e.target.checked ? 'RAM Saver Enabled' : 'RAM Saver Disabled');
+    const isEnabled = e.target.checked;
+    await setSetting('autoDiscardEnabled', isEnabled);
+
+    if (isEnabled) {
+      showToast('💤 RAM Saver ON — Hibernating background tabs...');
+      const res = await chrome.runtime.sendMessage({
+        type: MESSAGE_TYPES.DISCARD_NOW,
+        windowId: currentWindowId,
+        forceImmediate: true
+      });
+      const count = res?.count || 0;
+      if (count > 0) {
+        showToast(`Freed RAM: Hibernated ${count} tab(s)`);
+      }
+    } else {
+      showToast('RAM Saver Disabled');
+    }
+
+    await refreshData();
   });
 
   // Navigation tab switching
@@ -224,10 +270,18 @@ async function refreshData() {
       currentDomainSection.classList.add('hidden');
     }
 
-    // Update metrics bar
+    // Calculate real-time sleeping tabs count in current window
+    const windowSleepingCount = tabs.filter(t => t.discarded).length;
+    const globalSleepingCount = statsRes?.data?.discardedTabs || windowSleepingCount;
+    const ramSavedMb = statsRes?.data?.estimatedRamSavedMb || Math.round(globalSleepingCount * 65);
+
+    // Update metrics bar in real time
     statTotalTabs.textContent = tabs.length;
     statTotalGroups.textContent = groups.length;
-    statRamSaved.textContent = `${statsRes?.data?.estimatedRamSavedMb || 0} MB`;
+    if (statSleepingTabs) {
+      statSleepingTabs.textContent = windowSleepingCount;
+    }
+    statRamSaved.textContent = `${ramSavedMb} MB`;
 
     // Update badges
     stashCount.textContent = (settings.stashedSessions || []).length;
@@ -255,42 +309,38 @@ function switchView(view) {
   whitelistView.classList.toggle('hidden', view !== 'whitelist');
 
   searchContainer.classList.toggle('hidden', view !== 'live');
-
-  if (view === 'stash') renderStashes();
-  if (view === 'whitelist') renderWhitelist();
 }
 
 /**
- * Render Live Stacks and ungrouped tabs
+ * Render Live Tab Stacks
  */
 function renderStacks() {
   stacksList.innerHTML = '';
+  let totalVisibleItems = 0;
 
-  const groupMap = new Map();
-  const ungroupedTabs = [];
   const whitelistSet = new Set((currentSettings?.whitelistDomains || []).map(d => d.toLowerCase()));
 
-  // Group tabs by groupId
+  // Map of tabs by groupId
+  const groupTabsMap = new Map();
+  const ungroupedTabs = [];
+
   for (const tab of allTabs) {
-    if (tab.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE) {
-      if (!groupMap.has(tab.groupId)) {
-        groupMap.set(tab.groupId, []);
+    if (tab.groupId && tab.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE) {
+      if (!groupTabsMap.has(tab.groupId)) {
+        groupTabsMap.set(tab.groupId, []);
       }
-      groupMap.get(tab.groupId).push(tab);
+      groupTabsMap.get(tab.groupId).push(tab);
     } else {
       ungroupedTabs.push(tab);
     }
   }
 
-  let totalVisibleItems = 0;
-
   // Render grouped stacks
   for (const group of allGroups) {
-    const groupTabs = groupMap.get(group.id) || [];
-    if (groupTabs.length === 0) continue;
-
-    // Filter tabs if search query is present
-    const filteredTabs = activeFilterQuery
+    const groupTabs = groupTabsMap.get(group.id) || [];
+    
+    // Filter tabs by active search query
+    const filteredTabs = activeFilterQuery 
       ? groupTabs.filter(t => 
           (t.title && t.title.toLowerCase().includes(activeFilterQuery)) ||
           (t.url && t.url.toLowerCase().includes(activeFilterQuery)) ||
@@ -305,6 +355,7 @@ function renderStacks() {
     card.className = `stack-card ${group.collapsed && !activeFilterQuery ? 'collapsed' : ''}`;
 
     const groupFavicon = groupTabs.find(t => t.favIconUrl)?.favIconUrl || DEFAULT_FAVICON;
+    const anyAwakeTabs = groupTabs.some(t => !t.discarded && !t.active);
 
     card.innerHTML = `
       <div class="stack-header" data-group-id="${group.id}">
@@ -314,6 +365,11 @@ function renderStacks() {
           <span class="stack-count">${filteredTabs.length}</span>
         </div>
         <div class="stack-actions">
+          ${anyAwakeTabs ? `
+            <button class="mini-btn btn-sleep-group" title="Sleep all tabs in stack to free RAM" data-group-id="${group.id}">
+              <span style="font-size: 11px;">💤</span>
+            </button>
+          ` : ''}
           <button class="mini-btn btn-stash" title="Stash Stack (Save & Close)" data-group-id="${group.id}">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
           </button>
@@ -333,10 +389,23 @@ function renderStacks() {
     // Header click toggles collapse
     const header = card.querySelector('.stack-header');
     header.addEventListener('click', async (e) => {
-      if (e.target.closest('.btn-stash') || e.target.closest('.btn-close-group')) return;
+      if (e.target.closest('.btn-stash') || e.target.closest('.btn-close-group') || e.target.closest('.btn-sleep-group')) return;
       const nextCollapsed = !card.classList.contains('collapsed');
       card.classList.toggle('collapsed', nextCollapsed);
       await chrome.tabGroups.update(group.id, { collapsed: nextCollapsed });
+    });
+
+    // 1-Click Sleep Stack
+    const btnSleepGroup = card.querySelector('.btn-sleep-group');
+    btnSleepGroup?.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const res = await chrome.runtime.sendMessage({
+        type: MESSAGE_TYPES.DISCARD_NOW,
+        groupId: group.id,
+        forceImmediate: true
+      });
+      showToast(`Hibernated tabs in ${group.title || 'Stack'}`);
+      await refreshData();
     });
 
     // Stash stack click
@@ -431,28 +500,20 @@ function renderStacks() {
         sectionCard.classList.toggle('collapsed');
       });
 
-      // Quick Stack single domain button
-      const btnStackDomain = sectionCard.querySelector('.btn-stack-single-domain');
-      if (btnStackDomain) {
-        btnStackDomain.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          const tabIds = domainTabs.map(t => t.id).filter(Boolean);
-          if (tabIds.length > 0) {
-            const newGroupId = await chrome.tabs.group({ tabIds });
-            let groupTitle = currentSettings?.customDomainNames?.[domain] || formatDomainTitle(domain);
-            if (currentSettings?.showTabCountInTitle) {
-              groupTitle = `${groupTitle} (${tabIds.length})`;
-            }
-            await chrome.tabGroups.update(newGroupId, {
-              title: groupTitle,
-              color: getDomainColor(domain, currentSettings?.customDomainColors),
-              collapsed: false
-            });
-            showToast(`Stacked ${title}!`);
-            await refreshData();
-          }
+      // 1-Click Stack this specific domain
+      const btnStackSingle = sectionCard.querySelector('.btn-stack-single-domain');
+      btnStackSingle?.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const tabIds = domainTabs.map(t => t.id);
+        const groupId = await chrome.tabs.group({ tabIds });
+        const color = getDomainColor(domain, currentSettings?.customDomainColors);
+        await chrome.tabGroups.update(groupId, {
+          title: currentSettings?.customDomainNames?.[domain] || title,
+          color
         });
-      }
+        showToast(`Stacked ${title}!`);
+        await refreshData();
+      });
 
       stacksList.appendChild(sectionCard);
     }
@@ -476,14 +537,15 @@ function renderTabItemHtml(tab, isWhitelisted = false) {
   const isSleeping = tab.discarded;
 
   return `
-    <div class="tab-item ${tab.active ? 'active' : ''}" data-tab-id="${tab.id}">
+    <div class="tab-item ${tab.active ? 'active' : ''} ${isSleeping ? 'sleeping' : ''}" data-tab-id="${tab.id}">
       <div class="tab-main">
         <img class="tab-favicon" src="${escapeHtml(favicon)}" alt="">
         <span class="tab-title-text" title="${escapeHtml(tab.title || tab.url)}">${escapeHtml(tab.title || 'Untitled Tab')}</span>
       </div>
       <div class="tab-item-badges">
-        ${isWhitelisted ? '<span class="badge-whitelisted" title="Domain is in your whitelist">🛡️ Whitelisted</span>' : ''}
-        ${isSleeping ? '<span class="badge-sleeping" title="Hibernated to save RAM">💤 Sleeping</span>' : ''}
+        ${isWhitelisted ? '<span class="badge-whitelisted" title="Domain is in your whitelist">🛡️ Protected</span>' : ''}
+        ${isSleeping ? '<span class="badge-sleeping" title="Hibernated: RAM freed">💤 Sleeping</span>' : ''}
+        ${!isSleeping && !tab.active ? `<button class="tab-sleep-btn" data-tab-id="${tab.id}" title="Hibernate tab to free RAM">💤</button>` : ''}
         <button class="tab-close-btn" data-tab-id="${tab.id}" title="Close tab">&times;</button>
       </div>
     </div>
@@ -504,11 +566,27 @@ function attachTabItemEvents(container) {
 
   container.querySelectorAll('.tab-item').forEach(el => {
     el.addEventListener('click', async (e) => {
-      if (e.target.closest('.tab-close-btn')) return;
+      if (e.target.closest('.tab-close-btn') || e.target.closest('.tab-sleep-btn')) return;
       const tabId = parseInt(el.dataset.tabId, 10);
       if (tabId) {
         await chrome.tabs.update(tabId, { active: true });
         window.close();
+      }
+    });
+  });
+
+  // 1-Click single tab sleep button
+  container.querySelectorAll('.tab-sleep-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const tabId = parseInt(btn.dataset.tabId, 10);
+      if (tabId) {
+        await chrome.runtime.sendMessage({
+          type: MESSAGE_TYPES.DISCARD_TAB,
+          tabId
+        });
+        showToast('Tab hibernated to save RAM');
+        await refreshData();
       }
     });
   });
