@@ -65,10 +65,30 @@
 
           <div class="setting-row">
             <div class="setting-info">
-              <label class="setting-title" for="optAutoGroup">Enable Auto-Stacking</label>
-              <span class="setting-subtitle">Automatically cluster newly opened tabs by domain in real time.</span>
+              <div class="setting-title-with-badge">
+                <label class="setting-title" for="optAutoGroup">Enable Auto-Stacking</label>
+                <div class="info-badge-wrapper" title="Caution: Auto-Stack automatically organizes and groups tabs in real time in the background as you browse or open new tabs.">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                </div>
+              </div>
+              <span class="setting-subtitle">Automatically cluster newly opened tabs by domain in real time. <strong style="color: #f59e0b;">(Caution: runs continuously in background)</strong></span>
             </div>
             <input type="checkbox" id="optAutoGroup" class="switch">
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-title-with-badge">
+                <label class="setting-title" for="optPreserveGroups">Preserve Existing Tab Groups</label>
+                <span class="badge-recommended">Recommended</span>
+              </div>
+              <span class="setting-subtitle">Only group tabs that are currently ungrouped. Existing or custom tab groups will never be touched, modified, or merged.</span>
+            </div>
+            <input type="checkbox" id="optPreserveGroups" class="switch">
           </div>
 
           <div class="setting-row">

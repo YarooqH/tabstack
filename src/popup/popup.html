@@ -77,10 +77,26 @@
 
     <!-- Quick Toggles -->
     <div class="toggles-card">
-      <label class="toggle-row" title="Automatically cluster tabs with same domain">
-        <span class="toggle-title">Auto-Stack</span>
+      <div class="toggle-row-item">
+        <div class="toggle-title-with-info">
+          <label class="toggle-title" for="toggleAutoGroup" title="Automatically cluster tabs with same domain">Auto-Stack</label>
+          <div class="info-icon-wrap" id="autoStackInfoBtn" tabindex="0" role="button" aria-label="Auto-Stack Caution Notice" title="Caution: Auto-Stack continuously groups same-site tabs in real-time as you browse.">
+            <svg class="info-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <div class="info-popover">
+              <div class="info-popover-title">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span>Caution</span>
+              </div>
+              <p>When Auto-Stack is enabled, TabStack automatically reorganizes and groups tabs in real time as you browse or open new tabs.</p>
+            </div>
+          </div>
+        </div>
         <input type="checkbox" id="toggleAutoGroup" class="switch">
-      </label>
+      </div>
       <div class="toggle-divider"></div>
       <label class="toggle-row" title="Keep only the active domain stack open, collapse all others">
         <span class="toggle-title">Accordion Focus</span>
@@ -90,6 +106,25 @@
       <label class="toggle-row" title="Hibernate inactive tabs in collapsed groups to save RAM">
         <span class="toggle-title">RAM Saver</span>
         <input type="checkbox" id="toggleRamSaver" class="switch">
+      </label>
+    </div>
+
+    <!-- Smart Group Protection Setting -->
+    <div class="protection-card" id="groupProtectionCard">
+      <div class="protection-main">
+        <div class="protection-title-row">
+          <div class="protection-badge-group">
+            <svg class="protection-shield-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span class="protection-title">Preserve Existing Groups</span>
+          </div>
+          <span class="badge-protection-status active" id="badgeProtectionStatus">Protected</span>
+        </div>
+        <p class="protection-desc" id="descProtection">Only clusters ungrouped tabs. Existing or custom groups are protected and will never be modified or merged.</p>
+      </div>
+      <label class="switch-container" title="Toggle group protection">
+        <input type="checkbox" id="togglePreserveGroups" class="switch">
       </label>
     </div>
 

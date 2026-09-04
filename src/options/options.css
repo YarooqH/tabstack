@@ -201,6 +201,39 @@ body {
   max-width: 75%;
 }
 
+.setting-title-with-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-badge-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 50%;
+  transition: color 0.15s ease;
+}
+
+.info-badge-wrapper:hover {
+  color: #f59e0b;
+}
+
+.badge-recommended {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
 .setting-title {
   font-size: 13px;
   font-weight: 600;

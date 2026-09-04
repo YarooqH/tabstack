@@ -22,9 +22,15 @@ export async function groupTabsInWindow(windowId, force = false) {
     // Filter out pinned tabs and whitelisted domains
     const whitelist = new Set((settings.whitelistDomains || []).map(d => d.toLowerCase().trim()));
     const domainToTabs = new Map();
+    const preserveExisting = settings.preserveExistingGroups !== false;
 
     for (const tab of tabs) {
       if (tab.pinned) continue;
+
+      // If preserving existing groups, only consider ungrouped tabs (leave existing/custom groups untouched)
+      if (preserveExisting && tab.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE && tab.groupId > 0) {
+        continue;
+      }
 
       const domain = extractDomain(tab.url || tab.pendingUrl, settings.domainMode);
       if (!domain) continue;

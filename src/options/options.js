@@ -9,6 +9,7 @@ import { initTheme, setTheme } from '../shared/theme.js';
 // DOM Elements
 const optTheme = document.getElementById('optTheme');
 const optAutoGroup = document.getElementById('optAutoGroup');
+const optPreserveGroups = document.getElementById('optPreserveGroups');
 const optAccordion = document.getElementById('optAccordion');
 const optMinTabs = document.getElementById('optMinTabs');
 const optDomainMode = document.getElementById('optDomainMode');
@@ -40,6 +41,7 @@ async function init() {
 function populateForm(settings) {
   if (optTheme) optTheme.value = settings.theme || 'system';
   optAutoGroup.checked = !!settings.autoGroupEnabled;
+  if (optPreserveGroups) optPreserveGroups.checked = settings.preserveExistingGroups !== false;
   optAccordion.checked = !!settings.accordionMode;
   optMinTabs.value = String(settings.minTabsToGroup || 2);
   optDomainMode.value = settings.domainMode || 'root';
@@ -63,6 +65,7 @@ function setupListeners() {
     const updated = {
       theme: optTheme ? optTheme.value : 'system',
       autoGroupEnabled: optAutoGroup.checked,
+      preserveExistingGroups: optPreserveGroups ? optPreserveGroups.checked : true,
       accordionMode: optAccordion.checked,
       minTabsToGroup: parseInt(optMinTabs.value, 10),
       domainMode: optDomainMode.value,
@@ -79,7 +82,8 @@ function setupListeners() {
     chrome.runtime.sendMessage({ type: MESSAGE_TYPES.SETTINGS_UPDATED });
   };
 
-  [optAutoGroup, optAccordion, optMinTabs, optDomainMode, optShowCount, optRamSaver, optDiscardTimeout]
+  [optAutoGroup, optPreserveGroups, optAccordion, optMinTabs, optDomainMode, optShowCount, optRamSaver, optDiscardTimeout]
+    .filter(Boolean)
     .forEach(el => el.addEventListener('change', autoSaveHandler));
 
   // Whitelist Handlers
