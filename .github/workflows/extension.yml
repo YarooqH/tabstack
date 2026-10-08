@@ -1,0 +1,164 @@
+name: Extension Build & Chrome Web Store Publish
+
+on:
+  pull_request:
+    paths:
+      - 'manifest.json'
+      - 'src/**'
+      - 'icons/**'
+      - 'scripts/**'
+      - '.github/workflows/extension.yml'
+  push:
+    branches:
+      - master
+    paths:
+      - 'manifest.json'
+      - 'src/**'
+      - 'icons/**'
+  workflow_dispatch:
+    inputs:
+      publish_type:
+        description: 'DEFAULT_PUBLISH goes live after review; STAGED_PUBLISH waits for a manual publish in the dashboard'
+        type: choice
+        options:
+          - DEFAULT_PUBLISH
+          - STAGED_PUBLISH
+        default: DEFAULT_PUBLISH
+      cancel_pending:
+        description: 'Cancel an older submission that is still in review and replace it'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: extension-${{ github.ref }}
+  # Never interrupt a store upload halfway; superseded PR runs can be cancelled
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Validate & package
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.package.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Require a version bump when extension code changes
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          changed=$(git diff --name-only "origin/${BASE_REF}...HEAD" -- manifest.json src icons)
+          if [ -z "$changed" ]; then
+            echo "No shipped files changed; version bump not required."
+            exit 0
+          fi
+          base_version=$(git show "origin/${BASE_REF}:manifest.json" | node -e "process.stdout.write(JSON.parse(require('fs').readFileSync(0,'utf8')).version)")
+          head_version=$(node -p "require('./manifest.json').version")
+          echo "Base v${base_version} -> PR v${head_version}"
+          newer=$(node -e "
+            const [a, b] = process.argv.slice(1).map(v => v.split('.').map(Number));
+            let r = 0;
+            for (let i = 0; i < 4 && r === 0; i++) r = Math.sign((a[i] || 0) - (b[i] || 0));
+            process.stdout.write(String(r > 0));
+          " "$head_version" "$base_version")
+          if [ "$newer" != "true" ]; then
+            echo "::error file=manifest.json::Extension files changed but v${head_version} is not higher than v${base_version} on ${BASE_REF}. Bump \"version\" in manifest.json so the merge ships to the Chrome Web Store."
+            exit 1
+          fi
+
+      - name: Validate and package extension
+        id: package
+        run: |
+          zip_path=$(node scripts/build-extension.mjs --out dist | tail -n 1)
+          echo "zip=${zip_path}" >> "$GITHUB_OUTPUT"
+          echo "version=$(node -p "require('./manifest.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tabstack-extension
+          path: dist/*.zip
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    name: Publish to Chrome Web Store
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: chrome-web-store
+      url: https://chromewebstore.google.com/detail/tabstack/${{ vars.CWS_EXTENSION_ID || 'pnjlcnpebjggdmkhbopnibjgechfbfjg' }}
+    permissions:
+      contents: write # create the GitHub release for the shipped version
+    env:
+      CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
+      CWS_EXTENSION_ID: ${{ vars.CWS_EXTENSION_ID || 'pnjlcnpebjggdmkhbopnibjgechfbfjg' }}
+      CWS_SERVICE_ACCOUNT_JSON: ${{ secrets.CWS_SERVICE_ACCOUNT_JSON }}
+      CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+      CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+      CWS_REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+      CWS_PUBLISH_TYPE: ${{ inputs.publish_type || 'DEFAULT_PUBLISH' }}
+      CWS_CANCEL_PENDING: ${{ inputs.cancel_pending && 'true' || 'false' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check store credentials
+        id: creds
+        run: |
+          if [ -z "$CWS_PUBLISHER_ID" ] || { [ -z "$CWS_SERVICE_ACCOUNT_JSON" ] && [ -z "$CWS_REFRESH_TOKEN" ]; }; then
+            echo "::warning::Chrome Web Store secrets are not configured, so nothing was published. See docs/PUBLISHING.md."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Compare with store version
+        id: check
+        if: steps.creds.outputs.configured == 'true'
+        run: node scripts/cws-publish.mjs check
+
+      - name: Download package artifact
+        if: steps.check.outputs.should_publish == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: tabstack-extension
+          path: dist
+
+      - name: Upload and submit for review
+        id: publish
+        if: steps.check.outputs.should_publish == 'true'
+        run: node scripts/cws-publish.mjs publish "dist/tabstack-${{ needs.build.outputs.version }}.zip"
+
+      - name: Create GitHub release
+        if: steps.publish.outputs.submitted_version != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.publish.outputs.submitted_version }}
+        run: |
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            echo "Release v${VERSION} already exists"
+          else
+            gh release create "v${VERSION}" "dist/tabstack-${VERSION}.zip" \
+              --target "${GITHUB_SHA}" \
+              --title "TabStack v${VERSION}" \
+              --generate-notes
+          fi

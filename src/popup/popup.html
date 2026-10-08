@@ -31,7 +31,7 @@
         </div>
         <div class="brand-text">
           <span class="brand-name">TabStack</span>
-          <span class="brand-tag">v1.0</span>
+          <span class="brand-tag" id="brandVersion">v1.0</span>
         </div>
       </div>
       <div class="header-actions">
@@ -132,6 +132,7 @@
     <div class="tab-nav">
       <button class="nav-btn active" id="tabNavLive">Live Stacks</button>
       <button class="nav-btn" id="tabNavStash">Saved (<span id="stashCount">0</span>)</button>
+      <button class="nav-btn" id="tabNavSessions">Sessions (<span id="sessionsCount">0</span>)</button>
       <button class="nav-btn" id="tabNavWhitelist">Whitelist (<span id="whitelistCount">0</span>)</button>
     </div>
 
@@ -164,6 +165,29 @@
       <div id="emptyStash" class="empty-state hidden">
         <div class="empty-icon">📦</div>
         <p class="empty-text">No stashed stacks yet.<br>Click the stash icon on any group to save it for later.</p>
+      </div>
+    </main>
+
+    <!-- Main View: Session Snapshots -->
+    <main id="sessionsView" class="view-content hidden">
+      <div class="sessions-toolbar">
+        <div class="sessions-schedule">
+          <span class="sessions-schedule-title">Window snapshots</span>
+          <span id="sessionsScheduleText" class="subtext">--</span>
+        </div>
+        <button id="btnSnapshotNow" class="action-btn action-primary sessions-snapshot-btn" title="Save every open window now">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+          Snapshot now
+        </button>
+      </div>
+
+      <div id="snapshotsList" class="snapshots-list">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div id="emptySnapshots" class="empty-state hidden">
+        <div class="empty-icon">🕘</div>
+        <p class="empty-text">No snapshots yet.<br>Closed windows and periodic snapshots will show up here.</p>
       </div>
     </main>
 

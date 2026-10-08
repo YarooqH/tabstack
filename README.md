@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Smart Tab Auto-Collapse & RAM Saver for Chromium Browsers</strong><br />
-  Automatically clusters same-site tabs into native collapsible groups, expands only your active stack (Accordion Mode), and frees system memory.
+  Automatically clusters same-site tabs into native collapsible groups, expands only your active stack (Accordion Mode), frees system memory, and brings back windows you close by mistake.
 </p>
 
 <p align="center">
@@ -64,7 +64,14 @@ Configure custom hibernation timeouts, root vs. subdomain grouping, minimum tab 
   <img src="docs/images/tabstack-options-settings.png" alt="TabStack Options & Whitelist" width="60%" />
 </p>
 
-### 5. 🧼 Clean, Minimal & Clutter-Free UI
+### 5. 🕘 Session Snapshots (Never Lose a Window Again)
+Closed the wrong window? TabStack keeps a local copy of every open window and saves it the moment the window closes. It also takes periodic snapshots (every 1h, 3h, 6h, 24h or 7 days) and keeps the session that was open before the browser last restarted. Open the **Sessions** tab in the popup and click **Restore** to reopen the tabs in a new window with pinned tabs and tab groups (names, colors, collapsed state) intact. Snapshots can be exported to and imported from JSON in Settings.
+
+<p align="center">
+  <img src="docs/images/tabstack-session-snapshots.png" alt="TabStack Session Snapshots" width="48%" />
+</p>
+
+### 6. 🧼 Clean, Minimal & Clutter-Free UI
 Designed with an intuitive, distraction-free interface that gets completely out of your way. Fast, accessible, lightweight, and works seamlessly out of the box with zero complex setup.
 
 ---
@@ -85,6 +92,7 @@ Designed with an intuitive, distraction-free interface that gets completely out 
 
 * **Zero Injected Content Scripts:** TabStack never touches or inspects webpage DOM contents.
 * **100% Local Execution:** No remote analytics, tracking pixels, or data collection. Your open tabs and browsing history never leave your machine.
+* **Local-Only Snapshots:** Session snapshots (tab URLs, titles and group names) are stored in your browser's extension storage and are never uploaded. Turn them off or delete them anytime in Settings.
 * **Lightweight Service Worker:** Event-driven architecture with debounced operations (150ms) to ensure 0% CPU overhead.
 
 ---
@@ -105,6 +113,9 @@ Get TabStack directly from the official store:
 2. Open your Chromium browser (Chrome, Brave, Edge, Arc) and go to `chrome://extensions/`.
 3. Enable **Developer mode** in the top-right corner.
 4. Click **Load unpacked** and select the root `tabstack/` folder.
+
+### Releasing
+Merging a version bump to `master` publishes it automatically: GitHub Actions validates and packages the extension, uploads it to the Chrome Web Store through the v2 API, and submits it for review. PRs that change extension code must bump `"version"` in `manifest.json`. One-time credential setup is in **[docs/PUBLISHING.md](docs/PUBLISHING.md)**.
 
 ### Running the Landing Page Locally
 ```bash

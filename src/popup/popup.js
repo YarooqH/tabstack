@@ -3,7 +3,7 @@
  * Renders live tab stacks, search filtering, session stashing, whitelist manager, and quick actions
  */
 
-import { MESSAGE_TYPES } from '../shared/constants.js';
+import { MESSAGE_TYPES, SNAPSHOT_KINDS } from '../shared/constants.js';
 import { getSettings, setSetting, removeStash } from '../shared/storage.js';
 import { extractDomain, formatDomainTitle, getDomainColor } from '../background/utils.js';
 import { initTheme, setTheme } from '../shared/theme.js';
@@ -16,6 +16,8 @@ let currentSettings = null;
 let activeFilterQuery = '';
 let currentActiveDomain = null;
 let liveListenersAttached = false;
+let snapshots = [];
+const expandedSnapshotIds = new Set();
 
 // DOM Elements
 const themeControl = document.getElementById('themeControl');
@@ -55,7 +57,15 @@ const currentDomainText = document.getElementById('currentDomainText');
 const tabNavLive = document.getElementById('tabNavLive');
 const tabNavStash = document.getElementById('tabNavStash');
 const tabNavWhitelist = document.getElementById('tabNavWhitelist');
+const tabNavSessions = document.getElementById('tabNavSessions');
 const stashCount = document.getElementById('stashCount');
+const sessionsCount = document.getElementById('sessionsCount');
+
+const sessionsView = document.getElementById('sessionsView');
+const snapshotsList = document.getElementById('snapshotsList');
+const emptySnapshots = document.getElementById('emptySnapshots');
+const sessionsScheduleText = document.getElementById('sessionsScheduleText');
+const btnSnapshotNow = document.getElementById('btnSnapshotNow');
 const whitelistCount = document.getElementById('whitelistCount');
 
 const btnStackNow = document.getElementById('btnStackNow');
@@ -69,6 +79,9 @@ const toast = document.getElementById('toast');
  */
 async function init() {
   await initTheme();
+
+  const brandVersion = document.getElementById('brandVersion');
+  if (brandVersion) brandVersion.textContent = `v${chrome.runtime.getManifest().version}`;
 
   // Get active window
   const currentWindow = await chrome.windows.getCurrent();
@@ -96,6 +109,7 @@ async function init() {
 
   // Initial load
   await refreshData();
+  await loadSnapshots();
 }
 
 function updateThemeButtonsActiveState(theme) {
@@ -229,6 +243,18 @@ function setupEventListeners() {
   tabNavLive.addEventListener('click', () => switchView('live'));
   tabNavStash.addEventListener('click', () => switchView('stash'));
   tabNavWhitelist.addEventListener('click', () => switchView('whitelist'));
+  tabNavSessions.addEventListener('click', async () => {
+    switchView('sessions');
+    await loadSnapshots();
+  });
+
+  btnSnapshotNow.addEventListener('click', async () => {
+    btnSnapshotNow.disabled = true;
+    const res = await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.TAKE_SNAPSHOT });
+    btnSnapshotNow.disabled = false;
+    showToast(res?.success ? `Saved ${res.snapshot.tabCount} tab(s)` : 'No tabs to save');
+    await loadSnapshots();
+  });
 
   // Search input
   searchInput.addEventListener('input', (e) => {
@@ -353,16 +379,18 @@ async function refreshData() {
 
 /**
  * Switches between views
- * @param {'live'|'stash'|'whitelist'} view 
+ * @param {'live'|'stash'|'whitelist'|'sessions'} view 
  */
 function switchView(view) {
   tabNavLive.classList.toggle('active', view === 'live');
   tabNavStash.classList.toggle('active', view === 'stash');
   tabNavWhitelist.classList.toggle('active', view === 'whitelist');
+  tabNavSessions.classList.toggle('active', view === 'sessions');
 
   liveView.classList.toggle('hidden', view !== 'live');
   stashView.classList.toggle('hidden', view !== 'stash');
   whitelistView.classList.toggle('hidden', view !== 'whitelist');
+  sessionsView.classList.toggle('hidden', view !== 'sessions');
 
   searchContainer.classList.toggle('hidden', view !== 'live');
 }
@@ -717,6 +745,187 @@ function renderStashes() {
 
     stashesList.appendChild(card);
   }
+}
+
+const SNAPSHOT_LABELS = {
+  [SNAPSHOT_KINDS.CLOSED_WINDOW]: 'Closed window',
+  [SNAPSHOT_KINDS.AUTO]: 'Auto snapshot',
+  [SNAPSHOT_KINDS.MANUAL]: 'Saved snapshot',
+  [SNAPSHOT_KINDS.PREVIOUS_SESSION]: 'Before browser restart'
+};
+
+const INTERVAL_LABELS = {
+  60: 'every hour',
+  180: 'every 3 hours',
+  360: 'every 6 hours',
+  1440: 'every 24 hours',
+  10080: 'every 7 days'
+};
+
+async function loadSnapshots() {
+  const res = await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.GET_SNAPSHOTS });
+  snapshots = res?.snapshots || [];
+  sessionsCount.textContent = snapshots.length;
+  renderSnapshots();
+}
+
+function formatSnapshotDate(isoString) {
+  const date = new Date(isoString);
+  const time = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  if (date.toDateString() === today.toDateString()) return `Today, ${time}`;
+  if (date.toDateString() === yesterday.toDateString()) return `Yesterday, ${time}`;
+  return `${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}, ${time}`;
+}
+
+/**
+ * Names the most common sites in a snapshot so similar entries can be told apart
+ */
+function summarizeSnapshotSites(snapshot) {
+  const counts = new Map();
+  for (const win of snapshot.windows) {
+    for (const tab of win.tabs) {
+      const domain = extractDomain(tab.url, currentSettings?.domainMode);
+      if (domain) counts.set(domain, (counts.get(domain) || 0) + 1);
+    }
+  }
+  const top = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([d]) => (/^[\d.]+$/.test(d) || d.includes(':') ? d : formatDomainTitle(d)));
+  if (top.length === 0) return '';
+  return top.length > 3 ? `${top.slice(0, 3).join(', ')} +${top.length - 3}` : top.join(', ');
+}
+
+function renderSnapshotScheduleText() {
+  if (!currentSettings?.snapshotsEnabled) {
+    sessionsScheduleText.textContent = 'Periodic snapshots off';
+    return;
+  }
+  const interval = INTERVAL_LABELS[currentSettings.snapshotIntervalMinutes] || `every ${currentSettings.snapshotIntervalMinutes} min`;
+  sessionsScheduleText.textContent = `Auto ${interval}, keeps ${currentSettings.snapshotKeepCount}`;
+}
+
+function renderSnapshots() {
+  renderSnapshotScheduleText();
+  snapshotsList.innerHTML = '';
+  emptySnapshots.classList.toggle('hidden', snapshots.length > 0);
+
+  for (const snapshot of snapshots) {
+    const windowCount = snapshot.windows.length;
+    const isExpanded = expandedSnapshotIds.has(snapshot.id);
+    const sites = summarizeSnapshotSites(snapshot);
+
+    const card = document.createElement('div');
+    card.className = `snapshot-card ${isExpanded ? 'expanded' : ''}`;
+    card.innerHTML = `
+      <div class="snapshot-header">
+        <div class="snapshot-meta">
+          <span class="snapshot-kind">${escapeHtml(SNAPSHOT_LABELS[snapshot.kind] || 'Snapshot')}</span>
+          <span class="snapshot-counts">
+            ${escapeHtml(formatSnapshotDate(snapshot.createdAt))} · ${windowCount > 1 ? `${windowCount} windows, ` : ''}${snapshot.tabCount} tab${snapshot.tabCount === 1 ? '' : 's'}
+          </span>
+          ${sites ? `<span class="snapshot-sites" title="${escapeHtml(sites)}">${escapeHtml(sites)}</span>` : ''}
+        </div>
+        <div class="stash-actions">
+          <button class="action-btn action-primary btn-restore-snapshot" title="Open ${windowCount > 1 ? 'these windows' : 'this window'} again">Restore</button>
+          <button class="mini-btn danger btn-delete-snapshot" title="Delete snapshot">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+          <div class="mini-btn chevron-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="snapshot-details">${isExpanded ? renderSnapshotDetailsHtml(snapshot) : ''}</div>
+    `;
+
+    card.querySelector('.snapshot-header').addEventListener('click', (e) => {
+      if (e.target.closest('button')) return;
+      const details = card.querySelector('.snapshot-details');
+      if (expandedSnapshotIds.has(snapshot.id)) {
+        expandedSnapshotIds.delete(snapshot.id);
+        card.classList.remove('expanded');
+        details.innerHTML = '';
+      } else {
+        expandedSnapshotIds.add(snapshot.id);
+        card.classList.add('expanded');
+        details.innerHTML = renderSnapshotDetailsHtml(snapshot);
+        attachSnapshotDetailEvents(card, snapshot);
+      }
+    });
+
+    card.querySelector('.btn-restore-snapshot').addEventListener('click', () => restoreSnapshot(snapshot.id, null));
+
+    card.querySelector('.btn-delete-snapshot').addEventListener('click', async () => {
+      await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.DELETE_SNAPSHOT, snapshotId: snapshot.id });
+      expandedSnapshotIds.delete(snapshot.id);
+      showToast('Snapshot deleted');
+      await loadSnapshots();
+    });
+
+    if (isExpanded) attachSnapshotDetailEvents(card, snapshot);
+    snapshotsList.appendChild(card);
+  }
+}
+
+function renderSnapshotDetailsHtml(snapshot) {
+  const multiWindow = snapshot.windows.length > 1;
+
+  return snapshot.windows.map((win, index) => {
+    const groupsById = new Map((win.groups || []).map(g => [g.id, g]));
+    const tabsHtml = win.tabs.map(tab => {
+      const group = groupsById.get(tab.groupId);
+      return `
+        <a class="snapshot-tab" href="${escapeHtml(tab.url)}" data-url="${escapeHtml(tab.url)}" title="${escapeHtml(tab.url)}">
+          <img class="tab-favicon" src="${escapeHtml(tab.favIconUrl || DEFAULT_FAVICON)}" alt="">
+          <span class="tab-title-text">${escapeHtml(tab.title || tab.url)}</span>
+          ${tab.pinned ? '<span class="snapshot-tab-badge">Pinned</span>' : ''}
+          ${group ? `<span class="snapshot-group-chip group-${escapeHtml(group.color)}">${escapeHtml(group.title || 'Group')}</span>` : ''}
+        </a>
+      `;
+    }).join('');
+
+    return `
+      <div class="snapshot-window">
+        ${multiWindow ? `
+          <div class="snapshot-window-header">
+            <span>Window ${index + 1} · ${win.tabs.length} tab${win.tabs.length === 1 ? '' : 's'}</span>
+            <button class="mini-text-btn btn-restore-window" data-window-index="${index}">Open window</button>
+          </div>
+        ` : ''}
+        ${tabsHtml}
+      </div>
+    `;
+  }).join('');
+}
+
+function attachSnapshotDetailEvents(card, snapshot) {
+  card.querySelectorAll('.snapshot-details .tab-favicon').forEach(img => {
+    img.addEventListener('error', () => {
+      img.src = DEFAULT_FAVICON;
+    }, { once: true });
+  });
+
+  card.querySelectorAll('.btn-restore-window').forEach(btn => {
+    btn.addEventListener('click', () => restoreSnapshot(snapshot.id, parseInt(btn.dataset.windowIndex, 10)));
+  });
+
+  // Open a single remembered tab in the current window
+  card.querySelectorAll('.snapshot-tab').forEach(link => {
+    link.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await chrome.tabs.create({ url: link.dataset.url, windowId: currentWindowId, active: true });
+    });
+  });
+}
+
+function restoreSnapshot(snapshotId, windowIndex) {
+  showToast('Restoring tabs...');
+  // The new window takes focus and closes this popup; the service worker finishes the restore
+  chrome.runtime.sendMessage({ type: MESSAGE_TYPES.RESTORE_SNAPSHOT, snapshotId, windowIndex });
 }
 
 /**

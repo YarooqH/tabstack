@@ -2,13 +2,14 @@
   "manifest_version": 3,
   "name": "TabStack",
   "short_name": "TabStack",
-  "version": "1.2.0",
+  "version": "1.4.0",
   "description": "Automatically clusters same-site tabs into native collapsible groups, expands only active stacks, and saves memory.",
   "permissions": [
     "tabs",
     "tabGroups",
     "storage",
-    "alarms"
+    "alarms",
+    "unlimitedStorage"
   ],
   "background": {
     "service_worker": "src/background/service-worker.js",

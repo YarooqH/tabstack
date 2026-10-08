@@ -37,6 +37,7 @@
       <nav class="nav-menu">
         <a href="#general" class="nav-item active">General & Grouping</a>
         <a href="#ram" class="nav-item">RAM Saver & Hibernation</a>
+        <a href="#snapshots" class="nav-item">Session Snapshots</a>
         <a href="#whitelist" class="nav-item">Domain Whitelist</a>
         <a href="#stashes" class="nav-item">Saved Stashes</a>
         <a href="#about" class="nav-item">About & Shortcuts</a>
@@ -159,6 +160,71 @@
               <option value="30">30 minutes</option>
               <option value="60">1 hour</option>
             </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Session Snapshots Section -->
+      <section id="snapshots" class="settings-section">
+        <h2>Session Snapshots</h2>
+        <p class="section-desc">Keep a local copy of your open windows so a closed window or a lost session can be reopened with its tabs, pins and groups.</p>
+
+        <div class="setting-card">
+          <div class="setting-row">
+            <div class="setting-info">
+              <label class="setting-title" for="optSnapshotClosed">Save Windows When Closed</label>
+              <span class="setting-subtitle">Keeps the tabs of any window with 2 or more tabs the moment it closes, including right before the browser quits.</span>
+            </div>
+            <input type="checkbox" id="optSnapshotClosed" class="switch">
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <label class="setting-title" for="optSnapshotsEnabled">Periodic Snapshots</label>
+              <span class="setting-subtitle">Saves every open window on a schedule. Unchanged sessions are skipped.</span>
+            </div>
+            <input type="checkbox" id="optSnapshotsEnabled" class="switch">
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <label class="setting-title" for="optSnapshotInterval">Snapshot Every</label>
+              <span class="setting-subtitle">How often a periodic snapshot is taken while the browser is open.</span>
+            </div>
+            <select id="optSnapshotInterval" class="select-input">
+              <option value="60">1 hour</option>
+              <option value="180">3 hours</option>
+              <option value="360">6 hours (Default)</option>
+              <option value="1440">24 hours</option>
+              <option value="10080">7 days</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <label class="setting-title" for="optSnapshotKeep">Periodic Snapshots to Keep</label>
+              <span class="setting-subtitle">Older periodic snapshots are deleted. Closed windows keep the latest 25.</span>
+            </div>
+            <select id="optSnapshotKeep" class="select-input">
+              <option value="6">6</option>
+              <option value="12">12</option>
+              <option value="24">24 (Default)</option>
+              <option value="48">48</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+
+          <div class="setting-row setting-row-wrap">
+            <div class="setting-info">
+              <span class="setting-title">Backups</span>
+              <span class="setting-subtitle" id="snapshotStatusText">No snapshots saved</span>
+            </div>
+            <div class="button-group">
+              <button id="btnExportSnapshots" class="btn btn-secondary">Export</button>
+              <button id="btnImportSnapshots" class="btn btn-secondary">Import</button>
+              <button id="btnClearSnapshots" class="btn btn-danger">Delete All</button>
+              <input type="file" id="snapshotImportInput" accept="application/json,.json" hidden>
+            </div>
           </div>
         </div>
       </section>
