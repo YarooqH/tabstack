@@ -146,7 +146,7 @@
   <main class="legal-content">
     <div class="legal-header">
       <h1 class="legal-title">Privacy Policy</h1>
-      <div class="legal-meta">Last updated: August 17, 2026 · TabStack Extension</div>
+      <div class="legal-meta">Last updated: October 8, 2026 · TabStack Extension</div>
     </div>
 
     <div class="legal-callout">
@@ -155,7 +155,7 @@
 
     <div class="legal-section">
       <h2>1. Overview and Single Purpose</h2>
-      <p>TabStack is an open-source browser extension designed for Chromium-based browsers (Chrome, Brave, Arc, Edge). Its single purpose is to organize and cluster open tabs by domain into native collapsible tab groups and hibernate dormant background tabs to reclaim memory.</p>
+      <p>TabStack is an open-source browser extension designed for Chromium-based browsers (Chrome, Brave, Arc, Edge). Its single purpose is to organize and cluster open tabs by domain into native collapsible tab groups and hibernate dormant background tabs to reclaim memory. To protect that organization, it can also keep a local snapshot of your open windows so they can be reopened after being closed by mistake.</p>
     </div>
 
     <div class="legal-section">
@@ -163,7 +163,8 @@
       <p>TabStack adheres to a strict zero-telemetry policy:</p>
       <ul>
         <li><strong>No Personal Information:</strong> We do not ask for or collect names, email addresses, usernames, IP addresses, or device identifiers.</li>
-        <li><strong>No Web History Collection:</strong> Although TabStack inspects open tab URLs in local memory to group tabs by domain name (e.g. <code>github.com</code>), this data is processed ephemerally in active memory and is never logged, stored as history, or sent to external servers.</li>
+        <li><strong>No Web History Collection:</strong> TabStack inspects open tab URLs to group tabs by domain name (e.g. <code>github.com</code>). It does not read your browsing history and never sends tab data to any server.</li>
+        <li><strong>Local Session Snapshots:</strong> When Session Snapshots are enabled (the default), TabStack saves the URL, title, pinned state and tab group of the tabs in your open windows to your browser's local extension storage, so you can restore a window after closing it. Snapshots stay on your device, are trimmed automatically to the limits you choose, and can be turned off, exported or deleted at any time in Settings.</li>
         <li><strong>No Telemetry or Analytics:</strong> TabStack contains zero analytics libraries, zero tracking pixels, and zero background network requests. It operates completely offline.</li>
         <li><strong>No Remote Code:</strong> TabStack does not load or execute external scripts, remote CDNs, or dynamic code. All extension logic is fully contained within the installed package.</li>
       </ul>
@@ -191,11 +192,15 @@
           </tr>
           <tr>
             <td><code>storage</code></td>
-            <td>Allows persisting your local extension preferences (such as accordion mode toggles, hibernation timers, and custom group colors) inside your browser's local storage.</td>
+            <td>Allows persisting your local extension preferences (such as accordion mode toggles, hibernation timers, and custom group colors) and your session snapshots inside your browser's local storage.</td>
+          </tr>
+          <tr>
+            <td><code>unlimitedStorage</code></td>
+            <td>Lets session snapshots of large windows be stored locally without hitting the default extension storage cap. Nothing is stored outside your device.</td>
           </tr>
           <tr>
             <td><code>alarms</code></td>
-            <td>Allows scheduling lightweight periodic background timers to evaluate idle tab inactivity and trigger hibernation.</td>
+            <td>Allows scheduling lightweight periodic background timers to evaluate idle tab inactivity, trigger hibernation, and take periodic session snapshots.</td>
           </tr>
         </tbody>
       </table>
@@ -203,7 +208,7 @@
 
     <div class="legal-section">
       <h2>4. Data Storage and Retention</h2>
-      <p>All user configurations and preferences are stored exclusively on your local machine using Chromium's <code>chrome.storage.local</code> API. If you uninstall TabStack or clear your browser extension data, all local preferences are permanently removed.</p>
+      <p>All user configurations, preferences and session snapshots are stored exclusively on your local machine using Chromium's <code>chrome.storage.local</code> API. Session snapshots are kept only up to the retention limits set in Settings and can be deleted at any time. If you uninstall TabStack or clear your browser extension data, all local preferences and snapshots are permanently removed.</p>
     </div>
 
     <div class="legal-section">

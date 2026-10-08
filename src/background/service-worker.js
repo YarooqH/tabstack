@@ -3,7 +3,7 @@
  * Ultra-lightweight, event-driven, zero persistent memory overhead
  */
 
-import { DEFAULT_SETTINGS, MESSAGE_TYPES } from '../shared/constants.js';
+import { DEFAULT_SETTINGS, MESSAGE_TYPES, SNAPSHOT_KINDS } from '../shared/constants.js';
 import { getSettings, setSetting, addStash } from '../shared/storage.js';
 import { debounce } from './utils.js';
 import {
@@ -22,13 +22,30 @@ import {
   discardEligibleTabs,
   discardSingleTab
 } from './discarder.js';
+import {
+  SNAPSHOT_ALARM,
+  isWindowRestoring,
+  refreshLiveState,
+  scheduleLiveStateRefresh,
+  markWindowClosing,
+  handleWindowClosed,
+  takeSnapshot,
+  getSnapshots,
+  deleteSnapshot,
+  clearSnapshots,
+  importSnapshots,
+  restoreSnapshot,
+  syncSnapshotAlarm
+} from './snapshots.js';
 
 // Debounced tab group coordinator (150ms) to prevent CPU churn
 const debouncedGroupTabs = debounce((windowId) => {
-  if (typeof windowId === 'number') {
+  if (typeof windowId === 'number' && !isWindowRestoring(windowId)) {
     groupTabsInWindow(windowId);
   }
 }, 150);
+
+const SNAPSHOT_SETTING_KEYS = ['snapshotsEnabled', 'snapshotIntervalMinutes'];
 
 // Setup on install / update
 chrome.runtime.onInstalled.addListener(async (details) => {
@@ -53,6 +70,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     delayInMinutes: 2
   });
 
+  await syncSnapshotAlarm();
+  refreshLiveState();
+
   // Perform initial group on last focused window
   try {
     const win = await chrome.windows.getLastFocused({ populate: false });
@@ -64,9 +84,15 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   }
 });
 
+chrome.runtime.onStartup.addListener(async () => {
+  await syncSnapshotAlarm();
+  refreshLiveState();
+});
+
 // Event Listeners for Tab Life-cycle
 chrome.tabs.onCreated.addListener((tab) => {
   if (tab.windowId) debouncedGroupTabs(tab.windowId);
+  scheduleLiveStateRefresh();
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -74,11 +100,31 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' || changeInfo.url) {
     if (tab.windowId) debouncedGroupTabs(tab.windowId);
   }
+  if (changeInfo.url || changeInfo.title || changeInfo.pinned !== undefined || changeInfo.groupId !== undefined) {
+    scheduleLiveStateRefresh();
+  }
 });
 
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-  if (!removeInfo.isWindowClosing && removeInfo.windowId) {
+  if (removeInfo.isWindowClosing) {
+    markWindowClosing(removeInfo.windowId);
+  } else if (removeInfo.windowId) {
     debouncedGroupTabs(removeInfo.windowId);
+    scheduleLiveStateRefresh();
+  }
+});
+
+chrome.tabs.onMoved.addListener(() => scheduleLiveStateRefresh());
+chrome.tabs.onAttached.addListener(() => scheduleLiveStateRefresh());
+chrome.tabGroups.onUpdated.addListener(() => scheduleLiveStateRefresh());
+
+chrome.windows.onRemoved.addListener((windowId) => {
+  handleWindowClosed(windowId);
+});
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local' && SNAPSHOT_SETTING_KEYS.some(key => key in changes)) {
+    syncSnapshotAlarm();
   }
 });
 
@@ -91,6 +137,8 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'tabstack-ram-saver') {
     runTabDiscarder();
+  } else if (alarm.name === SNAPSHOT_ALARM) {
+    takeSnapshot(SNAPSHOT_KINDS.AUTO);
   }
 });
 
@@ -237,6 +285,35 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
 
         return { success: true };
+      }
+
+      case MESSAGE_TYPES.GET_SNAPSHOTS: {
+        return { success: true, snapshots: await getSnapshots() };
+      }
+
+      case MESSAGE_TYPES.TAKE_SNAPSHOT: {
+        const snapshot = await takeSnapshot(SNAPSHOT_KINDS.MANUAL);
+        return { success: !!snapshot, snapshot };
+      }
+
+      case MESSAGE_TYPES.RESTORE_SNAPSHOT: {
+        const { snapshotId, windowIndex } = message;
+        return await restoreSnapshot(snapshotId, Number.isInteger(windowIndex) ? windowIndex : null);
+      }
+
+      case MESSAGE_TYPES.DELETE_SNAPSHOT: {
+        await deleteSnapshot(message.snapshotId);
+        return { success: true };
+      }
+
+      case MESSAGE_TYPES.CLEAR_SNAPSHOTS: {
+        await clearSnapshots();
+        return { success: true };
+      }
+
+      case MESSAGE_TYPES.IMPORT_SNAPSHOTS: {
+        const count = await importSnapshots(message.snapshots);
+        return { success: true, count };
       }
 
       default:

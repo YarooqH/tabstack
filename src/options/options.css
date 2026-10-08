@@ -413,3 +413,14 @@ kbd {
   font-weight: 500;
   color: var(--accent-green);
 }
+
+.btn:disabled,
+.select-input:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.setting-row.setting-row-wrap {
+  flex-wrap: wrap;
+  gap: 12px;
+}
