@@ -124,7 +124,7 @@ function updatePreserveGroupsUI(isActive) {
     badgeProtectionStatus.textContent = 'Protected';
     badgeProtectionStatus.className = 'badge-protection-status active';
     groupProtectionCard?.classList.add('active');
-    descProtection.textContent = 'Only clusters ungrouped tabs. Existing or custom groups are protected and will never be modified or merged.';
+    descProtection.textContent = "Only stacks loose tabs into TabStack's own groups. Groups you create or rename are never modified or merged.";
   } else {
     badgeProtectionStatus.textContent = 'Off';
     badgeProtectionStatus.className = 'badge-protection-status inactive';
@@ -234,7 +234,7 @@ function setupEventListeners() {
     await setSetting('preserveExistingGroups', isEnabled);
     updatePreserveGroupsUI(isEnabled);
     showToast(isEnabled
-      ? '🛡️ Existing groups protected (Only ungrouped tabs stack)'
+      ? '🛡️ Your own tab groups are protected'
       : '⚠️ Group protection OFF (Tabs may merge into same-site stacks)'
     );
   });
