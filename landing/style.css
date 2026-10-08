@@ -683,7 +683,7 @@ body {
 
 .showcase-tabs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin-bottom: 14px;
 }
@@ -4598,9 +4598,21 @@ body {
 
 .steps-pipeline-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   list-style: none;
+}
+
+@media (max-width: 960px) {
+  .steps-pipeline-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .steps-pipeline-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .pipeline-step-card {
@@ -4656,6 +4668,8 @@ body {
 /* Step 1 Visual: Floating Chips */
 .step-mini-icon-mesh {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 6px;
 }
 
@@ -4683,6 +4697,8 @@ body {
 /* Step 2 Visual: Cluster flow */
 .step-cluster-animation {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 6px;
 }
 
@@ -4757,6 +4773,46 @@ body {
 }
 
 .sleep-status-text {
+  font-size: 9px;
+  color: var(--accent-green);
+  font-family: var(--font-mono);
+}
+
+/* Step 4 Visual: Restore Flow */
+.step-restore-wrap {
+  width: 100%;
+}
+
+.restore-flow-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.restore-flow-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.restore-flow-chip {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--btn-primary-text);
+  background: var(--btn-primary-bg);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.restore-flow-status {
   font-size: 9px;
   color: var(--accent-green);
   font-family: var(--font-mono);
@@ -5770,6 +5826,107 @@ body {
 .row-dot.orange { background: #f59e0b; }
 .row-dot.green { background: #10b981; }
 .row-dot.red-orange { background: #ff4500; }
+.row-dot.purple { background: #a855f7; }
+.row-dot.blue { background: #3b82f6; }
+
+/* Story Step 4: Session Snapshots */
+.mock-restore-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mock-restore-card .collapse-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.restore-snapshot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.restore-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--bg-input);
+  border: 1px solid transparent;
+  padding: 7px 10px;
+  border-radius: 6px;
+}
+
+.restore-row.is-target {
+  border-color: var(--border-medium);
+}
+
+.restore-row-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.restore-row-meta strong {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.restore-row-meta span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.restore-btn-mock {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 4px 10px;
+  border-radius: 5px;
+}
+
+.restore-row.is-target .restore-btn-mock {
+  color: var(--btn-primary-text);
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-bg);
+}
+
+.restore-done-line {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-green);
+}
+
+.story-visual-pane.active .anim-restore-press {
+  animation: restorePress 0.35s ease 0.55s both;
+}
+
+.story-visual-pane.active .anim-restore-done {
+  animation: slideRowIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.85s backwards;
+}
+
+@keyframes restorePress {
+  0%, 100% { transform: scale(1); }
+  45% { transform: scale(0.92); }
+}
 
 /* Step 2: Accordion Focus Animations */
 .story-visual-pane.active .anim-accordion-unfold {
@@ -6313,3 +6470,58 @@ body {
   color: var(--text-primary);
 }
 
+
+/* ==========================================================================
+   Small Screens: Header Fit & Install Cards
+   ========================================================================== */
+
+/* Grid items default to min-width: auto, so the clone command forced the cards wider than the screen */
+.install-methods > * {
+  min-width: 0;
+}
+
+.code-box {
+  gap: 10px;
+}
+
+.code-box code {
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    padding: 0 16px;
+  }
+
+  .nav-actions {
+    gap: 6px;
+  }
+
+  /* The hero "Source Code" button and the footer still link to GitHub */
+  .nav-actions .btn-icon {
+    display: none;
+  }
+
+  .nav-actions .btn-primary {
+    padding: 6px 12px;
+  }
+
+  .install-card {
+    padding: 24px 18px;
+  }
+}
+
+@media (max-width: 359px) {
+  .brand-title {
+    display: none;
+  }
+
+  /* Keep the demo's tab strip row inside the screen: status dot + memory only */
+  .sim-telemetry-badge .tag-text,
+  .sim-telemetry-badge .tag-divider {
+    display: none;
+  }
+}

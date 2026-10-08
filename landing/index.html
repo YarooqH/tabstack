@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TabStack — Make your tab bar usable again</title>
   
-  <meta name="description" content="TabStack groups tabs by domain, collapses what you are not using, and frees the RAM those tabs were wasting. Open source and offline.">
+  <meta name="description" content="TabStack groups tabs by domain, collapses what you are not using, frees the RAM those tabs were wasting, and brings back windows you close by mistake. Open source and offline.">
   <meta property="og:title" content="TabStack — Make your tab bar usable again">
-  <meta property="og:description" content="Group tabs by domain, keep your current task in focus, and reclaim memory without scripts, accounts, or telemetry.">
+  <meta property="og:description" content="Group tabs by domain, keep your current task in focus, reclaim memory, and restore closed windows without scripts, accounts, or telemetry.">
   <meta property="og:type" content="website">
   <meta name="google-site-verification" content="MIIYiI6zWCS8LeH1TwSqPtCKK-0t25hOKbe5vkAVOYM" />
 
@@ -95,7 +95,7 @@
         <h1 class="hero-headline">A clean tab bar<br><span class="headline-gradient">in one click.</span></h1>
         
         <p class="hero-description">
-          Native domain grouping, auto-collapsing stacks, and zero script injection. Free up memory and keep your browser fast.
+          Native domain grouping, auto-collapsing stacks, and zero script injection. Free up memory, and get back any window you close by mistake.
         </p>
 
         <div class="hero-cta-group">
@@ -982,6 +982,13 @@
             <p class="step-description">Background tabs automatically hibernate to free up memory, restoring instantly the moment you click back.</p>
           </div>
 
+          <!-- Step 4 Block -->
+          <div class="story-step-block" id="storyStep-4" data-step="4" role="button" tabindex="0">
+            <span class="step-num-badge">04</span>
+            <h3 class="step-heading">Closed the wrong window? Get it back</h3>
+            <p class="step-description">TabStack saves every window the moment it closes and takes periodic snapshots. One click reopens all the tabs with their stacks, colors, and pins intact.</p>
+          </div>
+
         </div>
 
         <!-- Right Column: Sticky Pinned Demo Window -->
@@ -1150,6 +1157,63 @@
                 </div>
               </div>
 
+              <!-- === Visual Step 4: Session Snapshots (Restore a Closed Window) === -->
+              <div class="story-visual-pane" id="visualPane-4">
+                <div class="pane-tabstrip-shelf">
+                  <div class="mock-group-pill-collapsed anim-stack-pill stack-1">
+                    <span class="row-dot red"></span>
+                    <span>YouTube</span>
+                    <span class="mini-count">8</span>
+                  </div>
+                  <div class="mock-group-pill-collapsed anim-stack-pill stack-2">
+                    <span class="row-dot purple"></span>
+                    <span>GitHub</span>
+                    <span class="mini-count">14</span>
+                  </div>
+                  <div class="mock-group-pill-collapsed anim-stack-pill stack-3">
+                    <span class="row-dot blue"></span>
+                    <span>Docs</span>
+                    <span class="mini-count">11</span>
+                  </div>
+                  <div class="mock-group-pill-collapsed anim-stack-pill stack-4">
+                    <span class="row-dot green"></span>
+                    <span>Spotify</span>
+                    <span class="mini-count">7</span>
+                  </div>
+                </div>
+
+                <div class="pane-stage-body">
+                  <div class="mock-page-viewport">
+                    <div class="mock-restore-card anim-collapse-box">
+                      <div class="collapse-card-header">
+                        <span class="collapse-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg> Sessions</span>
+                        <span class="collapse-meta">Saved locally</span>
+                      </div>
+                      <div class="restore-snapshot-list">
+                        <div class="restore-row is-target anim-row-1">
+                          <div class="restore-row-meta">
+                            <strong>Closed window</strong>
+                            <span>Yesterday, 11:42 PM · 40 tabs · 4 stacks</span>
+                          </div>
+                          <span class="restore-btn-mock anim-restore-press">Restore</span>
+                        </div>
+                        <div class="restore-row anim-row-2">
+                          <div class="restore-row-meta">
+                            <strong>Auto snapshot</strong>
+                            <span>Today, 6:00 AM · 2 windows, 52 tabs</span>
+                          </div>
+                          <span class="restore-btn-mock">Restore</span>
+                        </div>
+                      </div>
+                      <div class="restore-done-line anim-restore-done">
+                        <span class="pulse-dot-green"></span>
+                        40 tabs back in a new window, stacks and pins intact
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -1227,6 +1291,25 @@
               <p class="step-text">Background groups collapse and sleep automatically, reclaiming memory used by idle pages.</p>
             </div>
           </li>
+
+          <li class="pipeline-step-card">
+            <div class="step-card-visual">
+              <div class="step-restore-wrap">
+                <div class="restore-flow-card">
+                  <div class="restore-flow-header">
+                    <span>Closed window</span>
+                    <span class="restore-flow-chip">Restore</span>
+                  </div>
+                  <span class="restore-flow-status">40 tabs · 4 stacks saved</span>
+                </div>
+              </div>
+              <span class="step-badge">04 / RESTORE</span>
+            </div>
+            <div class="step-card-text-wrap">
+              <h3 class="step-title">Never lose a window</h3>
+              <p class="step-text">Closed windows and periodic snapshots are saved on your device, ready to reopen in one click.</p>
+            </div>
+          </li>
         </ol>
       </div>
     </div>
@@ -1256,7 +1339,7 @@
             </tr>
             <tr>
               <td><strong>Stores data remotely</strong></td>
-              <td>All preferences and saved sessions stay on your local device.</td>
+              <td>Preferences, stashed stacks, and window snapshots stay on your device.</td>
             </tr>
             <tr>
               <td><strong>Modifies URLs</strong></td>
@@ -1288,11 +1371,11 @@
         <div class="shortcuts-strip" aria-label="Default keyboard shortcuts">
           <div class="shortcut-chip">
             <span class="shortcut-keys"><kbd>Alt</kbd><kbd>Shift</kbd><kbd>T</kbd></span>
-            <span class="shortcut-label">Stack now</span>
+            <span class="shortcut-label">Open TabStack</span>
           </div>
           <div class="shortcut-chip">
             <span class="shortcut-keys"><kbd>Alt</kbd><kbd>Shift</kbd><kbd>S</kbd></span>
-            <span class="shortcut-label">Sleep dormant stacks</span>
+            <span class="shortcut-label">Stack this window</span>
           </div>
           <div class="shortcut-chip">
             <span class="shortcut-keys"><kbd>Alt</kbd><kbd>Shift</kbd><kbd>A</kbd></span>

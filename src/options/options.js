@@ -15,6 +15,16 @@ const optDomainMode = document.getElementById('optDomainMode');
 const optShowCount = document.getElementById('optShowCount');
 const optRamSaver = document.getElementById('optRamSaver');
 const optDiscardTimeout = document.getElementById('optDiscardTimeout');
+const optSnapshotClosed = document.getElementById('optSnapshotClosed');
+const optSnapshotsEnabled = document.getElementById('optSnapshotsEnabled');
+const optSnapshotInterval = document.getElementById('optSnapshotInterval');
+const optSnapshotKeep = document.getElementById('optSnapshotKeep');
+
+const snapshotStatusText = document.getElementById('snapshotStatusText');
+const btnExportSnapshots = document.getElementById('btnExportSnapshots');
+const btnImportSnapshots = document.getElementById('btnImportSnapshots');
+const btnClearSnapshots = document.getElementById('btnClearSnapshots');
+const snapshotImportInput = document.getElementById('snapshotImportInput');
 
 const whitelistInput = document.getElementById('whitelistInput');
 const btnAddWhitelist = document.getElementById('btnAddWhitelist');
@@ -35,6 +45,7 @@ async function init() {
   currentSettings = await getSettings();
   populateForm(currentSettings);
   setupListeners();
+  await updateSnapshotStatus();
 }
 
 function populateForm(settings) {
@@ -46,6 +57,12 @@ function populateForm(settings) {
   optShowCount.checked = settings.showTabCountInTitle !== false;
   optRamSaver.checked = !!settings.autoDiscardEnabled;
   optDiscardTimeout.value = String(settings.discardTimeoutMinutes || 20);
+  optSnapshotClosed.checked = settings.snapshotClosedWindows !== false;
+  optSnapshotsEnabled.checked = settings.snapshotsEnabled !== false;
+  optSnapshotInterval.value = String(settings.snapshotIntervalMinutes || 360);
+  optSnapshotKeep.value = String(settings.snapshotKeepCount || 24);
+  optSnapshotInterval.disabled = !optSnapshotsEnabled.checked;
+  optSnapshotKeep.disabled = !optSnapshotsEnabled.checked;
 
   renderWhitelistTags(settings.whitelistDomains || []);
   updateStashStatus(settings.stashedSessions || []);
@@ -68,8 +85,14 @@ function setupListeners() {
       domainMode: optDomainMode.value,
       showTabCountInTitle: optShowCount.checked,
       autoDiscardEnabled: optRamSaver.checked,
-      discardTimeoutMinutes: parseInt(optDiscardTimeout.value, 10)
+      discardTimeoutMinutes: parseInt(optDiscardTimeout.value, 10),
+      snapshotClosedWindows: optSnapshotClosed.checked,
+      snapshotsEnabled: optSnapshotsEnabled.checked,
+      snapshotIntervalMinutes: parseInt(optSnapshotInterval.value, 10),
+      snapshotKeepCount: parseInt(optSnapshotKeep.value, 10)
     };
+    optSnapshotInterval.disabled = !optSnapshotsEnabled.checked;
+    optSnapshotKeep.disabled = !optSnapshotsEnabled.checked;
 
     await setSettings(updated);
     currentSettings = { ...currentSettings, ...updated };
@@ -79,8 +102,15 @@ function setupListeners() {
     chrome.runtime.sendMessage({ type: MESSAGE_TYPES.SETTINGS_UPDATED });
   };
 
-  [optAutoGroup, optAccordion, optMinTabs, optDomainMode, optShowCount, optRamSaver, optDiscardTimeout]
+  [optAutoGroup, optAccordion, optMinTabs, optDomainMode, optShowCount, optRamSaver, optDiscardTimeout,
+    optSnapshotClosed, optSnapshotsEnabled, optSnapshotInterval, optSnapshotKeep]
     .forEach(el => el.addEventListener('change', autoSaveHandler));
+
+  // Snapshot backup handlers
+  btnExportSnapshots.addEventListener('click', exportSnapshots);
+  btnImportSnapshots.addEventListener('click', () => snapshotImportInput.click());
+  snapshotImportInput.addEventListener('change', importSnapshotsFromFile);
+  btnClearSnapshots.addEventListener('click', clearAllSnapshots);
 
   // Whitelist Handlers
   btnAddWhitelist.addEventListener('click', addWhitelistDomain);
@@ -188,6 +218,61 @@ async function clearAllStashes() {
     currentSettings.stashedSessions = [];
     updateStashStatus([]);
     showStatus('Cleared all stashes');
+  }
+}
+
+async function fetchSnapshots() {
+  const res = await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.GET_SNAPSHOTS });
+  return res?.snapshots || [];
+}
+
+async function updateSnapshotStatus() {
+  const snapshots = await fetchSnapshots();
+  const tabCount = snapshots.reduce((sum, s) => sum + (s.tabCount || 0), 0);
+  snapshotStatusText.textContent = snapshots.length === 0
+    ? 'No snapshots saved yet. Restore them from the Sessions tab in the popup.'
+    : `${snapshots.length} snapshot(s) holding ${tabCount} tabs. Restore them from the Sessions tab in the popup.`;
+  btnExportSnapshots.disabled = snapshots.length === 0;
+  btnClearSnapshots.disabled = snapshots.length === 0;
+}
+
+async function exportSnapshots() {
+  const snapshots = await fetchSnapshots();
+  const payload = JSON.stringify({ type: 'tabstack-snapshots', version: 1, snapshots }, null, 2);
+  const url = URL.createObjectURL(new Blob([payload], { type: 'application/json' }));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.href = url;
+  downloadAnchor.download = `tabstack-snapshots-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showStatus(`Exported ${snapshots.length} snapshot(s)`);
+}
+
+async function importSnapshotsFromFile() {
+  const file = snapshotImportInput.files?.[0];
+  snapshotImportInput.value = '';
+  if (!file) return;
+
+  try {
+    const parsed = JSON.parse(await file.text());
+    const incoming = Array.isArray(parsed) ? parsed : parsed?.snapshots;
+    if (!Array.isArray(incoming)) throw new Error('No snapshots in file');
+
+    const res = await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.IMPORT_SNAPSHOTS, snapshots: incoming });
+    showStatus(`Imported ${res?.count || 0} snapshot(s)`);
+    await updateSnapshotStatus();
+  } catch (err) {
+    showStatus(`Import failed: ${err.message}`);
+  }
+}
+
+async function clearAllSnapshots() {
+  if (confirm('Delete every saved snapshot? Closed windows saved so far can no longer be restored.')) {
+    await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.CLEAR_SNAPSHOTS });
+    await updateSnapshotStatus();
+    showStatus('Deleted all snapshots');
   }
 }
 

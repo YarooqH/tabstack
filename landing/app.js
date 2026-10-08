@@ -455,11 +455,9 @@ function setupCompareSlider() {
 
 function setupStickyStorytelling() {
   const stepBlocks = document.querySelectorAll('.story-step-block');
-  const visualPanes = {
-    1: document.getElementById('visualPane-1'),
-    2: document.getElementById('visualPane-2'),
-    3: document.getElementById('visualPane-3')
-  };
+  const visualPanes = Object.fromEntries(
+    [...document.querySelectorAll('.story-visual-pane')].map(pane => [pane.id.replace('visualPane-', ''), pane])
+  );
 
   if (!stepBlocks.length) return;
 
