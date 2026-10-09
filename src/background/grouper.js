@@ -7,6 +7,53 @@ import { getSettings } from '../shared/storage.js';
 import { extractDomain, formatDomainTitle, getDomainColor } from './utils.js';
 
 /**
+ * Name TabStack gives a domain's stack, without the tab count suffix
+ * @param {string} domain
+ * @param {object} settings
+ * @returns {string}
+ */
+function getStackTitle(domain, settings) {
+  return settings.customDomainNames?.[domain] || formatDomainTitle(domain);
+}
+
+/**
+ * Finds the groups TabStack created in a window. A group counts as TabStack's when its title is the
+ * stack name for the domain of one of its tabs, optionally followed by a " (n)" tab count. Titles
+ * survive browser restarts (group ids don't), and a group the user creates or renames won't match.
+ * @param {number} windowId
+ * @param {chrome.tabs.Tab[]} tabs All tabs in the window
+ * @param {object} settings
+ * @returns {Promise<Set<number>>}
+ */
+async function getManagedGroupIds(windowId, tabs, settings) {
+  const groups = await chrome.tabGroups.query({ windowId });
+
+  const domainsByGroup = new Map();
+  for (const tab of tabs) {
+    if (tab.groupId === chrome.tabGroups.TAB_GROUP_ID_NONE) continue;
+    const domain = extractDomain(tab.url || tab.pendingUrl, settings.domainMode);
+    if (!domain) continue;
+    if (!domainsByGroup.has(tab.groupId)) {
+      domainsByGroup.set(tab.groupId, new Set());
+    }
+    domainsByGroup.get(tab.groupId).add(domain);
+  }
+
+  const managed = new Set();
+  for (const group of groups) {
+    const baseTitle = (group.title || '').replace(/ \(\d+\)$/, '');
+    const domains = domainsByGroup.get(group.id) || [];
+    for (const domain of domains) {
+      if (getStackTitle(domain, settings) === baseTitle) {
+        managed.add(group.id);
+        break;
+      }
+    }
+  }
+  return managed;
+}
+
+/**
  * Automatically groups tabs by domain in the specified window
  * @param {number} windowId 
  * @param {boolean} [force=false] Set to true for manual "Stack Now" trigger
@@ -22,9 +69,17 @@ export async function groupTabsInWindow(windowId, force = false) {
     // Filter out pinned tabs and whitelisted domains
     const whitelist = new Set((settings.whitelistDomains || []).map(d => d.toLowerCase().trim()));
     const domainToTabs = new Map();
+    const preserveExisting = settings.preserveExistingGroups !== false;
+    const managedGroupIds = preserveExisting ? await getManagedGroupIds(windowId, tabs, settings) : null;
 
     for (const tab of tabs) {
       if (tab.pinned) continue;
+
+      // If preserving existing groups, leave groups the user made or renamed untouched.
+      // Tabs in TabStack's own stacks still count, so new same-site tabs join them instead of forming a duplicate stack.
+      if (preserveExisting && tab.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE && !managedGroupIds.has(tab.groupId)) {
+        continue;
+      }
 
       const domain = extractDomain(tab.url || tab.pendingUrl, settings.domainMode);
       if (!domain) continue;
@@ -65,7 +120,7 @@ export async function groupTabsInWindow(windowId, force = false) {
         }
 
         // Format title
-        let title = settings.customDomainNames?.[domain] || formatDomainTitle(domain);
+        let title = getStackTitle(domain, settings);
         if (settings.showTabCountInTitle) {
           title = `${title} (${domainTabs.length})`;
         }

@@ -28,6 +28,11 @@ const statRamSaved = document.getElementById('statRamSaved');
 const toggleAutoGroup = document.getElementById('toggleAutoGroup');
 const toggleAccordion = document.getElementById('toggleAccordion');
 const toggleRamSaver = document.getElementById('toggleRamSaver');
+const togglePreserveGroups = document.getElementById('togglePreserveGroups');
+const badgeProtectionStatus = document.getElementById('badgeProtectionStatus');
+const descProtection = document.getElementById('descProtection');
+const groupProtectionCard = document.getElementById('groupProtectionCard');
+const autoStackInfoBtn = document.getElementById('autoStackInfoBtn');
 
 const searchContainer = document.getElementById('searchContainer');
 const searchInput = document.getElementById('searchInput');
@@ -92,6 +97,11 @@ async function init() {
   toggleAutoGroup.checked = !!currentSettings.autoGroupEnabled;
   toggleAccordion.checked = !!currentSettings.accordionMode;
   toggleRamSaver.checked = !!currentSettings.autoDiscardEnabled;
+  if (togglePreserveGroups) {
+    const isPreserve = currentSettings.preserveExistingGroups !== false;
+    togglePreserveGroups.checked = isPreserve;
+    updatePreserveGroupsUI(isPreserve);
+  }
 
   // Event Listeners
   setupEventListeners();
@@ -106,6 +116,21 @@ function updateThemeButtonsActiveState(theme) {
   themeControl?.querySelectorAll('.theme-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.themeVal === theme);
   });
+}
+
+function updatePreserveGroupsUI(isActive) {
+  if (!badgeProtectionStatus || !descProtection) return;
+  if (isActive) {
+    badgeProtectionStatus.textContent = 'Protected';
+    badgeProtectionStatus.className = 'badge-protection-status active';
+    groupProtectionCard?.classList.add('active');
+    descProtection.textContent = "Only stacks loose tabs into TabStack's own groups. Groups you create or rename are never modified or merged.";
+  } else {
+    badgeProtectionStatus.textContent = 'Off';
+    badgeProtectionStatus.className = 'badge-protection-status inactive';
+    groupProtectionCard?.classList.remove('active');
+    descProtection.textContent = 'Group protection disabled. Auto-Stack will merge tabs matching the same domain across all groups.';
+  }
 }
 
 /**
@@ -142,6 +167,19 @@ function setupRealtimeListeners() {
  * Register all event handlers
  */
 function setupEventListeners() {
+  // Auto-Stack Info Button caution notice popover
+  autoStackInfoBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    autoStackInfoBtn.classList.toggle('active');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#autoStackInfoBtn')) {
+      autoStackInfoBtn?.classList.remove('active');
+    }
+  });
+
   // Theme segmented buttons
   themeControl?.querySelectorAll('.theme-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -188,6 +226,17 @@ function setupEventListeners() {
     }
 
     await refreshData();
+  });
+
+  // Preserve Existing Groups Toggle
+  togglePreserveGroups?.addEventListener('change', async (e) => {
+    const isEnabled = e.target.checked;
+    await setSetting('preserveExistingGroups', isEnabled);
+    updatePreserveGroupsUI(isEnabled);
+    showToast(isEnabled
+      ? '🛡️ Your own tab groups are protected'
+      : '⚠️ Group protection OFF (Tabs may merge into same-site stacks)'
+    );
   });
 
   // Navigation tab switching
@@ -284,6 +333,13 @@ async function refreshData() {
     allTabs = tabs;
     allGroups = groups;
     currentSettings = settings;
+
+    // Sync preserve groups toggle if changed externally
+    if (togglePreserveGroups && document.activeElement !== togglePreserveGroups) {
+      const isPreserve = settings.preserveExistingGroups !== false;
+      togglePreserveGroups.checked = isPreserve;
+      updatePreserveGroupsUI(isPreserve);
+    }
 
     // Detect active tab domain for 1-click whitelist button
     const activeTab = tabs.find(t => t.active);

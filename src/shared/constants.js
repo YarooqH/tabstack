@@ -16,6 +16,7 @@ export const CHROMIUM_COLORS = [
 export const DEFAULT_SETTINGS = {
   theme: 'system',               // 'system' | 'light' | 'dark'
   autoGroupEnabled: false,       // Off by default
+  preserveExistingGroups: true,  // Only group ungrouped tabs; leave existing groups untouched
   accordionMode: true,           // Auto-expand active group, collapse all other groups
   minTabsToGroup: 2,             // Minimum tabs from same domain to form a group (e.g. 2 tabs)
   domainMode: 'root',            // 'root' (e.g., github.com) or 'subdomain' (e.g., docs.github.com)
